@@ -3044,9 +3044,23 @@ export class RichPresenceAssets {
   public setSmallText(text?: string): this;
 }
 
+export interface RoleColors {
+  primaryColor: number;
+  secondaryColor: number | null;
+  tertiaryColor: number | null;
+}
+
+export interface RoleColorsResolvable {
+  primaryColor: ColorResolvable;
+  secondaryColor?: ColorResolvable;
+  tertiaryColor?: ColorResolvable;
+}
+
 export class Role extends Base {
   private constructor(client: Client, data: RawRoleData, guild: Guild);
+  /** @deprecated Use {@link Role.colors} instead. */
   public color: number;
+  public colors: RoleColors;
   public readonly createdAt: Date;
   public readonly createdTimestamp: number;
   /** @deprecated This will be removed in the next major version, see https://github.com/discordjs/discord.js/issues/7091 */
@@ -3073,7 +3087,9 @@ export class Role extends Base {
   public equals(role: Role): boolean;
   public iconURL(options?: StaticImageURLOptions): string | null;
   public permissionsIn(channel: NonThreadGuildBasedChannel | Snowflake, checkAdmin?: boolean): Readonly<Permissions>;
+  /** @deprecated Use {@link Role.setColors} instead. */
   public setColor(color: ColorResolvable, reason?: string): Promise<Role>;
+  public setColors(colors: RoleColorsResolvable, reason?: string): Promise<Role>;
   public setHoist(hoist?: boolean, reason?: string): Promise<Role>;
   public setMentionable(mentionable?: boolean, reason?: string): Promise<Role>;
   public setName(name: string, reason?: string): Promise<Role>;
@@ -4203,6 +4219,11 @@ export const Constants: {
   GuildScheduledEventEntityTypes: EnumHolder<typeof GuildScheduledEventEntityTypes>;
   GuildScheduledEventPrivacyLevels: EnumHolder<typeof GuildScheduledEventPrivacyLevels>;
   GuildScheduledEventStatuses: EnumHolder<typeof GuildScheduledEventStatuses>;
+  HolographicStyles: {
+    PRIMARY: 11_127_295;
+    SECONDARY: 16_759_788;
+    TERTIARY: 16_761_760;
+  };
   IntegrationExpireBehaviors: IntegrationExpireBehaviors[];
   SelectMenuComponentTypes: EnumHolder<typeof SelectMenuComponentTypes>;
   RelationshipTypes: EnumHolder<typeof RelationshipTypes>;
@@ -7742,7 +7763,9 @@ export interface ResolvedOverwriteOptions {
 
 export interface RoleData {
   name?: string;
+  /** @deprecated Use {@link RoleData.colors} instead. */
   color?: ColorResolvable;
+  colors?: RoleColorsResolvable;
   hoist?: boolean;
   position?: number;
   permissions?: PermissionResolvable;
