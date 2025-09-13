@@ -3716,11 +3716,11 @@ export class Typing extends Base {
   };
 }
 
-export interface PrimaryGuild {
-  identityGuildId?: Snowflake;
-  identityEnabled?: boolean;
-  tag?: string;
-  badge?: string;
+export interface UserPrimaryGuild {
+  badge: string | null;
+  identityEnabled: boolean | null;
+  identityGuildId: Snowflake | null;
+  tag: string | null;
 }
 
 export interface AvatarDecorationData {
@@ -3770,13 +3770,15 @@ export class User extends PartialTextBasedChannel(Base) {
   public readonly voice?: VoiceState;
   public readonly relationship: RelationshipTypes;
   public readonly friendNickname: string | null | undefined;
-  public primaryGuild: PrimaryGuild | null;
+  public primaryGuild: UserPrimaryGuild | null;
   /** @deprecated Use {@link User.primaryGuild} instead */
   public clan: PrimaryGuild | null;
   public avatarURL(options?: ImageURLOptions): string | null;
   public avatarDecorationURL(): string | null;
   public bannerURL(options?: ImageURLOptions): string | null;
+  /** @deprecated Use {@link User.guildTagBadgeURL} instead */
   public clanBadgeURL(): string | null;
+  public guildTagBadgeURL(options?: ImageURLOptions): string | null;
   public createDM(force?: boolean): Promise<DMChannel>;
   public deleteDM(): Promise<DMChannel>;
   public displayAvatarURL(options?: ImageURLOptions): string;
@@ -4178,7 +4180,7 @@ export const Constants: {
         dynamic: boolean,
       ): string;
       AvatarDecoration(hash: string): string;
-      ClanBadge(guildId: Snowflake, hash: string): string;
+      GuildTagBadge(guildId: Snowflake, hash: string): string;
       Banner(id: Snowflake, hash: string, format: DynamicImageFormat, size: AllowedImageSize, dynamic: boolean): string;
       DefaultAvatar(index: number): string;
       DiscoverySplash(guildId: Snowflake, hash: string, format: AllowedImageFormat, size: AllowedImageSize): string;
