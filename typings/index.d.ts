@@ -121,6 +121,7 @@ import {
   MessageReferenceTypes,
   SeparatorSpacingSizes,
   ApplicationType,
+  NameplatePalette,
 } from './enums';
 import {
   APIApplicationRoleConnectionMetadata,
@@ -3727,6 +3728,17 @@ export interface AvatarDecorationData {
   skuId: Snowflake;
 }
 
+export interface NameplateData {
+  asset: string;
+  label: string;
+  palette: NameplatePalette;
+  skuId: Snowflake;
+}
+
+export interface Collectibles {
+  nameplate: NameplateData | null;
+}
+
 export class User extends PartialTextBasedChannel(Base) {
   protected constructor(client: Client, data: RawUserData);
   private _equals(user: APIUser): boolean;
@@ -3741,6 +3753,7 @@ export class User extends PartialTextBasedChannel(Base) {
   public bot: boolean;
   public readonly createdAt: Date;
   public readonly createdTimestamp: number;
+  public collectibles: Collectibles | null;
   public discriminator: string;
   public readonly displayName: string;
   public readonly defaultAvatarURL: string;
