@@ -5075,7 +5075,7 @@ export type PurchasedFlagsString = 'NITRO_CLASSIC' | 'NITRO' | 'GUILD_BOOST' | '
 
 export type PremiumUsageFlagsString = 'PREMIUM_DISCRIMINATOR' | 'ANIMATED_AVATAR' | 'PROFILE_BANNER';
 
-export type InviteFlagsString = 'GUEST' | 'VIEWED';
+export type InviteFlagsString = 'IS_GUEST_INVITE' | 'IS_VIEWED' | 'IS_ENHANCED' | 'IS_APPLICATION_BYPASS';
 
 export type ActivitiesOptions = Omit<ActivityOptions, 'shardId'>;
 
