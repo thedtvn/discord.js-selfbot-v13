@@ -1,9 +1,4 @@
-> [!IMPORTANT]
-> ## Project Archival
-> 
-> **This project is no longer actively maintained and this repository has been archived.**
->
-> You can read the full announcement [here](https://github.com/aiko-chan-ai/discord.js-selfbot-v13/discussions/1743)
+# Well hi Stalker :\ (The toilet is missing a camera and i don't need one)
 
 <div align="center">
   <br />

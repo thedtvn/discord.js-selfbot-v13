@@ -584,7 +584,7 @@ class User extends Base {
    * @readonly
    */
   get relationship() {
-    const i = this.client.relationships.cache.get(this.id) ?? 0;
+    const i = this.client.relationships.cache.get(this.id) ?? 6; // Move none from 0 to 6
     return RelationshipTypes[parseInt(i)];
   }
 

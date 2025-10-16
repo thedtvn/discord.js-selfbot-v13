@@ -4453,16 +4453,19 @@ export class RelationshipManager extends BaseManager {
   public sinceCache: Collection<Snowflake, Date>;
   public readonly friendCache: Collection<Snowflake, User>;
   public readonly blockedCache: Collection<Snowflake, User>;
+  public readonly ignoredCache: Collection<Snowflake, User>;
   public readonly incomingCache: Collection<Snowflake, User>;
   public readonly outgoingCache: Collection<Snowflake, User>;
   public toJSON(): { type: RelationshipTypes; since: string; nickname: string | null | undefined; id: Snowflake }[];
   public resolveId(user: UserResolvable): Snowflake | undefined;
   public fetch(user?: UserResolvable, options?: BaseFetchOptions): Promise<RelationshipTypes | RelationshipManager>;
   public deleteRelationship(user: UserResolvable): Promise<boolean>;
+  public deleteIgnored(user: UserResolvable): Promise<boolean>;
   public sendFriendRequest(options: UserResolvable): Promise<boolean>;
   public addFriend(user: UserResolvable): Promise<boolean>;
   public setNickname(user: UserResolvable, nickname: string | null | undefined): Promise<boolean>;
   public addBlocked(user: UserResolvable): Promise<boolean>;
+  public addIgnored(user: UserResolvable): Promise<boolean>;
 }
 
 export class UserNoteManager extends BaseManager {

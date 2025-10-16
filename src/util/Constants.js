@@ -1800,23 +1800,25 @@ exports.PollLayoutTypes = createEnum([null, 'DEFAULT', 'IMAGE_ONLY_ANSWERS']);
 
 /**
  * Relationship Enums:
- * * 0: NONE
+ * * 0: IGNORED
  * * 1: FRIEND
  * * 2: BLOCKED
  * * 3: PENDING_INCOMING
  * * 4: PENDING_OUTGOING
  * * 5: IMPLICIT
+ * * 6: NONE
  * @typedef {string} RelationshipType
  * @see {@link https://luna.gitlab.io/discord-unofficial-docs/relationships.html}
  */
 
 exports.RelationshipTypes = createEnum([
-  'NONE',
+  'IGNORED',
   'FRIEND',
   'BLOCKED',
   'PENDING_INCOMING',
   'PENDING_OUTGOING',
   'IMPLICIT',
+  'NONE',
 ]);
 
 exports.SeparatorSpacingSizes = createEnum([null, 'SMALL', 'LARGE']);

@@ -55,6 +55,18 @@ class RelationshipManager extends BaseManager {
   }
 
   /**
+   * Get all ignored users
+   * @type {Collection<Snowflake, User>}
+   * @readonly
+   */
+  get ignoredCache() {
+    const users = this.cache
+      .filter(value => value === RelationshipTypes.IGNORE)
+      .map((_, key) => [key, this.client.users.cache.get(key)]);
+    return new Collection(users);
+  }
+
+  /**
    * Get all incoming friend requests
    * @type {Collection<Snowflake, User>}
    * @readonly
@@ -168,8 +180,6 @@ class RelationshipManager extends BaseManager {
    * @returns {Promise<boolean>}
    */
   async deleteRelationship(user) {
-    throw new Error('Risky action, not finished yet.');
-    // eslint-disable-next-line no-unreachable
     const id = this.resolveId(user);
     if (
       ![RelationshipTypes.FRIEND, RelationshipTypes.BLOCKED, RelationshipTypes.PENDING_OUTGOING].includes(
@@ -185,13 +195,28 @@ class RelationshipManager extends BaseManager {
   }
 
   /**
+   * Deletes an ignored relationship with a client user.
+   * @param {UserResolvable} user Target
+   * @returns {Promise<boolean>}
+   */
+  async deleteIgnored(user) {
+    // Yeah, somehow Discord made a new endpoint for this. -.-
+    if (this.cache.get(this.resolveId(user)) !== RelationshipTypes.IGNORED) {
+      return Promise.resolve(false);
+    }
+    const id = this.resolveId(user);
+    await this.client.api.users['@me'].relationships[id].ignore.delete({
+      DiscordContext: { location: 'ContextMenu' },
+    });
+    return true;
+  }
+
+  /**
    * Sends a friend request.
    * @param {UserResolvable} options Target (User Object, Username, User Id)
    * @returns {Promise<boolean>}
    */
   async sendFriendRequest(options) {
-    throw new Error('Risky action, not finished yet.');
-    // eslint-disable-next-line no-unreachable
     const id = this.resolveId(options);
     if (id) {
       await this.client.api.users['@me'].relationships[id].put({
@@ -218,8 +243,6 @@ class RelationshipManager extends BaseManager {
    * @returns {Promise<boolean>}
    */
   async addFriend(user) {
-    throw new Error('Risky action, not finished yet.');
-    // eslint-disable-next-line no-unreachable
     const id = this.resolveId(user);
     // Check if already friends
     if (this.cache.get(id) === RelationshipTypes.FRIEND) return Promise.resolve(false);
@@ -260,8 +283,6 @@ class RelationshipManager extends BaseManager {
    * @returns {Promise<boolean>}
    */
   async addBlocked(user) {
-    throw new Error('Risky action, not finished yet.');
-    // eslint-disable-next-line no-unreachable
     const id = this.resolveId(user);
     // Check
     if (this.cache.get(id) === RelationshipTypes.BLOCKED) return Promise.resolve(false);
@@ -273,6 +294,22 @@ class RelationshipManager extends BaseManager {
     });
     return true;
   }
+
+  /**
+   * Ignores a user.
+   * @param {UserResolvable} user User to ignore
+   * @returns {Promise<boolean>}
+   */
+  async addIgnored(user) {
+    const id = this.resolveId(user);
+    // Check
+    if (this.cache.get(id) === RelationshipTypes.IGNORED) return Promise.resolve(false);
+    await this.client.api.users['@me'].relationships[id].ignore.put({
+      DiscordContext: { location: 'ContextMenu' },
+    });
+    return true;
+  }
+
 }
 
 module.exports = RelationshipManager;
