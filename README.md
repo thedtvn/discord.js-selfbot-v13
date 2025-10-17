@@ -1,4 +1,4 @@
-# Well hi Stalker :\ (The toilet is missing a camera and i don't need one)
+# This Repo is Maintain By The DT for His own project 
 
 <div align="center">
   <br />
