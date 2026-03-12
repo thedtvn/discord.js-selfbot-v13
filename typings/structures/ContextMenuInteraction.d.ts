@@ -4,6 +4,9 @@ import BaseCommandInteraction from './BaseCommandInteraction';
  * @extends {BaseCommandInteraction}
  */
 declare class ContextMenuInteraction extends BaseCommandInteraction {
+    options: any;
+    targetId: any;
+    targetType: any;
     constructor(client: any, data: any);
     /**
      * Resolves and transforms options received from the API for a context menu interaction.

@@ -1,26 +1,36 @@
-import { Collection } from '@discordjs/collection';
 import { Channel } from './Channel';
 import Invite from './Invite';
+import MessageManager from '../managers/MessageManager';
 /**
  * Represents a Group DM Channel on Discord.
  * @extends {Channel}
  * @implements {TextBasedChannel}
  */
 declare class GroupDMChannel extends Channel {
+    messages: MessageManager;
+    _recipients: any[];
+    ownerId: string | null;
+    lastMessageId: string | null;
+    lastPinTimestamp: number | null;
+    name: string | null;
+    icon: string | null;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The URL to this channel's icon.
      * @param {StaticImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    iconURL({ format, size }?: {}): any;
+    iconURL({ format, size }?: {
+        format?: string;
+        size?: number;
+    }): string | null;
     /**
      * The recipients of this Group DM Channel.
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get recipients(): Collection<unknown, unknown>;
+    get recipients(): any;
     /**
      * The owner of this Group DM Channel
      * @type {?User}
@@ -52,7 +62,7 @@ declare class GroupDMChannel extends Channel {
      * // Logs: Hello from Group Test!
      * console.log(`Hello from ${channel}!`);
      */
-    toString(): any;
+    toString(): string;
     toJSON(): unknown;
     /**
      * The data for editing a channe;.
@@ -113,7 +123,7 @@ declare class GroupDMChannel extends Channel {
      * Get all the invites for this Group DM Channel.
      * @returns {Promise<Collection<string, Invite>>}
      */
-    fetchAllInvite(): Promise<Collection<unknown, unknown>>;
+    fetchAllInvite(): Promise<any>;
     /**
      * Delete invites from this Group DM Channel.
      * @param {InviteResolvable} invite Invite to add to the channel
@@ -136,7 +146,7 @@ declare class GroupDMChannel extends Channel {
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get voiceUsers(): Collection<unknown, unknown>;
+    get voiceUsers(): any;
     /**
      * Get current shard
      * @type {WebSocketShard}
@@ -152,8 +162,8 @@ declare class GroupDMChannel extends Channel {
         sendPayload: (data: any) => boolean;
         destroy: () => void;
     };
-    get lastMessage(): void;
-    get lastPinAt(): void;
+    get lastMessage(): any;
+    get lastPinAt(): any;
     send(): void;
     sendTyping(): void;
     createMessageCollector(): void;

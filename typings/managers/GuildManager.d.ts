@@ -1,10 +1,15 @@
+import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
 import CachedManager from './CachedManager';
+import { Guild } from '../structures/Guild';
+import OAuth2Guild from '../structures/OAuth2Guild';
 /**
  * Manages API methods for Guilds and stores their cache.
  * @extends {CachedManager}
  */
-declare class GuildManager extends CachedManager {
-    constructor(client: any, iterable: any);
+declare class GuildManager extends CachedManager<Snowflake, Guild> {
+    constructor(client: Client, iterable?: Iterable<Record<string, unknown>>);
     /**
      * The cache of this Manager
      * @type {Collection<Snowflake, Guild>}
@@ -66,11 +71,7 @@ declare class GuildManager extends CachedManager {
      * @param {GuildResolvable} guild The guild resolvable to identify
      * @returns {?Guild}
      */
-    resolve(guild: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    resolve(guild: unknown): Guild | null;
     /**
      * Resolves a {@link GuildResolvable} to a {@link Guild} id string.
      * @method resolveId
@@ -79,7 +80,7 @@ declare class GuildManager extends CachedManager {
      * @param {GuildResolvable} guild The guild resolvable to identify
      * @returns {?Snowflake}
      */
-    resolveId(guild: any): string;
+    resolveId(guild: unknown): Snowflake | null;
     /**
      * Options used to create a guild.
      * @typedef {Object} GuildCreateOptions
@@ -102,11 +103,18 @@ declare class GuildManager extends CachedManager {
      * @param {GuildCreateOptions} [options] Options for creating the guild
      * @returns {Promise<Guild>} The guild that was created
      */
-    create(name: any, { afkChannelId, afkTimeout, channels, defaultMessageNotifications, explicitContentFilter, icon, roles, systemChannelId, systemChannelFlags, verificationLevel, }?: {
-        channels?: any[];
-        icon?: any;
-        roles?: any[];
-    }): Promise<any>;
+    create(name: string, { afkChannelId, afkTimeout, channels, defaultMessageNotifications, explicitContentFilter, icon, roles, systemChannelId, systemChannelFlags, verificationLevel, }?: {
+        afkChannelId?: Snowflake | number;
+        afkTimeout?: number;
+        channels?: Array<Record<string, unknown>>;
+        defaultMessageNotifications?: string | number;
+        explicitContentFilter?: string | number;
+        icon?: unknown;
+        roles?: Array<Record<string, unknown>>;
+        systemChannelId?: Snowflake | number;
+        systemChannelFlags?: unknown;
+        verificationLevel?: string | number;
+    }): Promise<Guild>;
     /**
      * Options used to fetch a single guild.
      * @typedef {BaseFetchOptions} FetchGuildOptions
@@ -125,7 +133,7 @@ declare class GuildManager extends CachedManager {
      * @param {GuildResolvable|FetchGuildOptions|FetchGuildsOptions} [options] The guild's id or options
      * @returns {Promise<Guild|Collection<Snowflake, OAuth2Guild>>}
      */
-    fetch(options?: {}): Promise<any>;
+    fetch(options?: Record<string, unknown>): Promise<Guild | Collection<Snowflake, OAuth2Guild>>;
     /**
      * Options used to set incident actions. Supplying `null` to any option will disable the action.
      * @typedef {Object} IncidentActionsEditOptions
@@ -138,14 +146,9 @@ declare class GuildManager extends CachedManager {
      * @param {IncidentActionsEditOptions} incidentActions The incident actions to set
      * @returns {Promise<IncidentActions>}
      */
-    setIncidentActions(guild: any, { invitesDisabledUntil, dmsDisabledUntil }: {
-        invitesDisabledUntil: any;
-        dmsDisabledUntil: any;
-    }): Promise<{
-        invitesDisabledUntil: Date;
-        dmsDisabledUntil: Date;
-        dmSpamDetectedAt: Date;
-        raidDetectedAt: Date;
-    }>;
+    setIncidentActions(guild: unknown, { invitesDisabledUntil, dmsDisabledUntil }: {
+        invitesDisabledUntil?: string | number | Date | null;
+        dmsDisabledUntil?: string | number | Date | null;
+    }): Promise<Record<string, unknown>>;
 }
 export default GuildManager;

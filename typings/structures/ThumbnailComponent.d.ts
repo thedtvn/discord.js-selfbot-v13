@@ -1,5 +1,9 @@
 import BaseMessageComponent from './BaseMessageComponent';
+import UnfurledMediaItem from './UnfurledMediaItem';
 declare class ThumbnailComponent extends BaseMessageComponent {
+    media: UnfurledMediaItem;
+    description: string | null;
+    spoiler: boolean;
     /**
      * @property {UnfurledMediaItem} [media] A url or attachment
      * @property {String} [description] Alt text for the media, max 1024 characters
@@ -8,7 +12,7 @@ declare class ThumbnailComponent extends BaseMessageComponent {
     /**
      * @param {ThumbnailComponent | APIThumbnailComponent} [data={}] The data
      */
-    constructor(data?: {});
+    constructor(data?: any);
     setup(data: any): void;
     /**
      * @returns {APIThumbnailComponent}
@@ -16,8 +20,8 @@ declare class ThumbnailComponent extends BaseMessageComponent {
     toJSON(): {
         type: any;
         media: any;
-        description: any;
-        spoiler: any;
+        description: string | null;
+        spoiler: boolean;
     };
 }
 export default ThumbnailComponent;

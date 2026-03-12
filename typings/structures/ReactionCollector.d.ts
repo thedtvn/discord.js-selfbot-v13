@@ -1,3 +1,4 @@
+import { Collection } from '@discordjs/collection';
 import Collector from './interfaces/Collector';
 /**
  * @typedef {CollectorOptions} ReactionCollectorOptions
@@ -15,11 +16,14 @@ import Collector from './interfaces/Collector';
  * @extends {Collector}
  */
 declare class ReactionCollector extends Collector {
+    message: any;
+    users: Collection<string, any>;
+    total: number;
     /**
      * @param {Message} message The message upon which to collect reactions
      * @param {ReactionCollectorOptions} [options={}] The options to apply to this collector
      */
-    constructor(message: any, options?: {});
+    constructor(message: any, options?: any);
     /**
      * Handles an incoming reaction for possible collection.
      * @param {MessageReaction} reaction The reaction to possibly collect
@@ -27,14 +31,14 @@ declare class ReactionCollector extends Collector {
      * @returns {?(Snowflake|string)}
      * @private
      */
-    collect(reaction: any): any;
+    collect(reaction: any): string | null;
     /**
      * Handles a reaction deletion for possible disposal.
      * @param {MessageReaction} reaction The reaction to possibly dispose of
      * @param {User} user The user that removed the reaction
      * @returns {?(Snowflake|string)}
      */
-    dispose(reaction: any, user: any): any;
+    dispose(reaction: any, user: any): string | null;
     /**
      * Empties this reaction collector.
      */
@@ -44,7 +48,7 @@ declare class ReactionCollector extends Collector {
      * @type {?string}
      * @readonly
      */
-    get endReason(): "limit" | "emojiLimit" | "userLimit";
+    get endReason(): string | null;
     /**
      * Handles checking if the message has been deleted, and if so, stops the collector with the reason 'messageDelete'.
      * @private
@@ -78,6 +82,6 @@ declare class ReactionCollector extends Collector {
      * @param {MessageReaction} reaction The message reaction to get the key for
      * @returns {Snowflake|string}
      */
-    static key(reaction: any): any;
+    static key(reaction: any): string;
 }
 export default ReactionCollector;

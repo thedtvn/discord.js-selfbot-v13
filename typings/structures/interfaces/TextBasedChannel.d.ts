@@ -4,6 +4,14 @@ import MessageCollector from '../MessageCollector';
  * @interface
  */
 declare class TextBasedChannel {
+    client: any;
+    id: any;
+    guild: any;
+    edit: any;
+    createDM: any;
+    messages: any;
+    lastMessageId: string | null;
+    lastPinTimestamp: number | null;
     constructor();
     /**
      * The Message object of the last message in the channel, if one was sent
@@ -16,7 +24,7 @@ declare class TextBasedChannel {
      * @type {?Date}
      * @readonly
      */
-    get lastPinAt(): Date;
+    get lastPinAt(): Date | null;
     /**
      * Represents the data for a poll answer.
      * @typedef {Object} PollAnswerData
@@ -131,7 +139,7 @@ declare class TextBasedChannel {
         applications: any[];
         application_commands: any[];
     }>;
-    sendSlash(botOrApplicationId: any, commandNameString: any, ...args: any[]): Promise<unknown>;
+    sendSlash(botOrApplicationId: any, commandNameString: any, ...args: any[]): Promise<any>;
     /**
      * Sends a typing indicator in the channel.
      * @returns {Promise<{ message_send_cooldown_ms: number, thread_create_cooldown_ms: number }|void>} Resolves upon the typing status being sent
@@ -151,7 +159,7 @@ declare class TextBasedChannel {
      * collector.on('collect', m => console.log(`Collected ${m.content}`));
      * collector.on('end', collected => console.log(`Collected ${collected.size} items`));
      */
-    createMessageCollector(options?: {}): MessageCollector;
+    createMessageCollector(options?: any): MessageCollector;
     /**
      * An object containing the same properties as CollectorOptions, but a few more:
      * @typedef {MessageCollectorOptions} AwaitMessagesOptions
@@ -170,7 +178,7 @@ declare class TextBasedChannel {
      *   .then(collected => console.log(collected.size))
      *   .catch(collected => console.log(`After a minute, only ${collected.size} out of 4 voted.`));
      */
-    awaitMessages(options?: {}): Promise<unknown>;
+    awaitMessages(options?: any): Promise<any>;
     /**
      * Fetches all webhooks for the channel.
      * @returns {Promise<Collection<Snowflake, Webhook>>}
@@ -201,21 +209,21 @@ declare class TextBasedChannel {
      *   .then(console.log)
      *   .catch(console.error)
      */
-    createWebhook(name: any, options?: {}): any;
+    createWebhook(name: string, options?: any): any;
     /**
      * Sets the rate limit per user (slowmode) for this channel.
      * @param {number} rateLimitPerUser The new rate limit in seconds
      * @param {string} [reason] Reason for changing the channel's rate limit
      * @returns {Promise<this>}
      */
-    setRateLimitPerUser(rateLimitPerUser: any, reason: any): any;
+    setRateLimitPerUser(rateLimitPerUser: number, reason?: string): any;
     /**
      * Sets whether this channel is flagged as NSFW.
      * @param {boolean} [nsfw=true] Whether the channel should be considered NSFW
      * @param {string} [reason] Reason for changing the channel's NSFW flag
      * @returns {Promise<this>}
      */
-    setNSFW(nsfw: boolean, reason: any): any;
-    static applyToClass(structure: any, full?: boolean, ignore?: any[]): void;
+    setNSFW(nsfw?: boolean, reason?: string): any;
+    static applyToClass(structure: any, full?: boolean, ignore?: string[]): void;
 }
 export default TextBasedChannel;

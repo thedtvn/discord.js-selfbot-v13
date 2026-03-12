@@ -2,10 +2,11 @@
 
 import { Collection } from '@discordjs/collection';
 import { Channel } from './Channel';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import MessageManager from '../managers/MessageManager';
 import { Error } from '../errors';
 import { Opcodes, Status } from '../util/Constants';
+
+let TextBasedChannel: any;
 
 /**
  * Represents a direct message channel between two users.
@@ -222,6 +223,7 @@ class DMChannel extends Channel {
   // Doesn't work on DM channels; setNSFW() {}
 }
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(DMChannel, true, ['fetchWebhooks', 'createWebhook', 'setRateLimitPerUser', 'setNSFW']);
 
 export default DMChannel;

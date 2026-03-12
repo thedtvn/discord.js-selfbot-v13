@@ -1,7 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildStickerUpdateAction extends Action {
-    handle(current: any, data: any): {
-        sticker: any;
-    };
+    handle(current: any, data: any): any;
 }
+export default GuildStickerUpdateAction;

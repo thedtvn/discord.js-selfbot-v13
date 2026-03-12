@@ -4,13 +4,14 @@ import BaseGuildTextChannel from './BaseGuildTextChannel';
  * @extends {BaseGuildTextChannel}
  */
 declare class TextChannel extends BaseGuildTextChannel {
-    _patch(data: any): void;
+    rateLimitPerUser: number;
+    _patch(data: any): any;
     /**
      * Sets the rate limit per user (slowmode) for this channel.
      * @param {number} rateLimitPerUser The new rate limit in seconds
      * @param {string} [reason] Reason for changing the channel's rate limit
      * @returns {Promise<TextChannel>}
      */
-    setRateLimitPerUser(rateLimitPerUser: any, reason: any): any;
+    setRateLimitPerUser(rateLimitPerUser: number, reason?: string): any;
 }
 export default TextChannel;

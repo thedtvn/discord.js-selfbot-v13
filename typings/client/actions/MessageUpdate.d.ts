@@ -1,10 +1,5 @@
-declare const Action: any;
+import Action from './Action';
 declare class MessageUpdateAction extends Action {
-    handle(data: any): {
-        old?: undefined;
-        updated?: undefined;
-    } | {
-        old: any;
-        updated: any;
-    };
+    handle(data: any): any;
 }
+export default MessageUpdateAction;

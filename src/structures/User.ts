@@ -1,11 +1,12 @@
 import Base from './Base';
 import VoiceState from './VoiceState';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import { Error } from '../errors';
 import { RelationshipTypes } from '../util/Constants';
 import SnowflakeUtil from '../util/SnowflakeUtil';
 import UserFlags from '../util/UserFlags';
 import Util from '../util/Util';
+
+let TextBasedChannel: any;
 
 /**
  * Represents a user on Discord.
@@ -646,6 +647,7 @@ class User extends Base {
  *   .catch(console.error);
  */
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(User);
 
 

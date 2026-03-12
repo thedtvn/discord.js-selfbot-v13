@@ -1,11 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class StageInstanceUpdateAction extends Action {
-    handle(data: any): {
-        oldStageInstance: any;
-        newStageInstance: any;
-    } | {
-        oldStageInstance?: undefined;
-        newStageInstance?: undefined;
-    };
+    handle(data: any): any;
 }
+export default StageInstanceUpdateAction;

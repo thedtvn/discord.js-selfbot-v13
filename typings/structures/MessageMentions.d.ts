@@ -1,7 +1,23 @@
+import { Collection } from '@discordjs/collection';
 /**
  * Keeps track of mentions in a {@link Message}.
  */
 declare class MessageMentions {
+    client: any;
+    guild: any;
+    _content: string;
+    everyone: boolean;
+    users: Collection<string, any>;
+    roles: Collection<string, any>;
+    _members: Collection<string, any> | null;
+    _channels: Collection<string, any> | null;
+    _parsedUsers: Collection<string, any> | null;
+    crosspostedChannels: Collection<string, any>;
+    repliedUser: any;
+    static EVERYONE_PATTERN: RegExp;
+    static USERS_PATTERN: RegExp;
+    static ROLES_PATTERN: RegExp;
+    static CHANNELS_PATTERN: RegExp;
     constructor(message: any, users: any, roles: any, everyone: any, crosspostedChannels: any, repliedUser: any);
     /**
      * Any members that were mentioned (only in {@link Guild}s)
@@ -9,21 +25,21 @@ declare class MessageMentions {
      * @type {?Collection<Snowflake, GuildMember>}
      * @readonly
      */
-    get members(): any;
+    get members(): Collection<string, any> | null;
     /**
      * Any channels that were mentioned
      * <info>Order as they appear first in the message content</info>
      * @type {Collection<Snowflake, Channel>}
      * @readonly
      */
-    get channels(): any;
+    get channels(): Collection<string, any>;
     /**
      * Any user mentions that were included in the message content
      * <info>Order as they appear first in the message content</info>
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get parsedUsers(): any;
+    get parsedUsers(): Collection<string, any>;
     /**
      * Options used to check for a mention.
      * @typedef {Object} MessageMentionsHasOptions
@@ -46,6 +62,6 @@ declare class MessageMentions {
         ignoreRepliedUser?: boolean;
         ignoreEveryone?: boolean;
     }): boolean;
-    toJSON(): {};
+    toJSON(): Record<string, any>;
 }
 export default MessageMentions;

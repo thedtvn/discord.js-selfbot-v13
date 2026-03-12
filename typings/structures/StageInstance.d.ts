@@ -10,19 +10,21 @@ declare const deletedStageInstances: WeakSet<WeakKey>;
  * @extends {Base}
  */
 declare class StageInstance extends Base {
+    id: string;
+    guildId: string;
+    channelId: string;
+    topic: string;
+    privacyLevel: string;
+    discoverableDisabled: boolean | null;
+    guildScheduledEventId: string | null;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The stage channel associated with this stage instance
      * @type {?StageChannel}
      * @readonly
      */
     get channel(): any;
-    /**
-     * The associated guild scheduled event of this stage instance
-     * @type {?GuildScheduledEvent}
-     * @readonly
-     */
     get guildScheduledEvent(): any;
     /**
      * Whether or not the stage instance has been deleted
@@ -47,7 +49,7 @@ declare class StageInstance extends Base {
      *  .then(stageInstance => console.log(stageInstance))
      *  .catch(console.error)
      */
-    edit(options: any): any;
+    edit(options: any): Promise<StageInstance>;
     /**
      * Deletes this stage instance.
      * @returns {Promise<StageInstance>}
@@ -68,7 +70,7 @@ declare class StageInstance extends Base {
      *  .then(stageInstance => console.log(`Set the topic to: ${stageInstance.topic}`))
      *  .catch(console.error);
      */
-    setTopic(topic: any): any;
+    setTopic(topic: string): Promise<StageInstance>;
     /**
      * The timestamp this stage instances was created at
      * @type {number}

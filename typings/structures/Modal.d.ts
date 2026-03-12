@@ -2,17 +2,26 @@
  * Represents a modal (form) to be shown in response to an interaction
  */
 declare class Modal {
+    components: any[];
+    customId: string | undefined;
+    title: string | undefined;
+    nonce: string | undefined;
+    id: string | undefined;
+    applicationId: string;
+    channelId: string | undefined;
+    replied: boolean;
+    client: any;
     /**
      * @param {Object} data Modal to clone or raw data
      * @param {Client} client The client constructing this Modal, if provided
      */
-    constructor(data?: {}, client?: any);
+    constructor(data?: any, client?: any);
     /**
      * The id of the guild the message was sent in, if any
      * @type {?Snowflake}
      * @readonly
      */
-    get guildId(): any;
+    get guildId(): string | null;
     /**
      * The channel that the message was sent in
      * @type {TextBasedChannels}
@@ -26,10 +35,10 @@ declare class Modal {
      */
     get guild(): any;
     toJSON(): {
-        components: any;
-        custom_id: any;
-        title: any;
-        id: any;
+        components: any[];
+        custom_id: string | undefined;
+        title: string | undefined;
+        id: string | undefined;
     };
     /**
      * Reply to this modal with data. (Event only)

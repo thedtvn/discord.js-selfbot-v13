@@ -1,5 +1,4 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 /**
  * The data received in the {@link Client#event:applicationCommandPermissionsUpdate} event
  * @typedef {Object} ApplicationCommandPermissionsUpdateData
@@ -9,5 +8,6 @@ declare const Events: any;
  * @property {ApplicationCommandPermissions[]} permissions The updated permissions
  */
 declare class ApplicationCommandPermissionsUpdateAction extends Action {
-    handle(data: any): void;
+    handle(data: any): any;
 }
+export default ApplicationCommandPermissionsUpdateAction;

@@ -1,7 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildEmojiCreateAction extends Action {
-    handle(guild: any, createdEmoji: any): {
-        emoji: any;
-    };
+    handle(guild: any, createdEmoji: any): any;
 }
+export default GuildEmojiCreateAction;

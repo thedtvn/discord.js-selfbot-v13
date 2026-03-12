@@ -5,6 +5,10 @@ import Base from './Base';
  * @abstract
  */
 declare class BaseGuild extends Base {
+    id: string;
+    name: string;
+    icon: string | null;
+    features: string[];
     constructor(client: any, data: any);
     /**
      * The timestamp this guild was created at
@@ -23,25 +27,29 @@ declare class BaseGuild extends Base {
      * @type {string}
      * @readonly
      */
-    get nameAcronym(): any;
+    get nameAcronym(): string;
     /**
      * Whether this guild is partnered
      * @type {boolean}
      * @readonly
      */
-    get partnered(): any;
+    get partnered(): boolean;
     /**
      * Whether this guild is verified
      * @type {boolean}
      * @readonly
      */
-    get verified(): any;
+    get verified(): boolean;
     /**
      * The URL to this guild's icon.
      * @param {ImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    iconURL({ format, size, dynamic }?: {}): any;
+    iconURL({ format, size, dynamic }?: {
+        format?: string;
+        size?: number;
+        dynamic?: boolean;
+    }): string | null;
     /**
      * Fetches this guild.
      * @returns {Promise<Guild>}
@@ -51,6 +59,6 @@ declare class BaseGuild extends Base {
      * When concatenated with a string, this automatically returns the guild's name instead of the Guild object.
      * @returns {string}
      */
-    toString(): any;
+    toString(): string;
 }
 export default BaseGuild;

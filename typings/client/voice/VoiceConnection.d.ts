@@ -1,23 +1,8 @@
-declare const EventEmitter: any;
-declare const getCiphers: any;
-declare const setTimeout: any;
-declare const Collection: any;
-declare const VoiceUDP: any;
-declare const VoiceWebSocket: any;
-declare const MediaPlayer: any;
-declare const VoiceReceiver: any;
-declare const parseStreamKey: any;
-declare const PlayInterface: any;
-declare const Silence: any;
-declare const Error: any;
-declare const Opcodes: any, VoiceOpcodes: any, VoiceStatus: any, Events: any;
-declare const Speaking: any;
-declare const Util: any;
-declare class SingleSilence extends Silence {
-    _read(): void;
-}
-declare const SUPPORTED_MODES: string[];
-declare const SUPPORTED_CODECS: string[];
+import { EventEmitter } from 'events';
+import { setTimeout } from 'node:timers';
+import { Collection } from '@discordjs/collection';
+import MediaPlayer from './player/MediaPlayer';
+import VoiceReceiver from './receiver/Receiver';
 /**
  * Represents a connection to a guild's voice server.
  * ```js
@@ -31,6 +16,26 @@ declare const SUPPORTED_CODECS: string[];
  * @implements {PlayInterface}
  */
 declare class VoiceConnection extends EventEmitter {
+    voiceManager: any;
+    channel: any;
+    status: number;
+    speaking: any;
+    videoStatus: boolean | null;
+    authentication: any;
+    player: MediaPlayer;
+    ssrcMap: Map<number, {
+        userId: string;
+        speaking: number | boolean;
+        hasVideo: boolean;
+    }>;
+    _speaking: Map<string, any>;
+    sockets: any;
+    receiver: VoiceReceiver;
+    videoCodec: string;
+    streamConnection: StreamConnection | null;
+    streamWatchConnection: Collection<string, StreamConnectionReadonly>;
+    connectTimeout?: ReturnType<typeof setTimeout>;
+    eventHook?: boolean;
     constructor(voiceManager: any, channel: any);
     /**
      * The client that instantiated this connection
@@ -60,12 +65,12 @@ declare class VoiceConnection extends EventEmitter {
      * @param {VideoCodec} value Codec
      * @returns {VoiceConnection}
      */
-    setVideoCodec(value: any): this;
+    setVideoCodec(value: string): this;
     /**
      * Sets video status
      * @param {boolean} value Video on or off
      */
-    setVideoStatus(value: any): void;
+    setVideoStatus(value: boolean): void;
     /**
      * The voice state of this connection
      * @type {?VoiceState}
@@ -77,7 +82,7 @@ declare class VoiceConnection extends EventEmitter {
      * @returns {Promise<Shard>}
      * @private
      */
-    sendVoiceStateUpdate(options?: {}): any;
+    sendVoiceStateUpdate(options?: any): any;
     /**
      * Set the token and endpoint required to connect to the voice servers.
      * @param {string} token The voice token
@@ -85,13 +90,13 @@ declare class VoiceConnection extends EventEmitter {
      * @returns {void}
      * @private
      */
-    setTokenAndEndpoint(token: any, endpoint: any): void;
+    setTokenAndEndpoint(token: string, endpoint: string): void;
     /**
      * Sets the Session ID for the connection.
      * @param {string} sessionId The voice session ID
      * @private
      */
-    setSessionId(sessionId: any): void;
+    setSessionId(sessionId: string): void;
     /**
      * Checks whether the voice connection is authenticated.
      * @private
@@ -102,7 +107,7 @@ declare class VoiceConnection extends EventEmitter {
      * @param {string} reason The reason for failure
      * @private
      */
-    authenticateFailed(reason: any): void;
+    authenticateFailed(reason: string): void;
     /**
      * Move to a different voice channel in the same guild.
      * @param {VoiceChannel} channel The channel to move to
@@ -114,14 +119,14 @@ declare class VoiceConnection extends EventEmitter {
      * @param {Object} options Join config
      * @private
      */
-    authenticate(options?: {}): void;
+    authenticate(options?: any): void;
     /**
      * Attempts to reconnect to the voice server (typically after a region change).
      * @param {string} token The voice token
      * @param {string} endpoint The voice endpoint
      * @private
      */
-    reconnect(token: any, endpoint: any): void;
+    reconnect(token: string, endpoint: string): void;
     /**
      * Disconnects the voice connection, causing a disconnect and closing event to be emitted.
      */
@@ -154,14 +159,14 @@ declare class VoiceConnection extends EventEmitter {
      */
     onSessionDescription(data: any): void;
     onStartSpeaking({ user_id, ssrc, speaking }: {
-        user_id: any;
-        ssrc: any;
-        speaking: any;
+        user_id: string;
+        ssrc: number;
+        speaking: number;
     }): void;
     onStartStreaming({ video_ssrc, user_id, audio_ssrc }: {
-        video_ssrc: any;
-        user_id: any;
-        audio_ssrc: any;
+        video_ssrc: number;
+        user_id: string;
+        audio_ssrc: number;
     }): void;
     /**
      * Invoked when a speaking event is received.
@@ -169,22 +174,22 @@ declare class VoiceConnection extends EventEmitter {
      * @private
      */
     onSpeaking({ user_id, speaking }: {
-        user_id: any;
-        speaking: any;
+        user_id: string;
+        speaking: number;
     }): void;
-    playAudio(): void;
-    playVideo(): void;
+    playAudio(..._args: any[]): any;
+    playVideo(..._args: any[]): any;
     /**
      * Create new connection to screenshare stream
      * @returns {Promise<StreamConnection>}
      */
-    createStreamConnection(): Promise<unknown>;
+    createStreamConnection(): Promise<StreamConnection>;
     /**
      * Watch user stream
      * @param {UserResolvable} user Discord user
      * @returns {Promise<StreamConnectionReadonly>}
      */
-    joinStreamConnection(user: any): Promise<unknown>;
+    joinStreamConnection(user: any): Promise<StreamConnectionReadonly>;
 }
 /**
  * Represents a connection to a guild's voice server.
@@ -200,18 +205,19 @@ declare class VoiceConnection extends EventEmitter {
  */
 declare class StreamConnection extends VoiceConnection {
     #private;
+    voiceConnection: VoiceConnection;
+    serverId: string | null;
+    isPaused: boolean | null;
+    viewerIds: string[];
+    region: string | null;
     /**
      * @param {ClientVoiceManager} voiceManager Voice manager
      * @param {Channel} channel any channel (joinable)
      * @param {VoiceConnection} voiceConnection parent
      */
-    constructor(voiceManager: any, channel: any, voiceConnection: any);
-    createStreamConnection(): Promise<Awaited<this>>;
-    joinStreamConnection(): void;
-    get streamConnection(): this;
-    set streamConnection(value: this);
-    get streamWatchConnection(): any;
-    set streamWatchConnection(value: any);
+    constructor(voiceManager: any, channel: any, voiceConnection: VoiceConnection);
+    createStreamConnection(): Promise<StreamConnection>;
+    joinStreamConnection(): never;
     disconnect(): void;
     /**
      * Create new stream connection (WS packet)
@@ -251,19 +257,21 @@ declare class StreamConnection extends VoiceConnection {
  */
 declare class StreamConnectionReadonly extends VoiceConnection {
     #private;
+    voiceConnection: VoiceConnection;
+    userId: string;
+    serverId: string | null;
+    isPaused: boolean;
+    viewerIds: string[];
+    region: string | null;
     /**
      * @param {ClientVoiceManager} voiceManager Voice manager
      * @param {Channel} channel any channel (joinable)
      * @param {VoiceConnection} voiceConnection parent
      * @param {Snowflake} userId User ID
      */
-    constructor(voiceManager: any, channel: any, voiceConnection: any, userId: any);
-    createStreamConnection(): void;
-    joinStreamConnection(): Promise<Awaited<this>>;
-    get streamConnection(): any;
-    set streamConnection(value: any);
-    get streamWatchConnection(): any;
-    set streamWatchConnection(value: any);
+    constructor(voiceManager: any, channel: any, voiceConnection: VoiceConnection, userId: string);
+    createStreamConnection(): never;
+    joinStreamConnection(): Promise<this>;
     disconnect(): void;
     /**
      * Create new stream connection (WS packet)
@@ -283,3 +291,4 @@ declare class StreamConnectionReadonly extends VoiceConnection {
      */
     get streamKey(): string;
 }
+export default VoiceConnection;

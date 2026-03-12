@@ -1,4 +1,5 @@
 import { Channel } from './Channel';
+import PermissionOverwriteManager from '../managers/PermissionOverwriteManager';
 /**
  * Represents a guild channel from any of the following:
  * - {@link TextChannel}
@@ -13,8 +14,14 @@ import { Channel } from './Channel';
  * @abstract
  */
 declare class GuildChannel extends Channel {
+    guild: any;
+    guildId: string;
+    name: string;
+    rawPosition: number;
+    parentId: string | null;
+    permissionOverwrites: PermissionOverwriteManager;
     constructor(guild: any, data: any, client: any, immediatePatch?: boolean);
-    _patch(data: any): void;
+    _patch(data: any): any;
     _clone(): this;
     /**
      * The category parent of this channel
@@ -27,7 +34,7 @@ declare class GuildChannel extends Channel {
      * @type {?boolean}
      * @readonly
      */
-    get permissionsLocked(): boolean;
+    get permissionsLocked(): boolean | null;
     /**
      * The position of the channel
      * @type {number}
@@ -40,12 +47,8 @@ declare class GuildChannel extends Channel {
      * @param {boolean} [checkAdmin=true] Whether having `ADMINISTRATOR` will return all permissions
      * @returns {?Readonly<Permissions>}
      */
-    permissionsFor(memberOrRole: any, checkAdmin?: boolean): Readonly<import("../util/BitField").default<"CREATE_INSTANT_INVITE" | "KICK_MEMBERS" | "BAN_MEMBERS" | "ADMINISTRATOR" | "MANAGE_CHANNELS" | "MANAGE_GUILD" | "ADD_REACTIONS" | "VIEW_AUDIT_LOG" | "PRIORITY_SPEAKER" | "STREAM" | "VIEW_CHANNEL" | "SEND_MESSAGES" | "SEND_TTS_MESSAGES" | "MANAGE_MESSAGES" | "EMBED_LINKS" | "ATTACH_FILES" | "READ_MESSAGE_HISTORY" | "MENTION_EVERYONE" | "USE_EXTERNAL_EMOJIS" | "VIEW_GUILD_INSIGHTS" | "CONNECT" | "SPEAK" | "MUTE_MEMBERS" | "DEAFEN_MEMBERS" | "MOVE_MEMBERS" | "USE_VAD" | "CHANGE_NICKNAME" | "MANAGE_NICKNAMES" | "MANAGE_ROLES" | "MANAGE_WEBHOOKS" | "MANAGE_EMOJIS_AND_STICKERS" | "USE_APPLICATION_COMMANDS" | "REQUEST_TO_SPEAK" | "MANAGE_EVENTS" | "MANAGE_THREADS" | "USE_PUBLIC_THREADS" | "CREATE_PUBLIC_THREADS" | "USE_PRIVATE_THREADS" | "CREATE_PRIVATE_THREADS" | "USE_EXTERNAL_STICKERS" | "SEND_MESSAGES_IN_THREADS" | "START_EMBEDDED_ACTIVITIES" | "MODERATE_MEMBERS" | "VIEW_CREATOR_MONETIZATION_ANALYTICS" | "USE_SOUNDBOARD" | "CREATE_GUILD_EXPRESSIONS" | "CREATE_EVENTS" | "USE_EXTERNAL_SOUNDS" | "SEND_VOICE_MESSAGES" | "USE_CLYDE_AI" | "SET_VOICE_CHANNEL_STATUS" | "SEND_POLLS" | "USE_EXTERNAL_APPS", bigint>>;
-    overwritesFor(member: any, verified?: boolean, roles?: any): any[] | {
-        everyone: any;
-        roles: any[];
-        member: any;
-    };
+    permissionsFor(memberOrRole: any, checkAdmin?: boolean): any;
+    overwritesFor(member: any, verified?: boolean, roles?: any): any;
     /**
      * Gets the overall set of permissions for a member in this channel, taking into account channel overwrites.
      * @param {GuildMember} member The member to obtain the overall permissions for
@@ -53,7 +56,7 @@ declare class GuildChannel extends Channel {
      * @returns {Readonly<Permissions>}
      * @private
      */
-    memberPermissions(member: any, checkAdmin: any): Readonly<import("../util/BitField").default<"CREATE_INSTANT_INVITE" | "KICK_MEMBERS" | "BAN_MEMBERS" | "ADMINISTRATOR" | "MANAGE_CHANNELS" | "MANAGE_GUILD" | "ADD_REACTIONS" | "VIEW_AUDIT_LOG" | "PRIORITY_SPEAKER" | "STREAM" | "VIEW_CHANNEL" | "SEND_MESSAGES" | "SEND_TTS_MESSAGES" | "MANAGE_MESSAGES" | "EMBED_LINKS" | "ATTACH_FILES" | "READ_MESSAGE_HISTORY" | "MENTION_EVERYONE" | "USE_EXTERNAL_EMOJIS" | "VIEW_GUILD_INSIGHTS" | "CONNECT" | "SPEAK" | "MUTE_MEMBERS" | "DEAFEN_MEMBERS" | "MOVE_MEMBERS" | "USE_VAD" | "CHANGE_NICKNAME" | "MANAGE_NICKNAMES" | "MANAGE_ROLES" | "MANAGE_WEBHOOKS" | "MANAGE_EMOJIS_AND_STICKERS" | "USE_APPLICATION_COMMANDS" | "REQUEST_TO_SPEAK" | "MANAGE_EVENTS" | "MANAGE_THREADS" | "USE_PUBLIC_THREADS" | "CREATE_PUBLIC_THREADS" | "USE_PRIVATE_THREADS" | "CREATE_PRIVATE_THREADS" | "USE_EXTERNAL_STICKERS" | "SEND_MESSAGES_IN_THREADS" | "START_EMBEDDED_ACTIVITIES" | "MODERATE_MEMBERS" | "VIEW_CREATOR_MONETIZATION_ANALYTICS" | "USE_SOUNDBOARD" | "CREATE_GUILD_EXPRESSIONS" | "CREATE_EVENTS" | "USE_EXTERNAL_SOUNDS" | "SEND_VOICE_MESSAGES" | "USE_CLYDE_AI" | "SET_VOICE_CHANNEL_STATUS" | "SEND_POLLS" | "USE_EXTERNAL_APPS", bigint>>;
+    memberPermissions(member: any, checkAdmin: any): any;
     /**
      * Gets the overall set of permissions for a role in this channel, taking into account channel overwrites.
      * @param {Role} role The role to obtain the overall permissions for
@@ -61,7 +64,7 @@ declare class GuildChannel extends Channel {
      * @returns {Readonly<Permissions>}
      * @private
      */
-    rolePermissions(role: any, checkAdmin: any): Readonly<import("../util/BitField").default<"CREATE_INSTANT_INVITE" | "KICK_MEMBERS" | "BAN_MEMBERS" | "ADMINISTRATOR" | "MANAGE_CHANNELS" | "MANAGE_GUILD" | "ADD_REACTIONS" | "VIEW_AUDIT_LOG" | "PRIORITY_SPEAKER" | "STREAM" | "VIEW_CHANNEL" | "SEND_MESSAGES" | "SEND_TTS_MESSAGES" | "MANAGE_MESSAGES" | "EMBED_LINKS" | "ATTACH_FILES" | "READ_MESSAGE_HISTORY" | "MENTION_EVERYONE" | "USE_EXTERNAL_EMOJIS" | "VIEW_GUILD_INSIGHTS" | "CONNECT" | "SPEAK" | "MUTE_MEMBERS" | "DEAFEN_MEMBERS" | "MOVE_MEMBERS" | "USE_VAD" | "CHANGE_NICKNAME" | "MANAGE_NICKNAMES" | "MANAGE_ROLES" | "MANAGE_WEBHOOKS" | "MANAGE_EMOJIS_AND_STICKERS" | "USE_APPLICATION_COMMANDS" | "REQUEST_TO_SPEAK" | "MANAGE_EVENTS" | "MANAGE_THREADS" | "USE_PUBLIC_THREADS" | "CREATE_PUBLIC_THREADS" | "USE_PRIVATE_THREADS" | "CREATE_PRIVATE_THREADS" | "USE_EXTERNAL_STICKERS" | "SEND_MESSAGES_IN_THREADS" | "START_EMBEDDED_ACTIVITIES" | "MODERATE_MEMBERS" | "VIEW_CREATOR_MONETIZATION_ANALYTICS" | "USE_SOUNDBOARD" | "CREATE_GUILD_EXPRESSIONS" | "CREATE_EVENTS" | "USE_EXTERNAL_SOUNDS" | "SEND_VOICE_MESSAGES" | "USE_CLYDE_AI" | "SET_VOICE_CHANNEL_STATUS" | "SEND_POLLS" | "USE_EXTERNAL_APPS", bigint>>;
+    rolePermissions(role: any, checkAdmin: any): any;
     /**
      * Locks in the permission overwrites from the parent channel.
      * @returns {Promise<GuildChannel>}
@@ -86,7 +89,7 @@ declare class GuildChannel extends Channel {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    edit(data: any, reason: any): any;
+    edit(data: any, reason?: string): any;
     /**
      * Sets a new name for the guild channel.
      * @param {string} name The new name for the guild channel
@@ -98,7 +101,7 @@ declare class GuildChannel extends Channel {
      *   .then(newChannel => console.log(`Channel's new name is ${newChannel.name}`))
      *   .catch(console.error);
      */
-    setName(name: any, reason: any): any;
+    setName(name: string, reason?: string): any;
     /**
      * Options used to set the parent of a channel.
      * @typedef {Object} SetParentOptions
@@ -118,6 +121,7 @@ declare class GuildChannel extends Channel {
      */
     setParent(channel: any, { lockPermissions, reason }?: {
         lockPermissions?: boolean;
+        reason?: string;
     }): any;
     /**
      * Options used to set the position of a channel.
@@ -136,7 +140,7 @@ declare class GuildChannel extends Channel {
      *   .then(newChannel => console.log(`Channel's new position is ${newChannel.position}`))
      *   .catch(console.error);
      */
-    setPosition(position: any, options?: {}): any;
+    setPosition(position: number, options?: any): any;
     /**
      * Options used to clone a guild channel.
      * @typedef {GuildChannelCreateOptions} GuildChannelCloneOptions
@@ -147,7 +151,7 @@ declare class GuildChannel extends Channel {
      * @param {GuildChannelCloneOptions} [options] The options for cloning this channel
      * @returns {Promise<GuildChannel>}
      */
-    clone(options?: {}): any;
+    clone(options?: any): any;
     /**
      * Checks if this channel has the same type, topic, position, name, overwrites, and id as another channel.
      * In most cases, a simple `channel.id === channel2.id` will do, and is much faster too.
@@ -183,6 +187,6 @@ declare class GuildChannel extends Channel {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    delete(reason: any): Promise<this>;
+    delete(reason?: string): Promise<this>;
 }
 export default GuildChannel;

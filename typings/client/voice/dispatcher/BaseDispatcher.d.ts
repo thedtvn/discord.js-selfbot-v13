@@ -1,15 +1,5 @@
-declare const Buffer: any;
-declare const crypto: any;
-declare const Writable: any;
-declare const setTimeout: any;
-declare const secretbox: any;
-declare const MAX_UINT_16: number;
-declare const MAX_UINT_32: number;
-declare const extensions: {
-    id: number;
-    length: number;
-    value: number;
-}[];
+import { Buffer } from 'node:buffer';
+import { Writable } from 'node:stream';
 /**
  * @external WritableStream
  * @see {@link https://nodejs.org/api/stream.html#stream_class_stream_writable}
@@ -18,12 +8,28 @@ declare const extensions: {
  * @extends {Writable}
  */
 declare class BaseDispatcher extends Writable {
-    constructor(player: any, highWaterMark: number, payloadType: any, extensionEnabled: any, streams?: {});
+    streams: any;
+    player: any;
+    payloadType: number;
+    extensionEnabled: boolean;
+    _nonce: number;
+    _nonceBuffer: Buffer | null;
+    pausedSince: number | null;
+    _writeCallback: (() => void) | null;
+    _pausedTime: number;
+    _silentPausedTime: number;
+    count: number;
+    sequence: number;
+    timestamp: number;
+    _silence?: boolean;
+    _syncDispatcher?: any;
+    startTime?: number;
+    constructor(player: any, highWaterMark: number, payloadType: number, extensionEnabled: boolean, streams?: any);
     getTypeDispatcher(): string;
     resetNonceBuffer(): void;
-    getNewSequence(): any;
-    _write(chunk: any, enc: any, done: any): void;
-    _destroy(err: any, cb: any): void;
+    getNewSequence(): number;
+    _write(chunk: Buffer, enc: BufferEncoding, done: (error?: Error | null) => void): void;
+    _destroy(err: Error | null, cb: (error?: Error | null) => void): void;
     _cleanup(): void;
     /**
      * Pauses playback
@@ -41,7 +47,7 @@ declare class BaseDispatcher extends Writable {
      * @type {number}
      * @readonly
      */
-    get pausedTime(): any;
+    get pausedTime(): number;
     /**
      * Resumes playback
      */
@@ -52,15 +58,15 @@ declare class BaseDispatcher extends Writable {
      * @readonly
      */
     get totalStreamTime(): number;
-    _step(done: any): void;
-    _final(callback: any): void;
-    _playChunk(chunk: any, isLastPacket?: boolean): void;
+    _step(done: (error?: Error | null) => void): void;
+    _final(callback: (error?: Error | null) => void): void;
+    _playChunk(chunk: Buffer, isLastPacket?: boolean): void;
     /**
      * Creates a one-byte extension header
      * https://www.rfc-editor.org/rfc/rfc5285#section-4.2
      * @returns {Buffer} <Buffer be de 00 01>
      */
-    createHeaderExtension(): any;
+    createHeaderExtension(): Buffer;
     /**
      * Creates a one-byte extension header & a single extension of type playout-delay
      * @see https://docs.discord.food/topics/voice-connections#sending-and-receiving-voice
@@ -68,11 +74,12 @@ declare class BaseDispatcher extends Writable {
      * @see https://webrtc.googlesource.com/src/+/refs/heads/main/docs/native-code/rtp-hdrext/playout-delay
      * @returns {Buffer} playout-delay extension <Buffer 51 00 00 00>
      */
-    createPayloadExtension(): any;
-    _encrypt(buffer: any, additionalData: any): any[];
-    _createPacket(buffer: any, isLastPacket: any): any;
-    _sendPacket(packet: any): void;
-    _setSpeaking(value: any): void;
-    _setVideoStatus(value: any): void;
-    _setStreamStatus(value: any): void;
+    createPayloadExtension(): Buffer;
+    _encrypt(buffer: Buffer, additionalData: Buffer): [Buffer, Buffer];
+    _createPacket(buffer: Buffer, isLastPacket: boolean): Buffer;
+    _sendPacket(packet: Buffer): void;
+    _setSpeaking(value: number): void;
+    _setVideoStatus(value: boolean): void;
+    _setStreamStatus(value: boolean): void;
 }
+export default BaseDispatcher;

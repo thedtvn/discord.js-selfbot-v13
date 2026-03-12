@@ -1,16 +1,17 @@
-declare const udp: any;
-declare const EventEmitter: any;
-declare const isIP: any;
-declare const Buffer: any;
-declare const Error: any;
-declare const VoiceOpcodes: any;
-declare const Util: any;
+import { type Socket } from 'dgram';
+import { EventEmitter } from 'events';
+import { Buffer } from 'node:buffer';
 /**
  * Represents a UDP client for a Voice Connection.
  * @extends {EventEmitter}
  * @private
  */
 declare class VoiceConnectionUDPClient extends EventEmitter {
+    voiceConnection: any;
+    socket: Socket | null;
+    discordAddress: string | null;
+    localAddress: string | null;
+    localPort: number | null;
     constructor(voiceConnection: any);
     shutdown(): void;
     /**
@@ -24,15 +25,7 @@ declare class VoiceConnectionUDPClient extends EventEmitter {
      * @param {Object} packet The packet to send
      * @returns {Promise<Object>}
      */
-    send(packet: any): Promise<unknown>;
-    createUDPSocket(address: any): Promise<void>;
+    send(packet: Buffer): Promise<Buffer>;
+    createUDPSocket(address: string): Promise<void>;
 }
-declare function parseLocalPacket(message: any): {
-    address: any;
-    port: any;
-    error?: undefined;
-} | {
-    error: any;
-    address?: undefined;
-    port?: undefined;
-};
+export default VoiceConnectionUDPClient;

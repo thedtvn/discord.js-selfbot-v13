@@ -1,17 +1,30 @@
 import Base from './Base';
+import type Client from '../client/Client';
+import type { Snowflake } from 'discord-api-types/v10';
 /**
  * @type {WeakSet<StageInstance>}
  * @private
  * @internal
  */
-declare const deletedStickers: WeakSet<WeakKey>;
+declare const deletedStickers: WeakSet<Sticker>;
 /**
  * Represents a Sticker.
  * @extends {Base}
  */
 declare class Sticker extends Base {
-    constructor(client: any, sticker: any);
-    _patch(sticker: any): void;
+    id: Snowflake;
+    description: string | null;
+    type: string | null;
+    format: string;
+    name: string;
+    packId: Snowflake | null;
+    tags: string[] | null;
+    available: boolean | null;
+    guildId: Snowflake | null;
+    user: any | null;
+    sortValue: number | null;
+    constructor(client: Client, sticker: any);
+    _patch(sticker: any): any;
     /**
      * The timestamp the sticker was created at
      * @type {number}
@@ -48,7 +61,7 @@ declare class Sticker extends Base {
      * <info>If the sticker's format is LOTTIE, it returns the URL of the Lottie JSON file.</info>
      * @type {string}
      */
-    get url(): any;
+    get url(): string;
     /**
      * Fetches this sticker.
      * @returns {Promise<Sticker>}
@@ -58,12 +71,12 @@ declare class Sticker extends Base {
      * Fetches the pack this sticker is part of from Discord, if this is a Nitro sticker.
      * @returns {Promise<?StickerPack>}
      */
-    fetchPack(): Promise<any>;
+    fetchPack(): Promise<any | null>;
     /**
      * Fetches the user who uploaded this sticker, if this is a guild sticker.
      * @returns {Promise<?User>}
      */
-    fetchUser(): Promise<any>;
+    fetchUser(): Promise<any | null>;
     /**
      * Data for editing a sticker.
      * @typedef {Object} GuildStickerEditData
@@ -82,7 +95,7 @@ declare class Sticker extends Base {
      *   .then(s => console.log(`Updated the name of the sticker to ${s.name}`))
      *   .catch(console.error);
      */
-    edit(data: any, reason: any): any;
+    edit(data?: any, reason?: string): Promise<Sticker>;
     /**
      * Deletes the sticker.
      * @returns {Promise<Sticker>}
@@ -93,7 +106,7 @@ declare class Sticker extends Base {
      *   .then(s => console.log(`Deleted sticker ${s.name}`))
      *   .catch(console.error);
      */
-    delete(reason: any): Promise<this>;
+    delete(reason?: string): Promise<this>;
     /**
      * Whether this sticker is the same as another one.
      * @param {Sticker|APISticker} other The sticker to compare it to

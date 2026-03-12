@@ -1,11 +1,19 @@
 import Base from './Base';
+import Permissions from '../util/Permissions';
+import type Client from '../client/Client';
+import type { Snowflake } from 'discord-api-types/v10';
 /**
  * Represents a permission overwrite for a role or member in a guild channel.
  * @extends {Base}
  */
 declare class PermissionOverwrites extends Base {
-    constructor(client: any, data: any, channel: any);
-    _patch(data: any): void;
+    readonly channel: any;
+    id: Snowflake;
+    type: string;
+    deny: Readonly<Permissions>;
+    allow: Readonly<Permissions>;
+    constructor(client: Client, data: any, channel: any);
+    _patch(data: any): any;
     /**
      * Edits this Permission Overwrite.
      * @param {PermissionOverwriteOptions} options The options for the update
@@ -19,18 +27,18 @@ declare class PermissionOverwrites extends Base {
      *   .then(channel => console.log(channel.permissionOverwrites.get(message.author.id)))
      *   .catch(console.error);
      */
-    edit(options: any, reason: any): Promise<this>;
+    edit(options: any, reason?: string): Promise<this>;
     /**
      * Deletes this Permission Overwrite.
      * @param {string} [reason] Reason for deleting this overwrite
      * @returns {Promise<PermissionOverwrites>}
      */
-    delete(reason: any): Promise<this>;
+    delete(reason?: string): Promise<this>;
     toJSON(): {
-        id: string;
+        id: Snowflake;
         type: any;
-        allow: any;
-        deny: any;
+        allow: Readonly<Permissions>;
+        deny: Readonly<Permissions>;
     };
     /**
      * An object mapping permission flags to `true` (enabled), `null` (unset) or `false` (disabled).
@@ -54,9 +62,12 @@ declare class PermissionOverwrites extends Base {
      * @param {ResolvedOverwriteOptions} initialPermissions The initial permissions
      * @returns {ResolvedOverwriteOptions}
      */
-    static resolveOverwriteOptions(options: any, { allow, deny }?: {}): {
-        allow: any;
-        deny: any;
+    static resolveOverwriteOptions(options: any, { allow, deny }?: {
+        allow?: any;
+        deny?: any;
+    }): {
+        allow: Permissions;
+        deny: Permissions;
     };
     /**
      * The raw data for a permission overwrite
@@ -86,16 +97,11 @@ declare class PermissionOverwrites extends Base {
      * @param {Guild} [guild] The guild to resolve from
      * @returns {RawOverwriteData}
      */
-    static resolve(overwrite: any, guild: any): {
+    static resolve(overwrite: any, guild?: any): {
         id: string;
         type: any;
         allow: any;
         deny: any;
-    } | {
-        id: any;
-        type: any;
-        allow: string;
-        deny: string;
     };
 }
 export default PermissionOverwrites;

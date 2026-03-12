@@ -6,8 +6,9 @@ import { Emoji } from './Emoji';
  * @extends {Emoji}
  */
 declare class ReactionEmoji extends Emoji {
+    reaction: any;
     constructor(reaction: any, emoji: any);
-    toJSON(): {};
+    toJSON(): Record<string, any>;
     valueOf(): string;
 }
 export default ReactionEmoji;

@@ -1,9 +1,10 @@
 'use strict';
 
 import GuildChannel from './GuildChannel';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import GuildTextThreadManager from '../managers/GuildTextThreadManager';
 import MessageManager from '../managers/MessageManager';
+
+let TextBasedChannel: any;
 
 /**
  * Represents a text-based guild channel on Discord.
@@ -195,6 +196,7 @@ class BaseGuildTextChannel extends GuildChannel {
   setNSFW() {}
 }
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(BaseGuildTextChannel, true);
 
 export default BaseGuildTextChannel;

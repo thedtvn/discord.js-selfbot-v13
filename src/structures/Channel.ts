@@ -2,21 +2,22 @@
 
 import process from 'node:process';
 import Base from './Base';
-import CategoryChannel from './CategoryChannel';
-import DMChannel from './DMChannel';
-import NewsChannel from './NewsChannel';
-import StageChannel from './StageChannel';
-import StoreChannel from './StoreChannel';
-import TextChannel from './TextChannel';
-import ThreadChannel from './ThreadChannel';
-import VoiceChannel from './VoiceChannel';
-import DirectoryChannel from './DirectoryChannel';
-import ForumChannel from './ForumChannel';
-import MediaChannel from './MediaChannel';
-import GroupDMChannel from './GroupDMChannel';
 import ChannelFlags from '../util/ChannelFlags';
 import { ChannelTypes, ThreadChannelTypes, VoiceBasedChannelTypes } from '../util/Constants';
 import SnowflakeUtil from '../util/SnowflakeUtil';
+
+let CategoryChannel: any;
+let DMChannel: any;
+let NewsChannel: any;
+let StageChannel: any;
+let StoreChannel: any;
+let TextChannel: any;
+let ThreadChannel: any;
+let VoiceChannel: any;
+let DirectoryChannel: any;
+let ForumChannel: any;
+let MediaChannel: any;
+let GroupDMChannel: any;
 
 /**
  * @type {WeakSet<Channel>}
@@ -202,6 +203,19 @@ class Channel extends Base {
   }
 
   static create(client: any, data: any, guild: any, { allowUnknownGuild }: { allowUnknownGuild?: boolean } = {}): any {
+    CategoryChannel ??= require('./CategoryChannel').default;
+    DMChannel ??= require('./DMChannel').default;
+    NewsChannel ??= require('./NewsChannel').default;
+    StageChannel ??= require('./StageChannel').default;
+    StoreChannel ??= require('./StoreChannel').default;
+    TextChannel ??= require('./TextChannel').default;
+    ThreadChannel ??= require('./ThreadChannel').default;
+    VoiceChannel ??= require('./VoiceChannel').default;
+    DirectoryChannel ??= require('./DirectoryChannel').default;
+    ForumChannel ??= require('./ForumChannel').default;
+    MediaChannel ??= require('./MediaChannel').default;
+    GroupDMChannel ??= require('./GroupDMChannel').default;
+
     let channel;
     if (!data.guild_id && !guild) {
       if ((data.recipients && data.type !== ChannelTypes.GROUP_DM) || data.type === ChannelTypes.DM) {

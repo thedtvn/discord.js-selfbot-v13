@@ -145,10 +145,8 @@ declare class Sweepers {
      */
     static filterByLifetime({ lifetime, getComparisonTimestamp, excludeFromSweep, }?: {
         lifetime?: number;
-        getComparisonTimestamp?: (e: {
-            createdTimestamp?: number;
-        }) => number;
-        excludeFromSweep?: () => boolean;
+        getComparisonTimestamp?: (e: any, key?: any, coll?: any) => number | undefined;
+        excludeFromSweep?: (...args: any[]) => boolean;
     }): () => (entry: any, key: any, coll: any) => boolean;
     /**
      * Creates a sweep filter that sweeps archived threads
@@ -185,6 +183,7 @@ declare class Sweepers {
      */
     _sweepGuildDirectProp(key: string, filter: (...args: unknown[]) => boolean, { emit, outputName }?: {
         emit?: boolean;
+        outputName?: string;
     }): {
         guilds: number;
         items: number;

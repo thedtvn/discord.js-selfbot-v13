@@ -1,24 +1,37 @@
 import BaseGuildEmoji from './BaseGuildEmoji';
 import GuildEmojiRoleManager from '../managers/GuildEmojiRoleManager';
+import type Client from '../client/Client';
+import type { Guild } from './Guild';
+import type User from './User';
+import type { Role } from './Role';
+import type { APIEmoji, Snowflake } from 'discord-api-types/v10';
 /**
  * Represents a custom emoji.
  * @extends {BaseGuildEmoji}
  */
 declare class GuildEmoji extends BaseGuildEmoji {
-    constructor(client: any, data: any, guild: any);
+    author: User | null;
+    _roles: Snowflake[];
+    constructor(client: Client, data: APIEmoji & {
+        roles?: Snowflake[];
+        user?: unknown;
+    }, guild: Guild);
     /**
      * The guild this emoji is part of
      * @type {Guild}
      * @name GuildEmoji#guild
      */
     _clone(): this;
-    _patch(data: any): void;
+    _patch(data: APIEmoji & {
+        roles?: Snowflake[];
+        user?: unknown;
+    }): any;
     /**
      * Whether the emoji is deletable by the client user
      * @type {boolean}
      * @readonly
      */
-    get deletable(): any;
+    get deletable(): boolean;
     /**
      * A manager for roles this emoji is active for.
      * @type {GuildEmojiRoleManager}
@@ -29,7 +42,7 @@ declare class GuildEmoji extends BaseGuildEmoji {
      * Fetches the author for this emoji
      * @returns {Promise<User>}
      */
-    fetchAuthor(): any;
+    fetchAuthor(): Promise<User>;
     /**
      * Data for editing an emoji.
      * @typedef {Object} GuildEmojiEditData
@@ -47,25 +60,30 @@ declare class GuildEmoji extends BaseGuildEmoji {
      *   .then(e => console.log(`Edited emoji ${e}`))
      *   .catch(console.error);
      */
-    edit(data: any, reason: any): Promise<this>;
+    edit(data: {
+        name?: string;
+        roles?: Array<Role | Snowflake>;
+    }, reason?: string): Promise<this>;
     /**
      * Sets the name of the emoji.
      * @param {string} name The new name for the emoji
      * @param {string} [reason] Reason for changing the emoji's name
      * @returns {Promise<GuildEmoji>}
      */
-    setName(name: any, reason: any): Promise<this>;
+    setName(name: string, reason?: string): Promise<this>;
     /**
      * Deletes the emoji.
      * @param {string} [reason] Reason for deleting the emoji
      * @returns {Promise<GuildEmoji>}
      */
-    delete(reason: any): Promise<this>;
+    delete(reason?: string): Promise<this>;
     /**
      * Whether this emoji is the same as another one.
      * @param {GuildEmoji|APIEmoji} other The emoji to compare it to
      * @returns {boolean}
      */
-    equals(other: any): any;
+    equals(other: GuildEmoji | (APIEmoji & {
+        roles?: Snowflake[];
+    })): boolean;
 }
 export default GuildEmoji;

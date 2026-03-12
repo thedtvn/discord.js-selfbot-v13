@@ -4,6 +4,10 @@ import Interaction from './Interaction';
  * @extends {Interaction}
  */
 declare class AutocompleteInteraction extends Interaction {
+    commandId: any;
+    commandName: string;
+    responded: boolean;
+    options: any;
     constructor(client: any, data: any);
     /**
      * The invoked application command, if it was fetched before
@@ -16,10 +20,7 @@ declare class AutocompleteInteraction extends Interaction {
      * @returns {CommandInteractionOption}
      * @private
      */
-    transformOption(option: any): {
-        name: any;
-        type: any;
-    };
+    transformOption(option: any, _resolved?: any): any;
     /**
      * Sends results for the autocomplete of this interaction.
      * @param {ApplicationCommandOptionChoiceData[]} options The options for the autocomplete

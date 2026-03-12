@@ -1,4 +1,17 @@
+import type { Snowflake } from 'discord-api-types/v10';
+import type ThreadChannel from '../structures/ThreadChannel';
 import ThreadManager from './ThreadManager';
+interface GuildTextThreadCreateOptions {
+    name?: string;
+    autoArchiveDuration?: number | 'MAX';
+    startMessage?: Snowflake | {
+        id?: Snowflake;
+    };
+    type?: string | number;
+    invitable?: boolean;
+    reason?: string;
+    rateLimitPerUser?: number;
+}
 /**
  * Manages API methods for {@link ThreadChannel} objects and stores their cache.
  * @extends {ThreadManager}
@@ -47,8 +60,6 @@ declare class GuildTextThreadManager extends ThreadManager {
      *   .then(threadChannel => console.log(threadChannel))
      *   .catch(console.error);
      */
-    create({ name, autoArchiveDuration, startMessage, type, invitable, reason, rateLimitPerUser, }?: {
-        autoArchiveDuration?: any;
-    }): Promise<any>;
+    create({ name, autoArchiveDuration, startMessage, type, invitable, reason, rateLimitPerUser, }?: GuildTextThreadCreateOptions): Promise<ThreadChannel>;
 }
 export default GuildTextThreadManager;

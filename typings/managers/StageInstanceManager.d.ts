@@ -1,10 +1,32 @@
+import type { Snowflake } from 'discord-api-types/v10';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
+import { StageInstance } from '../structures/StageInstance';
+type StageChannelResolvable = Snowflake | {
+    id: Snowflake;
+};
+type StageInstanceResolvable = Snowflake | StageInstance;
+type RawStageInstanceData = {
+    id: Snowflake;
+    channel_id?: Snowflake;
+} & Record<string, unknown>;
+interface StageInstanceCreateOptions {
+    topic: string;
+    privacyLevel?: number | string;
+    sendStartNotification?: boolean;
+    guildScheduledEvent?: StageInstanceResolvable;
+}
+interface StageInstanceEditOptions {
+    topic?: string;
+    privacyLevel?: number | string;
+}
 /**
  * Manages API methods for {@link StageInstance} objects and holds their cache.
  * @extends {CachedManager}
  */
-declare class StageInstanceManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+declare class StageInstanceManager extends CachedManager<Snowflake, StageInstance, StageInstanceResolvable, RawStageInstanceData, [Guild]> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawStageInstanceData>);
     /**
      * The cache of this Manager
      * @type {Collection<Snowflake, StageInstance>}
@@ -39,11 +61,7 @@ declare class StageInstanceManager extends CachedManager {
      *  .then(stageInstance => console.log(stageInstance))
      *  .catch(console.error);
      */
-    create(channel: any, options: any): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    create(channel: StageChannelResolvable, options: StageInstanceCreateOptions): Promise<StageInstance>;
     /**
      * Fetches the stage instance associated with a stage channel, if it exists.
      * @param {StageChannelResolvable} channel The stage channel whose associated stage instance is to be fetched
@@ -55,14 +73,10 @@ declare class StageInstanceManager extends CachedManager {
      *  .then(stageInstance => console.log(stageInstance))
      *  .catch(console.error);
      */
-    fetch(channel: any, { cache, force }?: {
+    fetch(channel: StageChannelResolvable, { cache, force }?: {
         cache?: boolean;
         force?: boolean;
-    }): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    }): Promise<StageInstance>;
     /**
      * Options used to edit an existing stage instance.
      * @typedef {Object} StageInstanceEditOptions
@@ -80,12 +94,12 @@ declare class StageInstanceManager extends CachedManager {
      *  .then(stageInstance => console.log(stageInstance))
      *  .catch(console.error);
      */
-    edit(channel: any, options: any): Promise<any>;
+    edit(channel: StageChannelResolvable, options: StageInstanceEditOptions): Promise<StageInstance>;
     /**
      * Deletes an existing stage instance.
      * @param {StageChannelResolvable} channel The stage channel whose associated stage instance is to be deleted
      * @returns {Promise<void>}
      */
-    delete(channel: any): Promise<void>;
+    delete(channel: StageChannelResolvable): Promise<void>;
 }
 export default StageInstanceManager;

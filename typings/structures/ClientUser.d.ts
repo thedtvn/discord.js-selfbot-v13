@@ -7,7 +7,17 @@ import User from './User';
  */
 declare class ClientUser extends User {
     #private;
-    _patch(data: any): void;
+    verified: boolean;
+    mfaEnabled: boolean | null;
+    purchasedFlags: Readonly<any>;
+    premiumUsageFlags: Readonly<any>;
+    phone: string | null;
+    nsfwAllowed: boolean | null;
+    email: string | null;
+    bio: string | null;
+    pronouns: string | null;
+    premiumType: number;
+    _patch(data: any): any;
     /**
      * Represents the client user's presence
      * @type {ClientPresence}
@@ -27,7 +37,7 @@ declare class ClientUser extends User {
      * @param {ClientUserEditData} options The new data
      * @returns {Promise<ClientUser>}
      */
-    edit(options?: {}): Promise<any>;
+    edit(options?: any): Promise<ClientUser>;
     /**
      * Sets the username of the logged in client.
      * <info>Changing usernames in Discord is heavily rate limited, with only 2 requests
@@ -41,7 +51,7 @@ declare class ClientUser extends User {
      *   .then(user => console.log(`My new username is ${user.username}`))
      *   .catch(console.error);
      */
-    setUsername(username: any, password: any): Promise<any>;
+    setUsername(username: string, password: string): Promise<ClientUser>;
     /**
      * Sets the avatar of the logged in client.
      * @param {?(BufferResolvable|Base64Resolvable)} avatar The new avatar
@@ -52,7 +62,7 @@ declare class ClientUser extends User {
      *   .then(user => console.log(`New avatar set!`))
      *   .catch(console.error);
      */
-    setAvatar(avatar: any): Promise<any>;
+    setAvatar(avatar: any): Promise<ClientUser>;
     /**
      * Options for setting activities
      * @typedef {Object} ActivitiesOptions
@@ -96,7 +106,7 @@ declare class ClientUser extends User {
      * // Set the client user's status
      * client.user.setStatus('idle');
      */
-    setStatus(status: any, shardId: any): any;
+    setStatus(status: string, shardId?: number | number[]): any;
     /**
      * Options for setting an activity.
      * @typedef {Object} ActivityOptions
@@ -115,14 +125,14 @@ declare class ClientUser extends User {
      * client.user.setActivity('discord.js', { type: 'WATCHING' });
      * @see {@link https://github.com/aiko-chan-ai/discord.js-selfbot-v13/blob/main/Document/RichPresence.md}
      */
-    setActivity(name: any, options?: {}): any;
+    setActivity(name: string | any, options?: any): any;
     /**
      * Sets/removes the AFK flag for the client user.
      * @param {boolean} [afk=true] Whether or not the user is AFK
      * @param {number|number[]} [shardId] Shard Id(s) to have the AFK flag set on
      * @returns {ClientPresence}
      */
-    setAFK(afk: boolean, shardId: any): any;
+    setAFK(afk?: boolean, shardId?: number | number[]): any;
     /**
      * Sets the banner of the logged in client.
      * @param {?(BufferResolvable|Base64Resolvable)} banner The new banner
@@ -133,7 +143,7 @@ declare class ClientUser extends User {
      *   .then(user => console.log(`New banner set!`))
      *   .catch(console.error);
      */
-    setBanner(banner: any): Promise<any>;
+    setBanner(banner: any): Promise<ClientUser>;
     /**
      * Set HyperSquad House
      * @param {string|number} type
@@ -148,19 +158,19 @@ declare class ClientUser extends User {
      * // Leave
      * client.user.setHypeSquad(0);
      */
-    setHypeSquad(type: any): any;
+    setHypeSquad(type: string | number): Promise<void>;
     /**
      * Set Accent color
      * @param {ColorResolvable} color Color to set
      * @returns {Promise<ClientUser>}
      */
-    setAccentColor(color?: any): Promise<any>;
+    setAccentColor(color?: any): Promise<ClientUser>;
     /**
      * Set About me
      * @param {string} [bio=null] Bio to set
      * @returns {Promise<ClientUser>}
      */
-    setAboutMe(bio?: any): Promise<any>;
+    setAboutMe(bio?: string | null): Promise<ClientUser>;
     /**
      * Create an invite [Friend Invites]
      * maxAge: 604800 | maxUses: 1
@@ -177,12 +187,12 @@ declare class ClientUser extends User {
      * Get all friend invites
      * @returns {Promise<Collection<string, Invite>>}
      */
-    getAllFriendInvites(): Promise<Collection<unknown, unknown>>;
+    getAllFriendInvites(): Promise<Collection<string, Invite>>;
     /**
      * Revoke all friend invites
      * @returns {Promise<void>}
      */
-    revokeAllFriendInvites(): any;
+    revokeAllFriendInvites(): Promise<void>;
     /**
      * Sets Discord Playing status to "Playing on Samsung Galaxy". Only selected gamss from discords database works
      * @param {string} packageName Android package name
@@ -196,29 +206,29 @@ declare class ClientUser extends User {
      * // Stop
      * client.user.setSamsungActivity('com.miHoYo.GenshinImpact', 'STOP');
      */
-    setSamsungActivity(packageName: any, type?: string): Promise<this>;
+    setSamsungActivity(packageName: string, type?: string): Promise<ClientUser>;
     /**
      * Stop ringing
      * @param {ChannelResolvable} channel DMChannel | GroupDMChannel
      * @returns {Promise<void>}
      */
-    stopRinging(channel: any): any;
+    stopRinging(channel: any): Promise<void>;
     /**
      * Super Reactions
      * @returns {Promise<number>}
      */
-    fetchBurstCredit(): any;
+    fetchBurstCredit(): Promise<number>;
     /**
      * Set global display name
      * @param {string} globalName The new display name
      * @returns {Promise<ClientUser>}
      */
-    setGlobalName(globalName?: string): Promise<any>;
+    setGlobalName(globalName?: string): Promise<ClientUser>;
     /**
      * Set pronouns
      * @param {?string} pronouns Your pronouns
      * @returns {Promise<ClientUser>}
      */
-    setPronouns(pronouns?: string): Promise<any>;
+    setPronouns(pronouns?: string): Promise<ClientUser>;
 }
 export default ClientUser;

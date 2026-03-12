@@ -4,13 +4,13 @@ import { Presence } from './Presence';
  * @extends {Presence}
  */
 declare class ClientPresence extends Presence {
-    constructor(client: any, data?: {});
+    constructor(client: any, data?: any);
     /**
      * Sets the client's presence
      * @param {PresenceData} presence The data to set the presence to
      * @returns {ClientPresence}
      */
-    set(presence: any): this;
+    set(presence: any): ClientPresence;
     /**
      * Parses presence data into a packet ready to be sent to Discord
      * @param {PresenceData} presence The data to parse
@@ -18,16 +18,11 @@ declare class ClientPresence extends Presence {
      * @private
      */
     _parse({ status, since, afk, activities }: {
-        status: any;
-        since: any;
-        afk: any;
-        activities: any;
-    }): {
-        activities: any[];
-        afk: any;
-        since: any;
-        status: any;
-    };
+        status?: string;
+        since?: number;
+        afk?: boolean;
+        activities?: any[];
+    }): any;
 }
 export default ClientPresence;
 /**

@@ -1,8 +1,5 @@
-declare const Action: any;
-declare const deletedEmojis: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildEmojiDeleteAction extends Action {
-    handle(emoji: any): {
-        emoji: any;
-    };
+    handle(emoji: any): any;
 }
+export default GuildEmojiDeleteAction;

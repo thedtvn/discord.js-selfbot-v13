@@ -1,3 +1,23 @@
+interface WebEmbedImage {
+    url: string;
+    proxyURL?: string;
+    height?: number;
+    width?: number;
+}
+interface WebEmbedVideo {
+    url: string;
+    proxyURL?: string;
+    height?: number;
+    width?: number;
+}
+interface WebEmbedAuthor {
+    name?: string;
+    url?: string;
+}
+interface WebEmbedProvider {
+    name?: string;
+    url?: string;
+}
 /**
  * Send Embedlink to Discord
  * <info>Only works with Discord Web and Discord Client (no custom theme installed)</info>
@@ -7,10 +27,21 @@
  * - Description limit 350 characters
  */
 declare class WebEmbed {
+    imageType: string;
+    title: string | null;
+    description: string | null;
+    url: string | null;
+    color: number | null;
+    image: WebEmbedImage | null;
+    thumbnail: WebEmbedImage | null;
+    video: WebEmbedVideo | null;
+    author: WebEmbedAuthor | null;
+    provider: WebEmbedProvider | null;
+    redirect: string | undefined;
     /**
      * @param {WebEmbed} [data={}] Raw data
      */
-    constructor(data?: {});
+    constructor(data?: any);
     /**
      * @private
      * @param {Object} data The data for the embed
@@ -51,43 +82,43 @@ declare class WebEmbed {
      * @param {string} description The description (Limit 350 characters)
      * @returns {WebEmbed}
      */
-    setDescription(description: any): this;
+    setDescription(description: string): this;
     /**
      * Sets the image of this embed.
      * @param {string} url The URL of the image
      * @returns {WebEmbed}
      */
-    setImage(url: any): this;
+    setImage(url: string): this;
     /**
      * Sets the thumbnail of this embed.
      * @param {string} url The URL of the image
      * @returns {WebEmbed}
      */
-    setThumbnail(url: any): this;
+    setThumbnail(url: string): this;
     /**
      * Sets the video of this embed.
      * @param {string} url The URL of the video
      * @returns {WebEmbed}
      */
-    setVideo(url: any): this;
+    setVideo(url: string): this;
     /**
      * Sets the title of this embed.
      * @param {string} title The title
      * @returns {WebEmbed}
      */
-    setTitle(title: any): this;
+    setTitle(title: string): this;
     /**
      * Sets the URL of this embed.
      * @param {string} url The URL
      * @returns {WebEmbed}
      */
-    setURL(url: any): this;
+    setURL(url: string): this;
     /**
      * Sets the redirect URL of this embed.
      * @param {string} url The URL
      * @returns {WebEmbed}
      */
-    setRedirect(url: any): this;
+    setRedirect(url: string): this;
     toString(): string;
 }
 export default WebEmbed;

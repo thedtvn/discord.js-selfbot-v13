@@ -1,7 +1,58 @@
 /**
  * Represents an embed in a message (image/video preview, rich embed, etc.)
  */
+interface EmbedField {
+    name: string;
+    value: string;
+    inline: boolean;
+}
+interface MessageEmbedThumbnail {
+    url: string;
+    proxyURL?: string;
+    height?: number;
+    width?: number;
+}
+interface MessageEmbedImage {
+    url: string;
+    proxyURL?: string;
+    height?: number;
+    width?: number;
+}
+interface MessageEmbedVideo {
+    url: string;
+    proxyURL?: string;
+    height?: number;
+    width?: number;
+}
+interface MessageEmbedAuthor {
+    name: string;
+    url?: string;
+    iconURL?: string;
+    proxyIconURL?: string;
+}
+interface MessageEmbedProvider {
+    name?: string;
+    url?: string;
+}
+interface MessageEmbedFooter {
+    text: string;
+    iconURL?: string;
+    proxyIconURL?: string;
+}
 declare class MessageEmbed {
+    type: string;
+    title: string | null;
+    description: string | null;
+    url: string | null;
+    color: number | null;
+    timestamp: number | null;
+    fields: EmbedField[];
+    thumbnail: MessageEmbedThumbnail | null;
+    image: MessageEmbedImage | null;
+    video: MessageEmbedVideo | null;
+    author: MessageEmbedAuthor | null;
+    provider: MessageEmbedProvider | null;
+    footer: MessageEmbedFooter | null;
     /**
      * A `Partial` object is a representation of any existing object.
      * This object contains between 0 and all of the original objects parameters.
@@ -26,26 +77,26 @@ declare class MessageEmbed {
     /**
      * @param {MessageEmbed|MessageEmbedOptions|APIEmbed} [data={}] MessageEmbed to clone or raw embed data
      */
-    constructor(data?: {}, skipValidation?: boolean);
-    setup(data: any, skipValidation: any): void;
+    constructor(data?: any, skipValidation?: boolean);
+    setup(data: any, skipValidation: boolean): void;
     /**
      * The date displayed on this embed
      * @type {?Date}
      * @readonly
      */
-    get createdAt(): Date;
+    get createdAt(): Date | null;
     /**
      * The hexadecimal version of the embed color, with a leading hash
      * @type {?string}
      * @readonly
      */
-    get hexColor(): string;
+    get hexColor(): string | null;
     /**
      * The accumulated length for the embed title, description, fields, footer text, and author name
      * @type {number}
      * @readonly
      */
-    get length(): any;
+    get length(): number;
     /**
      * Checks if this embed is equal to another one by comparing every single one of their properties.
      * @param {MessageEmbed|APIEmbed} embed The embed to compare with
@@ -68,7 +119,7 @@ declare class MessageEmbed {
      * @returns {MessageEmbed}
      * @deprecated This method is a wrapper for {@link MessageEmbed#addFields}. Use that instead.
      */
-    addField(name: any, value: any, inline: any): this;
+    addField(name: string, value: string, inline?: boolean): this;
     /**
      * Adds fields to the embed (max 25).
      * @param {...EmbedFieldData|EmbedFieldData[]} fields The fields to add
@@ -82,7 +133,7 @@ declare class MessageEmbed {
      * @param {...EmbedFieldData|EmbedFieldData[]} [fields] The replacing field objects
      * @returns {MessageEmbed}
      */
-    spliceFields(index: any, deleteCount: any, ...fields: any[]): this;
+    spliceFields(index: number, deleteCount: number, ...fields: any[]): this;
     /**
      * Sets the embed's fields (max 25).
      * @param {...EmbedFieldData|EmbedFieldData[]} fields The fields to set
@@ -106,7 +157,7 @@ declare class MessageEmbed {
      * <warn>This parameter is **deprecated**. Use the `options` parameter instead.</warn>
      * @returns {MessageEmbed}
      */
-    setAuthor(options: any, deprecatedIconURL: any, deprecatedURL: any): this;
+    setAuthor(options: any, deprecatedIconURL?: string, deprecatedURL?: string): this;
     /**
      * Sets the color of this embed.
      * @param {ColorResolvable} color The color of the embed
@@ -118,7 +169,7 @@ declare class MessageEmbed {
      * @param {string} description The description
      * @returns {MessageEmbed}
      */
-    setDescription(description: any): this;
+    setDescription(description: string): this;
     /**
      * The options to provide for setting a footer for a {@link MessageEmbed}.
      * @typedef {Object} EmbedFooterData
@@ -133,72 +184,43 @@ declare class MessageEmbed {
      * <warn>This parameter is **deprecated**. Use the `options` parameter instead.</warn>
      * @returns {MessageEmbed}
      */
-    setFooter(options: any, deprecatedIconURL: any): this;
+    setFooter(options: any, deprecatedIconURL?: string): this;
     /**
      * Sets the image of this embed.
      * @param {string} url The URL of the image
      * @returns {MessageEmbed}
      */
-    setImage(url: any): this;
+    setImage(url: string): this;
     /**
      * Sets the thumbnail of this embed.
      * @param {string} url The URL of the thumbnail
      * @returns {MessageEmbed}
      */
-    setThumbnail(url: any): this;
+    setThumbnail(url: string): this;
     /**
      * Sets the timestamp of this embed.
      * @param {Date|number|null} [timestamp=Date.now()] The timestamp or date.
      * If `null` then the timestamp will be unset (i.e. when editing an existing {@link MessageEmbed})
      * @returns {MessageEmbed}
      */
-    setTimestamp(timestamp?: number): this;
+    setTimestamp(timestamp?: Date | number | null): this;
     /**
      * Sets the title of this embed.
      * @param {string} title The title
      * @returns {MessageEmbed}
      */
-    setTitle(title: any): this;
+    setTitle(title: string): this;
     /**
      * Sets the URL of this embed.
      * @param {string} url The URL
      * @returns {MessageEmbed}
      */
-    setURL(url: any): this;
+    setURL(url: string): this;
     /**
      * Transforms the embed to a plain object.
      * @returns {APIEmbed} The raw data of this embed
      */
-    toJSON(): {
-        title: any;
-        type: any;
-        description: any;
-        url: any;
-        timestamp: Date;
-        color: any;
-        fields: any;
-        thumbnail: any;
-        image: any;
-        author: {
-            name: any;
-            url: any;
-            icon_url: any;
-        };
-        video: {
-            url: any;
-            proxyURL: any;
-            height: any;
-            width: any;
-        };
-        provider: {
-            name: any;
-            url: any;
-        };
-        footer: {
-            text: any;
-            icon_url: any;
-        };
-    };
+    toJSON(): Record<string, any>;
     /**
      * Normalizes field input and verifies strings.
      * @param {string} name The name of the field
@@ -206,11 +228,7 @@ declare class MessageEmbed {
      * @param {boolean} [inline=false] Set the field to display inline
      * @returns {EmbedField}
      */
-    static normalizeField(name: any, value: any, inline?: boolean): {
-        name: string;
-        value: string;
-        inline: boolean;
-    };
+    static normalizeField(name: string, value: string, inline?: boolean): EmbedField;
     /**
      * @typedef {Object} EmbedFieldData
      * @property {string} name The name of this field
@@ -222,11 +240,7 @@ declare class MessageEmbed {
      * @param {...EmbedFieldData|EmbedFieldData[]} fields Fields to normalize
      * @returns {EmbedField[]}
      */
-    static normalizeFields(...fields: any[]): {
-        name: string;
-        value: string;
-        inline: boolean;
-    }[];
+    static normalizeFields(...fields: any[]): EmbedField[];
 }
 /**
  * @external APIEmbed

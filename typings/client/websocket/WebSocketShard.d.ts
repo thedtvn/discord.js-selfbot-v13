@@ -5,6 +5,33 @@ import type WebSocketManager from './WebSocketManager';
  * @extends {EventEmitter}
  */
 declare class WebSocketShard extends EventEmitter {
+    manager: WebSocketManager;
+    id: number;
+    resumeURL: string | null;
+    status: number;
+    sequence: number;
+    closeSequence: number;
+    sessionId: string | null;
+    ping: number;
+    lastPingTimestamp: number;
+    lastHeartbeatAcked: boolean;
+    closeEmitted: boolean;
+    ratelimit: {
+        queue: any[];
+        total: number;
+        remaining: number;
+        time: number;
+        timer: NodeJS.Timeout | null;
+    };
+    connection: any | null;
+    inflate: any | null;
+    helloTimeout: NodeJS.Timeout | null;
+    wsCloseTimeout: NodeJS.Timeout | null;
+    eventsAttached: boolean;
+    expectedGuilds: Set<string> | null;
+    readyTimeout: NodeJS.Timeout | null;
+    connectedAt: number;
+    heartbeatInterval: NodeJS.Timeout | null;
     constructor(manager: WebSocketManager, id: number);
     /**
      * Emits a debug event.
@@ -18,7 +45,7 @@ declare class WebSocketShard extends EventEmitter {
      * @returns {Promise<void>} A promise that will resolve if the shard turns ready successfully,
      * or reject if we couldn't connect
      */
-    connect(): Promise<unknown>;
+    connect(): Promise<void>;
     /**
      * Called whenever a connection is opened to the gateway.
      * @private
@@ -82,7 +109,7 @@ declare class WebSocketShard extends EventEmitter {
      * @param {number} [time] If set to -1, it will clear the hello timeout
      * @private
      */
-    setHelloTimeout(time: any): void;
+    setHelloTimeout(time?: number): void;
     /**
      * Sets the WebSocket Close timeout.
      * This method is responsible for detecting any zombie connections if the WebSocket fails to close properly.

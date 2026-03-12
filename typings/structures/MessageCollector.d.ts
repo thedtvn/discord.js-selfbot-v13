@@ -12,31 +12,33 @@ import Collector from './interfaces/Collector';
  * @extends {Collector}
  */
 declare class MessageCollector extends Collector {
+    channel: any;
+    received: number;
     /**
      * @param {TextBasedChannels} channel The channel
      * @param {MessageCollectorOptions} options The options to be applied to this collector
      * @emits MessageCollector#message
      */
-    constructor(channel: any, options?: {});
+    constructor(channel: any, options?: any);
     /**
      * Handles a message for possible collection.
      * @param {Message} message The message that could be collected
      * @returns {?Snowflake}
      * @private
      */
-    collect(message: any): any;
+    collect(message: any): string | null;
     /**
      * Handles a message for possible disposal.
      * @param {Message} message The message that could be disposed of
      * @returns {?Snowflake}
      */
-    dispose(message: any): any;
+    dispose(message: any): string | null;
     /**
      * The reason this collector has ended with, or null if it hasn't ended yet
      * @type {?string}
      * @readonly
      */
-    get endReason(): "limit" | "processedLimit";
+    get endReason(): string | null;
     /**
      * Handles checking if the channel has been deleted, and if so, stops the collector with the reason 'channelDelete'.
      * @private

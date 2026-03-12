@@ -1,20 +1,27 @@
+import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
+import { Channel } from '../structures/Channel';
 /**
  * A manager of channels belonging to a client
  * @extends {CachedManager}
  */
-declare class ChannelManager extends CachedManager {
-    constructor(client: any, iterable: any);
+declare class ChannelManager extends CachedManager<Snowflake, Channel> {
+    constructor(client: Client, iterable?: Iterable<Record<string, unknown>>);
     /**
      * The cache of Channels
      * @type {Collection<Snowflake, Channel>}
      * @name ChannelManager#cache
      */
-    _add(data: any, guild: any, { cache, allowUnknownGuild }?: {
+    _add(data: {
+        id: Snowflake;
+        type: string | number;
+    } & Record<string, unknown>, guild: Guild | null, { cache, allowUnknownGuild }?: {
         cache?: boolean;
         allowUnknownGuild?: boolean;
-    }): any;
-    _remove(id: any): void;
+    }): Channel | null;
+    _remove(id: Snowflake): void;
     /**
      * Data that can be resolved to give a Channel object. This can be:
      * * A Channel object
@@ -54,11 +61,11 @@ declare class ChannelManager extends CachedManager {
      *   .then(channel => console.log(channel.name))
      *   .catch(console.error);
      */
-    fetch(id: any, { allowUnknownGuild, cache, force }?: {
+    fetch(id: Snowflake, { allowUnknownGuild, cache, force }?: {
         allowUnknownGuild?: boolean;
         cache?: boolean;
         force?: boolean;
-    }): Promise<any>;
+    }): Promise<Channel | null>;
     /**
      * Create Group DM
      * @param {UserResolvable[]} [recipients=[]] Array of recipients
@@ -66,6 +73,8 @@ declare class ChannelManager extends CachedManager {
      * @example
      * client.channels.createGroupDM();
      */
-    createGroupDM(recipients?: any[]): Promise<any>;
+    createGroupDM(recipients?: Array<{
+        id?: Snowflake;
+    } | Snowflake>): Promise<Channel | null>;
 }
 export default ChannelManager;

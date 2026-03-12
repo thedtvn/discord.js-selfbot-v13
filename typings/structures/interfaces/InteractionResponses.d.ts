@@ -3,6 +3,13 @@
  * @interface
  */
 declare class InteractionResponses {
+    deferred: boolean;
+    replied: boolean;
+    ephemeral: boolean;
+    client: any;
+    id: any;
+    token: string;
+    webhook: any;
     /**
      * Options for deferring the reply to an {@link Interaction}.
      * @typedef {Object} InteractionDeferReplyOptions
@@ -42,7 +49,7 @@ declare class InteractionResponses {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    deferReply(options?: {}): Promise<any>;
+    deferReply(options?: any): Promise<any>;
     /**
      * Creates a reply to this interaction.
      * <info>Use the `fetchReply` option to get the bot's reply message.</info>
@@ -119,7 +126,7 @@ declare class InteractionResponses {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    deferUpdate(options?: {}): Promise<any>;
+    deferUpdate(options?: any): Promise<any>;
     /**
      * Updates the original message of the component on which the interaction was received on.
      * @param {string|MessagePayload|InteractionUpdateOptions} options The options for the updated message
@@ -158,7 +165,7 @@ declare class InteractionResponses {
      *   .then(interaction => console.log(`${interaction.customId} was submitted!`))
      *   .catch(console.error);
      */
-    awaitModalSubmit(options: any): Promise<unknown>;
-    static applyToClass(structure: any, ignore?: any[]): void;
+    awaitModalSubmit(options: any): Promise<any>;
+    static applyToClass(structure: any, ignore?: string[]): void;
 }
 export default InteractionResponses;

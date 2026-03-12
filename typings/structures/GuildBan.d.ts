@@ -4,8 +4,11 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class GuildBan extends Base {
+    guild: any;
+    user: any;
+    reason: string | null;
     constructor(client: any, data: any, guild: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Whether this GuildBan is partial. If the reason is not provided the value is null
      * @type {boolean}

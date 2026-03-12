@@ -1,19 +1,28 @@
-import { Collection } from '@discordjs/collection';
 import GuildChannel from './GuildChannel';
+import MessageManager from '../managers/MessageManager';
 /**
  * Represents a voice-based guild channel on Discord.
  * @extends {GuildChannel}
  * @implements {TextBasedChannel}
  */
 declare class BaseGuildVoiceChannel extends GuildChannel {
+    messages: MessageManager;
+    nsfw: boolean;
+    bitrate: number;
+    rtcRegion: string | null;
+    userLimit: number;
+    videoQualityMode: string | null;
+    lastMessageId: string | null;
+    rateLimitPerUser: number;
+    status: string | null;
     constructor(guild: any, data: any, client: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The members in this voice-based channel
      * @type {Collection<Snowflake, GuildMember>}
      * @readonly
      */
-    get members(): Collection<unknown, unknown>;
+    get members(): any;
     /**
      * Checks if the voice-based channel is full
      * @type {boolean}
@@ -36,7 +45,7 @@ declare class BaseGuildVoiceChannel extends GuildChannel {
      *   .then(invite => console.log(`Created an invite with a code of ${invite.code}`))
      *   .catch(console.error);
      */
-    createInvite(options: any): any;
+    createInvite(options?: any): any;
     /**
      * Fetches a collection of invites to this guild channel.
      * Resolves with a collection mapping invites by their codes.
@@ -55,7 +64,7 @@ declare class BaseGuildVoiceChannel extends GuildChannel {
      *   .then(channel => console.log(`Set bitrate to ${channel.bitrate}bps for ${channel.name}`))
      *   .catch(console.error);
      */
-    setBitrate(bitrate: any, reason: any): any;
+    setBitrate(bitrate: any, reason?: string): any;
     /**
      * Sets the RTC region of the channel.
      * @param {?string} rtcRegion The new region of the channel. Set to `null` to remove a specific region for the channel
@@ -68,7 +77,7 @@ declare class BaseGuildVoiceChannel extends GuildChannel {
      * // Remove a fixed region for this channel - let Discord decide automatically
      * channel.setRTCRegion(null, 'We want to let Discord decide.');
      */
-    setRTCRegion(rtcRegion: any, reason: any): any;
+    setRTCRegion(rtcRegion: any, reason?: string): any;
     /**
      * Sets the user limit of the channel.
      * @param {number} userLimit The new user limit
@@ -80,15 +89,15 @@ declare class BaseGuildVoiceChannel extends GuildChannel {
      *   .then(channel => console.log(`Set user limit to ${channel.userLimit} for ${channel.name}`))
      *   .catch(console.error);
      */
-    setUserLimit(userLimit: any, reason: any): any;
+    setUserLimit(userLimit: any, reason?: string): any;
     /**
      * Sets the camera video quality mode of the channel.
      * @param {VideoQualityMode|number} videoQualityMode The new camera video quality mode.
      * @param {string} [reason] Reason for changing the camera video quality mode.
      * @returns {Promise<BaseGuildVoiceChannel>}
      */
-    setVideoQualityMode(videoQualityMode: any, reason: any): any;
-    get lastMessage(): void;
+    setVideoQualityMode(videoQualityMode: any, reason?: string): any;
+    get lastMessage(): any;
     send(): void;
     sendTyping(): void;
     createMessageCollector(): void;

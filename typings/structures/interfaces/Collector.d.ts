@@ -1,4 +1,5 @@
 import EventEmitter from 'node:events';
+import { Collection } from '@discordjs/collection';
 /**
  * Filter to be applied to the collector.
  * @typedef {Function} CollectorFilter
@@ -20,7 +21,14 @@ import EventEmitter from 'node:events';
  * @abstract
  */
 declare class Collector extends EventEmitter {
-    constructor(client: any, options?: {});
+    readonly client: any;
+    filter: (...args: any[]) => boolean | Promise<boolean>;
+    options: any;
+    collected: Collection<any, any>;
+    ended: boolean;
+    private _timeout;
+    private _idletimeout;
+    constructor(client: any, options?: any);
     /**
      * Call this to handle an event as a collectable element. Accepts any event data as parameters.
      * @param {...*} args The arguments emitted by the listener
@@ -58,7 +66,10 @@ declare class Collector extends EventEmitter {
      * Resets the collector's timeout and idle timer.
      * @param {CollectorResetTimerOptions} [options] Options for resetting
      */
-    resetTimer({ time, idle }?: {}): void;
+    resetTimer({ time, idle }?: {
+        time?: number;
+        idle?: number;
+    }): void;
     /**
      * Checks whether the collector should end, and if so, ends it.
      * @returns {boolean} Whether the collector ended or not
@@ -69,14 +80,14 @@ declare class Collector extends EventEmitter {
      * @see {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/for-await...of}
      */
     [Symbol.asyncIterator](): AsyncGenerator<any, void, unknown>;
-    toJSON(): {};
+    toJSON(): any;
     /**
      * The reason this collector has ended with, or null if it hasn't ended yet
      * @type {?string}
      * @readonly
      * @abstract
      */
-    get endReason(): void;
+    get endReason(): string | null;
     /**
      * Handles incoming events from the `handleCollect` function. Returns null if the event should not
      * be collected, or returns an object describing the data that should be stored.
@@ -85,7 +96,7 @@ declare class Collector extends EventEmitter {
      * @returns {?(*|Promise<?*>)} Data to insert into collection, if any
      * @abstract
      */
-    collect(): void;
+    collect(...args: any[]): any;
     /**
      * Handles incoming events from the `handleDispose`. Returns null if the event should not
      * be disposed, or returns the key that should be removed.
@@ -94,6 +105,6 @@ declare class Collector extends EventEmitter {
      * @returns {?*} Key to remove from the collection, if any
      * @abstract
      */
-    dispose(): void;
+    dispose(...args: any[]): any;
 }
 export default Collector;

@@ -4,8 +4,11 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class Typing extends Base {
+    channel: any;
+    user: any;
+    startedTimestamp: number;
     constructor(channel: any, user: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Indicates whether the status is received from a guild.
      * @returns {boolean}

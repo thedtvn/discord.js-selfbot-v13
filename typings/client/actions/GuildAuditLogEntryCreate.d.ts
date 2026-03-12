@@ -1,8 +1,5 @@
-declare const Action: any;
-declare const GuildAuditLogsEntry: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildAuditLogEntryCreateAction extends Action {
-    handle(data: any): {
-        auditLogEntry: any;
-    };
+    handle(data: any): any;
 }
+export default GuildAuditLogEntryCreateAction;

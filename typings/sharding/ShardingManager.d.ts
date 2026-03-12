@@ -1,12 +1,30 @@
-declare const EventEmitter: any;
-declare const fs: any;
-declare const path: any;
-declare const process: any;
-declare const sleep: any;
-declare const Collection: any;
-declare const Shard: any;
-declare const Error: any, TypeError: any, RangeError: any;
-declare const Util: any;
+import { EventEmitter } from 'node:events';
+import { Collection } from '@discordjs/collection';
+import Shard from './Shard';
+export type ShardingManagerMode = 'process' | 'worker';
+export interface ShardingManagerOptions {
+    totalShards?: number | 'auto';
+    shardList?: number[] | 'auto';
+    mode?: ShardingManagerMode;
+    respawn?: boolean;
+    shardArgs?: string[];
+    execArgv?: string[];
+    token?: string;
+}
+export interface MultipleShardSpawnOptions {
+    amount?: number | 'auto';
+    delay?: number;
+    timeout?: number;
+}
+export interface BroadcastEvalOptions {
+    shard?: number;
+    context?: unknown;
+}
+export interface MultipleShardRespawnOptions {
+    shardDelay?: number;
+    respawnDelay?: number;
+    timeout?: number;
+}
 /**
  * This is a utility class that makes multi-process sharding of a bot an easy and painless experience.
  * It works by spawning a self-contained {@link ChildProcess} or {@link Worker} for each individual shard, each
@@ -18,6 +36,15 @@ declare const Util: any;
  * @deprecated
  */
 declare class ShardingManager extends EventEmitter {
+    file: string;
+    shardList: number[] | 'auto';
+    totalShards: number | 'auto';
+    mode: ShardingManagerMode;
+    respawn: boolean;
+    shardArgs: string[];
+    execArgv: string[];
+    token: string | null;
+    shards: Collection<number, Shard>;
     /**
      * The mode to spawn shards with for a {@link ShardingManager}. Can be either one of:
      * * 'process' to use child processes
@@ -41,7 +68,7 @@ declare class ShardingManager extends EventEmitter {
      * @param {string} file Path to your shard script file
      * @param {ShardingManagerOptions} [options] Options for the sharding manager
      */
-    constructor(file: any, options?: {});
+    constructor(file: string, options?: ShardingManagerOptions);
     /**
      * Creates a single shard.
      * <warn>Using this method is usually not necessary if you use the spawn method.</warn>
@@ -49,7 +76,7 @@ declare class ShardingManager extends EventEmitter {
      * <info>This is usually not necessary to manually specify.</info>
      * @returns {Shard} Note that the created shard needs to be explicitly spawned using its spawn method.
      */
-    createShard(id?: any): Shard;
+    createShard(id?: number): Shard;
     /**
      * Options used to spawn multiple shards.
      * @typedef {Object} MultipleShardSpawnOptions
@@ -62,17 +89,13 @@ declare class ShardingManager extends EventEmitter {
      * @param {MultipleShardSpawnOptions} [options] Options for spawning shards
      * @returns {Promise<Collection<number, Shard>>}
      */
-    spawn({ amount, delay, timeout }?: {
-        amount?: any;
-        delay?: number;
-        timeout?: number;
-    }): Promise<any>;
+    spawn({ amount, delay, timeout }?: MultipleShardSpawnOptions): Promise<Collection<number, Shard>>;
     /**
      * Sends a message to all shards.
      * @param {*} message Message to be sent to the shards
      * @returns {Promise<Shard[]>}
      */
-    broadcast(message: any): Promise<any[]>;
+    broadcast(message: unknown): Promise<Shard[]>;
     /**
      * Options for {@link ShardingManager#broadcastEval} and {@link ShardClientUtil#broadcastEval}.
      * @typedef {Object} BroadcastEvalOptions
@@ -85,7 +108,7 @@ declare class ShardingManager extends EventEmitter {
      * @param {BroadcastEvalOptions} [options={}] The options for the broadcast
      * @returns {Promise<*|Array<*>>} Results of the script execution
      */
-    broadcastEval(script: any, options?: {}): Promise<any>;
+    broadcastEval(script: (client: unknown, context: unknown) => unknown, options?: BroadcastEvalOptions): Promise<unknown | unknown[]>;
     /**
      * Fetches a client property value of each shard, or a given shard.
      * @param {string} prop Name of the client property to get, using periods for nesting
@@ -96,7 +119,7 @@ declare class ShardingManager extends EventEmitter {
      *   .then(results => console.log(`${results.reduce((prev, val) => prev + val, 0)} total guilds`))
      *   .catch(console.error);
      */
-    fetchClientValues(prop: any, shard: any): Promise<any>;
+    fetchClientValues(prop: string, shard?: number): Promise<unknown | unknown[]>;
     /**
      * Runs a method with given arguments on all shards, or a given shard.
      * @param {string} method Method name to run on each shard
@@ -105,7 +128,7 @@ declare class ShardingManager extends EventEmitter {
      * @returns {Promise<*|Array<*>>} Results of the method execution
      * @private
      */
-    _performOnShards(method: any, args: any, shard: any): Promise<any>;
+    _performOnShards(method: 'eval' | 'fetchClientValue', args: unknown[], shard?: number): Promise<unknown | unknown[]>;
     /**
      * Options used to respawn all shards.
      * @typedef {Object} MultipleShardRespawnOptions
@@ -120,9 +143,6 @@ declare class ShardingManager extends EventEmitter {
      * @param {MultipleShardRespawnOptions} [options] Options for respawning shards
      * @returns {Promise<Collection<number, Shard>>}
      */
-    respawnAll({ shardDelay, respawnDelay, timeout }?: {
-        shardDelay?: number;
-        respawnDelay?: number;
-        timeout?: number;
-    }): Promise<any>;
+    respawnAll({ shardDelay, respawnDelay, timeout }?: MultipleShardRespawnOptions): Promise<Collection<number, Shard>>;
 }
+export default ShardingManager;

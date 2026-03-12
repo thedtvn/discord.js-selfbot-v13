@@ -1,67 +1,130 @@
-declare const process: any;
-declare const setInterval: any;
-declare const setTimeout: any;
-declare const Collection: any;
-declare const authenticator: any;
-declare const BaseClient: any;
-declare const ActionsManager: any;
-declare const ClientVoiceManager: any;
-declare const WebSocketManager: any;
-declare const Error: any, TypeError: any;
-declare const BaseGuildEmojiManager: any;
-declare const BillingManager: any;
-declare const ChannelManager: any;
-declare const ClientUserSettingManager: any;
-declare const GuildManager: any;
-declare const PresenceManager: any;
-declare const RelationshipManager: any;
-declare const SessionManager: any;
-declare const UserManager: any;
-declare const UserNoteManager: any;
-declare const VoiceStateManager: any;
-declare const ShardClientUtil: any;
-declare const ClientPresence: any;
-declare const GuildPreview: any;
-declare const GuildTemplate: any;
-declare const Invite: any;
-declare const Sticker: any;
-declare const StickerPack: any;
-declare const VoiceRegion: any;
-declare const Webhook: any;
-declare const Widget: any;
-declare const Application: any;
-declare const Events: any, Status: any;
-declare const DataResolver: any;
-declare const Intents: any;
-declare const DiscordAuthWebsocket: any;
-declare const Sweepers: any;
+import { Collection } from '@discordjs/collection';
+import { authenticator } from 'otplib';
+import BaseClient, { type ClientOptions as BaseClientOptions } from './BaseClient';
+import ActionsManager from './actions/ActionsManager';
+import ClientVoiceManager from './voice/ClientVoiceManager';
+import WebSocketManager from './websocket/WebSocketManager';
+import BaseGuildEmojiManager from '../managers/BaseGuildEmojiManager';
+import BillingManager from '../managers/BillingManager';
+import ChannelManager from '../managers/ChannelManager';
+import ClientUserSettingManager from '../managers/ClientUserSettingManager';
+import GuildManager from '../managers/GuildManager';
+import PresenceManager from '../managers/PresenceManager';
+import RelationshipManager from '../managers/RelationshipManager';
+import SessionManager from '../managers/SessionManager';
+import UserManager from '../managers/UserManager';
+import UserNoteManager from '../managers/UserNoteManager';
+import VoiceStateManager from '../managers/VoiceStateManager';
+import ShardClientUtil from '../sharding/ShardClientUtil';
+import ClientPresence from '../structures/ClientPresence';
+import GuildPreview from '../structures/GuildPreview';
+import GuildTemplate from '../structures/GuildTemplate';
+import Invite from '../structures/Invite';
+import { Sticker } from '../structures/Sticker';
+import StickerPack from '../structures/StickerPack';
+import VoiceRegion from '../structures/VoiceRegion';
+import Webhook from '../structures/Webhook';
+import Widget from '../structures/Widget';
+import Application from '../structures/interfaces/Application';
+import Sweepers from '../util/Sweepers';
+interface CleanupPayload {
+    cleanup: () => void;
+    message?: string;
+    name?: string;
+}
+interface ClientFetchInviteOptions {
+    guildScheduledEventId?: string;
+}
+interface AcceptInviteOptions {
+    bypassOnboarding?: boolean;
+    bypassVerify?: boolean;
+}
+interface OAuth2AuthorizeOptions extends Record<string, unknown> {
+    guild_id?: string;
+    permissions?: string;
+    authorize?: boolean;
+    code?: string;
+    webhook_channel_id?: string;
+}
+interface AuthorizedApplicationData {
+    application: Application;
+    authorizedApplicationId: string;
+    scopes: string[];
+    deauthorize: () => Promise<void>;
+}
+interface ClientUserLike {
+    id: string;
+    phone?: string | null;
+    email?: string | null;
+    voice?: {
+        selfMute?: boolean;
+        selfDeaf?: boolean;
+        selfVideo?: boolean;
+    };
+    _patch?(data: any): any;
+    [key: string]: any;
+}
+export interface ClientOptions extends BaseClientOptions {
+    ws: Record<string, unknown> & {
+        presence?: unknown;
+    };
+    sweepers: Record<string, unknown>;
+    messageSweepInterval: number;
+    messageCacheLifetime: number;
+    TOTPKey?: string;
+}
 /**
  * The main hub for interacting with the Discord API, and the starting point for any bot.
  * @extends {BaseClient}
  */
 declare class Client extends BaseClient {
+    options: ClientOptions;
+    _cleanups: Set<() => void>;
+    _finalizers: FinalizationRegistry<CleanupPayload>;
+    ws: WebSocketManager;
+    actions: ActionsManager;
+    voice: ClientVoiceManager;
+    voiceStates: VoiceStateManager;
+    shard: ShardClientUtil | null;
+    users: UserManager;
+    guilds: GuildManager;
+    channels: ChannelManager;
+    sweepers: Sweepers;
+    presence: ClientPresence;
+    presences: PresenceManager;
+    notes: UserNoteManager;
+    relationships: RelationshipManager;
+    billing: BillingManager;
+    sessions: SessionManager;
+    settings: ClientUserSettingManager;
+    token: string | null;
+    user: ClientUserLike | null;
+    readyAt: Date | null;
+    application: any;
+    authenticator: typeof authenticator;
+    sweepMessageInterval?: NodeJS.Timeout;
     /**
      * @param {ClientOptions} [options] Options for the client
      */
-    constructor(options: any);
+    constructor(options?: Partial<ClientOptions>);
     /**
      * A manager of all the custom emojis that the client has access to
      * @type {BaseGuildEmojiManager}
      * @readonly
      */
-    get emojis(): any;
+    get emojis(): BaseGuildEmojiManager;
     /**
      * Timestamp of the time the client was last `READY` at
      * @type {?number}
      * @readonly
      */
-    get readyTimestamp(): any;
+    get readyTimestamp(): number | null;
     /**
      * How long it has been since the client last entered the `READY` state in milliseconds
      * @type {?number}
      * @readonly
      */
-    get uptime(): number;
+    get uptime(): number | null;
     /**
      * Logs the client in, establishing a WebSocket connection to Discord.
      * @param {string} [token=this.token] Token of the account to log in with
@@ -69,8 +132,8 @@ declare class Client extends BaseClient {
      * @example
      * client.login('my token');
      */
-    login(token?: any): Promise<any>;
-    QRLogin(): any;
+    login(token?: string | null): Promise<string>;
+    QRLogin(): Promise<unknown>;
     /**
      * Logs the client in, establishing a WebSocket connection to Discord.
      * @param {string} email The email associated with the account
@@ -81,7 +144,7 @@ declare class Client extends BaseClient {
      * client.passLogin("test@gmail.com", "SuperSecretPa$$word", 1234)
      * @deprecated This method will not be updated until I find the most convenient way to implement MFA.
      */
-    passLogin(email: any, password: any): Promise<any>;
+    passLogin(email: string, password: string): Promise<string | null>;
     /**
      * Returns whether the client has logged in, indicative of being able to access
      * properties such as `user` and `application`.
@@ -114,7 +177,7 @@ declare class Client extends BaseClient {
      *   .then(invite => console.log(`Obtained invite with code: ${invite.code}`))
      *   .catch(console.error);
      */
-    fetchInvite(invite: any, options: any): Promise<any>;
+    fetchInvite(invite: string, options?: ClientFetchInviteOptions): Promise<Invite>;
     /**
      * Obtains a template from Discord.
      * @param {GuildTemplateResolvable} template Template code or URL
@@ -124,7 +187,7 @@ declare class Client extends BaseClient {
      *   .then(template => console.log(`Obtained template with code: ${template.code}`))
      *   .catch(console.error);
      */
-    fetchGuildTemplate(template: any): Promise<any>;
+    fetchGuildTemplate(template: string): Promise<GuildTemplate>;
     /**
      * Obtains a webhook from Discord.
      * @param {Snowflake} id The webhook's id
@@ -135,7 +198,7 @@ declare class Client extends BaseClient {
      *   .then(webhook => console.log(`Obtained webhook with name: ${webhook.name}`))
      *   .catch(console.error);
      */
-    fetchWebhook(id: any, token: any): Promise<any>;
+    fetchWebhook(id: string, token?: string): Promise<Webhook>;
     /**
      * Obtains the available voice regions from Discord.
      * @returns {Promise<Collection<string, VoiceRegion>>}
@@ -144,7 +207,7 @@ declare class Client extends BaseClient {
      *   .then(regions => console.log(`Available regions are: ${regions.map(region => region.name).join(', ')}`))
      *   .catch(console.error);
      */
-    fetchVoiceRegions(): Promise<any>;
+    fetchVoiceRegions(): Promise<Collection<string, VoiceRegion>>;
     /**
      * Obtains a sticker from Discord.
      * @param {Snowflake} id The sticker's id
@@ -154,7 +217,7 @@ declare class Client extends BaseClient {
      *   .then(sticker => console.log(`Obtained sticker with name: ${sticker.name}`))
      *   .catch(console.error);
      */
-    fetchSticker(id: any): Promise<any>;
+    fetchSticker(id: string): Promise<Sticker>;
     /**
      * Obtains the list of sticker packs available to Nitro subscribers from Discord.
      * @returns {Promise<Collection<Snowflake, StickerPack>>}
@@ -163,7 +226,7 @@ declare class Client extends BaseClient {
      *   .then(packs => console.log(`Available sticker packs are: ${packs.map(pack => pack.name).join(', ')}`))
      *   .catch(console.error);
      */
-    fetchPremiumStickerPacks(): Promise<any>;
+    fetchPremiumStickerPacks(): Promise<Collection<string, StickerPack>>;
     /**
      * A last ditch cleanup function for garbage collection.
      * @param {Function} options.cleanup The function called to GC
@@ -171,11 +234,7 @@ declare class Client extends BaseClient {
      * @param {string} [options.name] The name of the item being GCed
      * @private
      */
-    _finalize({ cleanup, message, name }: {
-        cleanup: any;
-        message: any;
-        name: any;
-    }): void;
+    _finalize({ cleanup, message, name }: CleanupPayload): void;
     /**
      * Sweeps all text-based channels' messages and removes the ones older than the max message lifetime.
      * If the message has been edited, the time of the edit is used rather than the time of the original message.
@@ -188,25 +247,28 @@ declare class Client extends BaseClient {
      * const amount = client.sweepMessages(1800);
      * console.log(`Successfully removed ${amount} messages from the cache.`);
      */
-    sweepMessages(lifetime?: any): any;
+    sweepMessages(lifetime?: number): number;
     /**
      * Obtains a guild preview from Discord, available for all guilds the bot is in and all Discoverable guilds.
      * @param {GuildResolvable} guild The guild to fetch the preview for
      * @returns {Promise<GuildPreview>}
      */
-    fetchGuildPreview(guild: any): Promise<any>;
+    fetchGuildPreview(guild: unknown): Promise<GuildPreview>;
     /**
      * Obtains the widget data of a guild from Discord, available for guilds with the widget enabled.
      * @param {GuildResolvable} guild The guild to fetch the widget data for
      * @returns {Promise<Widget>}
      */
-    fetchGuildWidget(guild: any): Promise<any>;
+    fetchGuildWidget(guild: unknown): Promise<Widget>;
     /**
      * Refresh the Discord CDN links with hashes so they can be usable.
      * @param {...string} urls Discord CDN URLs
      * @returns {Promise<Array<{ original: string, refreshed: string }>>}
      */
-    refreshAttachmentURL(...urls: any[]): Promise<any>;
+    refreshAttachmentURL(...urls: string[]): Promise<Array<{
+        original: string;
+        refreshed: string;
+    }>>;
     /**
      * Options for {@link Client#generateInvite}.
      * @typedef {Object} InviteGenerationOptions
@@ -221,13 +283,13 @@ declare class Client extends BaseClient {
      * function will wait before resolving the promise and continuing execution.
      * @returns {void} The `sleep` function is returning a Promise.
      */
-    sleep(timeout: any): Promise<unknown>;
-    toJSON(): any;
+    sleep(timeout: number): Promise<unknown>;
+    toJSON(): Record<string, unknown>;
     /**
      * The current session id of the shard
      * @type {?string}
      */
-    get sessionId(): any;
+    get sessionId(): string | null;
     /**
      * Options for {@link Client#acceptInvite}.
      * @typedef {Object} AcceptInviteOptions
@@ -242,10 +304,7 @@ declare class Client extends BaseClient {
      * @example
      * await client.acceptInvite('https://discord.gg/genshinimpact', { bypassOnboarding: true, bypassVerify: true })
      */
-    acceptInvite(invite: any, options?: {
-        bypassOnboarding: boolean;
-        bypassVerify: boolean;
-    }): Promise<any>;
+    acceptInvite(invite: string, options?: AcceptInviteOptions): Promise<unknown>;
     /**
      * Redeem nitro from code or url.
      * @param {string} nitro Nitro url or code
@@ -253,7 +312,7 @@ declare class Client extends BaseClient {
      * @param {Snowflake} [paymentSourceId] Payment source id
      * @returns {Promise<any>}
      */
-    redeemNitro(nitro: any, channel: any, paymentSourceId: any): any;
+    redeemNitro(nitro: string, channel?: unknown, paymentSourceId?: string): Promise<unknown> | false;
     /**
      * @typedef {Object} OAuth2AuthorizeOptions
      * @property {string} [guild_id] Guild ID
@@ -272,20 +331,22 @@ declare class Client extends BaseClient {
         guild_id: "guildID",
       })
      */
-    authorizeURL(urlOAuth2: any, options?: {}): any;
+    authorizeURL(urlOAuth2: string, options?: OAuth2AuthorizeOptions): Promise<{
+        location: string;
+    }>;
     /**
      * Install User Apps
      * @param {Snowflake} applicationId  Discord Application id
      * @returns {Promise<void>}
      */
-    installUserApps(applicationId: any): any;
+    installUserApps(applicationId: string): Promise<unknown>;
     /**
      * Deauthorizes an application or token.
      * @param {Snowflake} id - The ID of the Discord Application or Token.
      * @param {'application' | 'token'} [type='application'] - The type of the ID provided. Defaults to 'application'.
      * @returns {Promise<void>} A promise that resolves when the deauthorization is complete.
      */
-    deauthorize(id: any, type?: string): any;
+    deauthorize(id: string, type?: 'application' | 'token'): Promise<void>;
     /**
      * @typedef {Object} AuthorizedApplicationData
      * @property {Application} application - The application object.
@@ -297,7 +358,7 @@ declare class Client extends BaseClient {
      * Retrieves the list of authorized applications (OAuth2 tokens).
      * @returns {Promise<Collection<Snowflake, AuthorizedApplicationData>>}
      */
-    authorizedApplications(): any;
+    authorizedApplications(): Promise<Collection<string, AuthorizedApplicationData>>;
     /**
      * Calls {@link https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/eval} on a script
      * with the client as `this`.
@@ -305,14 +366,15 @@ declare class Client extends BaseClient {
      * @returns {*}
      * @private
      */
-    _eval(script: any): any;
+    _eval(script: string): unknown;
     /**
      * Validates the client options.
      * @param {ClientOptions} [options=this.options] Options to validate
      * @private
      */
-    _validateOptions(options?: any): void;
+    _validateOptions(options?: ClientOptions): void;
 }
+export default Client;
 /**
  * Emitted for general warnings.
  * @event Client#warn

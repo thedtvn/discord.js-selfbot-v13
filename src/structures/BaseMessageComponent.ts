@@ -2,17 +2,18 @@
 
 import { TypeError } from '../errors';
 import { MessageComponentTypes, Events } from '../util/Constants';
-import MessageActionRow from './MessageActionRow';
-import MessageButton from './MessageButton';
-import MessageSelectMenu from './MessageSelectMenu';
-import TextInputComponent from './TextInputComponent';
-import SectionComponent from './SectionComponent';
-import TextDisplayComponent from './TextDisplayComponent';
-import ThumbnailComponent from './ThumbnailComponent';
-import MediaGalleryComponent from './MediaGalleryComponent';
-import FileComponent from './FileComponent';
-import SeparatorComponent from './SeparatorComponent';
-import ContainerComponent from './ContainerComponent';
+
+let MessageActionRow: any;
+let MessageButton: any;
+let MessageSelectMenu: any;
+let TextInputComponent: any;
+let SectionComponent: any;
+let TextDisplayComponent: any;
+let ThumbnailComponent: any;
+let MediaGalleryComponent: any;
+let FileComponent: any;
+let SeparatorComponent: any;
+let ContainerComponent: any;
 
 /**
  * Represents an interactive component of a Message or Modal. It should not be necessary to construct this directly.
@@ -91,6 +92,18 @@ class BaseMessageComponent {
    * @private
    */
   static create(data: any, client?: any): any {
+    MessageActionRow ??= require('./MessageActionRow').default;
+    MessageButton ??= require('./MessageButton').default;
+    MessageSelectMenu ??= require('./MessageSelectMenu').default;
+    TextInputComponent ??= require('./TextInputComponent').default;
+    SectionComponent ??= require('./SectionComponent').default;
+    TextDisplayComponent ??= require('./TextDisplayComponent').default;
+    ThumbnailComponent ??= require('./ThumbnailComponent').default;
+    MediaGalleryComponent ??= require('./MediaGalleryComponent').default;
+    FileComponent ??= require('./FileComponent').default;
+    SeparatorComponent ??= require('./SeparatorComponent').default;
+    ContainerComponent ??= require('./ContainerComponent').default;
+
     let component;
     let type = data.type;
 

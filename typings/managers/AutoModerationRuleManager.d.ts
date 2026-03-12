@@ -1,10 +1,75 @@
+import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
+import AutoModerationRule from '../structures/AutoModerationRule';
+type AutoModerationRuleResolvable = AutoModerationRule | Snowflake;
+type RawAutoModerationRuleData = {
+    id: Snowflake;
+} & Record<string, unknown>;
+interface AutoModerationTriggerMetadataOptions {
+    keywordFilter?: string[];
+    regexPatterns?: string[];
+    presets?: (number | string)[];
+    allowList?: string[];
+    mentionTotalLimit?: number | null;
+    mentionRaidProtectionEnabled?: boolean;
+}
+interface AutoModerationActionMetadataOptions {
+    channel?: Snowflake | {
+        id: Snowflake;
+    };
+    durationSeconds?: number;
+    customMessage?: string;
+}
+interface AutoModerationActionOptions {
+    type: number | string;
+    metadata?: AutoModerationActionMetadataOptions;
+}
+interface AutoModerationRuleCreateOptions {
+    name: string;
+    eventType: number | string;
+    triggerType: number | string;
+    triggerMetadata?: AutoModerationTriggerMetadataOptions;
+    actions: AutoModerationActionOptions[];
+    enabled?: boolean;
+    exemptRoles?: Collection<Snowflake, unknown> | (Snowflake | {
+        id: Snowflake;
+    })[];
+    exemptChannels?: Collection<Snowflake, unknown> | (Snowflake | {
+        id: Snowflake;
+    })[];
+    reason?: string;
+}
+interface AutoModerationRuleEditOptions {
+    name?: string;
+    eventType?: number | string;
+    triggerMetadata?: AutoModerationTriggerMetadataOptions;
+    actions?: AutoModerationActionOptions[];
+    enabled?: boolean;
+    exemptRoles?: Collection<Snowflake, unknown> | (Snowflake | {
+        id: Snowflake;
+    })[];
+    exemptChannels?: Collection<Snowflake, unknown> | (Snowflake | {
+        id: Snowflake;
+    })[];
+    reason?: string;
+}
+interface FetchAutoModerationRuleOptions {
+    autoModerationRule?: AutoModerationRuleResolvable;
+    cache?: boolean;
+    force?: boolean;
+}
+interface FetchAutoModerationRulesOptions {
+    cache?: boolean;
+}
 /**
  * Manages API methods for auto moderation rules and stores their cache.
  * @extends {CachedManager}
  */
-declare class AutoModerationRuleManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+declare class AutoModerationRuleManager extends CachedManager<Snowflake, AutoModerationRule, AutoModerationRuleResolvable, RawAutoModerationRuleData, [Guild]> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawAutoModerationRuleData>);
     /**
      * Resolves an {@link AutoModerationRuleResolvable} to an {@link AutoModerationRule} object.
      * @method resolve
@@ -21,11 +86,7 @@ declare class AutoModerationRuleManager extends CachedManager {
      * @param {AutoModerationRuleResolvable} autoModerationRule The AutoModerationRule resolvable to resolve
      * @returns {?Snowflake}
      */
-    _add(data: any, cache: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    _add(data: RawAutoModerationRuleData, cache?: boolean): AutoModerationRule;
     /**
      * Options used to set the trigger metadata of an auto moderation rule.
      * @typedef {Object} AutoModerationTriggerMetadataOptions
@@ -80,21 +141,7 @@ declare class AutoModerationRuleManager extends CachedManager {
      * @param {AutoModerationRuleCreateOptions} options Options for creating the auto moderation rule
      * @returns {Promise<AutoModerationRule>}
      */
-    create({ name, eventType, triggerType, triggerMetadata, actions, enabled, exemptRoles, exemptChannels, reason, }: {
-        name: any;
-        eventType: any;
-        triggerType: any;
-        triggerMetadata: any;
-        actions: any;
-        enabled: any;
-        exemptRoles: any;
-        exemptChannels: any;
-        reason: any;
-    }): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    create({ name, eventType, triggerType, triggerMetadata, actions, enabled, exemptRoles, exemptChannels, reason, }: AutoModerationRuleCreateOptions): Promise<AutoModerationRule>;
     /**
      * Options used to edit an auto moderation rule.
      * @typedef {Object} AutoModerationRuleEditOptions
@@ -116,20 +163,7 @@ declare class AutoModerationRuleManager extends CachedManager {
      * @param {AutoModerationRuleEditOptions} options Options for editing the auto moderation rule
      * @returns {Promise<AutoModerationRule>}
      */
-    edit(autoModerationRule: any, { name, eventType, triggerMetadata, actions, enabled, exemptRoles, exemptChannels, reason }: {
-        name: any;
-        eventType: any;
-        triggerMetadata: any;
-        actions: any;
-        enabled: any;
-        exemptRoles: any;
-        exemptChannels: any;
-        reason: any;
-    }): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    edit(autoModerationRule: AutoModerationRuleResolvable, { name, eventType, triggerMetadata, actions, enabled, exemptRoles, exemptChannels, reason }: AutoModerationRuleEditOptions): Promise<AutoModerationRule>;
     /**
      * Data that can be resolved to give an AutoModerationRule object. This can be:
      * * An AutoModerationRule
@@ -167,23 +201,19 @@ declare class AutoModerationRuleManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error)
      */
-    fetch(options: any): Promise<any>;
+    fetch(options?: AutoModerationRuleResolvable | FetchAutoModerationRuleOptions | FetchAutoModerationRulesOptions): Promise<AutoModerationRule | Collection<Snowflake, AutoModerationRule>>;
     _fetchSingle({ autoModerationRule, cache, force }: {
-        autoModerationRule: any;
-        cache: any;
+        autoModerationRule: Snowflake;
+        cache?: boolean;
         force?: boolean;
-    }): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
-    _fetchMany(options?: {}): Promise<any>;
+    }): Promise<AutoModerationRule>;
+    _fetchMany(options?: FetchAutoModerationRulesOptions): Promise<Collection<Snowflake, AutoModerationRule>>;
     /**
      * Deletes an auto moderation rule.
      * @param {AutoModerationRuleResolvable} autoModerationRule The auto moderation rule to delete
      * @param {string} [reason] The reason for deleting the auto moderation rule
      * @returns {Promise<void>}
      */
-    delete(autoModerationRule: any, reason: any): Promise<void>;
+    delete(autoModerationRule: AutoModerationRuleResolvable, reason?: string): Promise<void>;
 }
 export default AutoModerationRuleManager;

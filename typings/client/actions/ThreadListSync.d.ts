@@ -1,11 +1,6 @@
-declare const Collection: any;
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class ThreadListSyncAction extends Action {
-    handle(data: any): {
-        syncedThreads?: undefined;
-    } | {
-        syncedThreads: any;
-    };
-    removeStale(channel: any): void;
+    handle(data: any): any;
+    removeStale(channel: any): any;
 }
+export default ThreadListSyncAction;

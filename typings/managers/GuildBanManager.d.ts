@@ -1,20 +1,47 @@
+import { Collection } from '@discordjs/collection';
 import CachedManager from './CachedManager';
+import GuildBan from '../structures/GuildBan';
+import { GuildMember } from '../structures/GuildMember';
+import type { Snowflake } from 'discord-api-types/v10';
+import type { Guild } from '../structures/Guild';
+type GuildBanResolvable = GuildBan | Snowflake;
+type RawGuildBanData = {
+    user: {
+        id: Snowflake;
+    };
+} & Record<string, unknown>;
+interface FetchBansOptions {
+    limit?: number;
+    before?: Snowflake;
+    after?: Snowflake;
+    cache?: boolean;
+}
+interface BanOptions {
+    days?: number;
+    deleteMessageSeconds?: number;
+    reason?: string;
+}
+interface BulkBanOptions {
+    deleteMessageSeconds?: number;
+    reason?: string;
+}
+interface BulkBanResult {
+    bannedUsers: Snowflake[];
+    failedUsers: Snowflake[];
+}
 /**
  * Manages API methods for GuildBans and stores their cache.
  * @extends {CachedManager}
  */
-declare class GuildBanManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+declare class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolvable, RawGuildBanData, [Guild]> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawGuildBanData>);
     /**
      * The cache of this Manager
      * @type {Collection<Snowflake, GuildBan>}
      * @name GuildBanManager#cache
      */
-    _add(data: any, cache: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    _add(data: RawGuildBanData, cache?: boolean): GuildBan;
     /**
      * Data that resolves to give a GuildBan object. This can be:
      * * A GuildBan object
@@ -26,11 +53,7 @@ declare class GuildBanManager extends CachedManager {
      * @param {GuildBanResolvable} ban The ban that is in the guild
      * @returns {?GuildBan}
      */
-    resolve(ban: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    resolve(ban: GuildBanResolvable): GuildBan | null;
     /**
      * Options used to fetch a single ban from a guild.
      * @typedef {BaseFetchOptions} FetchBanOptions
@@ -69,22 +92,18 @@ declare class GuildBanManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error)
      * @example
-     * // Fetch a single ban without caching
-     * guild.bans.fetch({ user, cache: false })
-     *   .then(console.log)
-     *   .catch(console.error);
-     */
-    fetch(options: any): Promise<any>;
+      * // Fetch a single ban without caching
+      * guild.bans.fetch({ user, cache: false })
+      *   .then(console.log)
+      *   .catch(console.error);
+      */
+    fetch(options?: unknown): Promise<GuildBan | Collection<Snowflake, GuildBan>>;
     _fetchSingle({ user, cache, force }: {
-        user: any;
-        cache: any;
+        user: Snowflake;
+        cache?: boolean;
         force?: boolean;
-    }): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
-    _fetchMany(options?: {}): Promise<any>;
+    }): Promise<GuildBan>;
+    _fetchMany(options?: FetchBansOptions): Promise<Collection<Snowflake, GuildBan>>;
     /**
      * Options used to ban a user from a guild.
      * @typedef {Object} BanOptions
@@ -102,24 +121,24 @@ declare class GuildBanManager extends CachedManager {
      * If the GuildMember cannot be resolved, the User will instead be attempted to be resolved. If that also cannot
      * be resolved, the user id will be the result.
      * @example
-     * // Ban a user by id (or with a user/guild member object)
-     * guild.bans.create('84484653687267328')
-     *   .then(banInfo => console.log(`Banned ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`))
-     *   .catch(console.error);
-     */
-    create(user: any, options?: {}): Promise<any>;
+      * // Ban a user by id (or with a user/guild member object)
+      * guild.bans.create('84484653687267328')
+      *   .then(banInfo => console.log(`Banned ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`))
+      *   .catch(console.error);
+      */
+    create(user: unknown, options?: BanOptions): Promise<GuildMember | unknown>;
     /**
      * Unbans a user from the guild.
      * @param {UserResolvable} user The user to unban
      * @param {string} [reason] Reason for unbanning user
      * @returns {Promise<?User>}
      * @example
-     * // Unban a user by id (or with a user/guild member object)
-     * guild.bans.remove('84484653687267328')
-     *   .then(user => console.log(`Unbanned ${user.username} from ${guild.name}`))
-     *   .catch(console.error);
-     */
-    remove(user: any, reason: any): Promise<any>;
+      * // Unban a user by id (or with a user/guild member object)
+      * guild.bans.remove('84484653687267328')
+      *   .then(user => console.log(`Unbanned ${user.username} from ${guild.name}`))
+      *   .catch(console.error);
+      */
+    remove(user: unknown, reason?: string): Promise<unknown>;
     /**
      * Options used for bulk banning users from a guild.
      * @typedef {Object} BulkBanOptions
@@ -144,13 +163,10 @@ declare class GuildBanManager extends CachedManager {
      * guild.bans.bulkCreate(['84484653687267328'], { deleteMessageSeconds: 7 * 24 * 60 * 60 })
      *   .then(result => {
      *     console.log(`Banned ${result.bannedUsers.length} users, failed to ban ${result.failedUsers.length} users.`)
-     *   })
-     *   .catch(console.error);
-     * @deprecated This method will not be usable until an effective MFA implementation is in place.
-     */
-    bulkCreate(users: any, options?: {}): Promise<{
-        bannedUsers: any;
-        failedUsers: any;
-    }>;
+      *   })
+      *   .catch(console.error);
+      * @deprecated This method will not be usable until an effective MFA implementation is in place.
+      */
+    bulkCreate(users: unknown[] | Collection<Snowflake, unknown>, options?: BulkBanOptions): Promise<BulkBanResult>;
 }
 export default GuildBanManager;

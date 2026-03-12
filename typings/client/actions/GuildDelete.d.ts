@@ -1,11 +1,8 @@
-declare const setTimeout: any;
-declare const Action: any;
-declare const deletedGuilds: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildDeleteAction extends Action {
+    deleted: Map<string, any>;
     constructor(client: any);
-    handle(data: any): {
-        guild: any;
-    };
-    scheduleForDeletion(id: any): void;
+    handle(data: any): any;
+    scheduleForDeletion(id: any): any;
 }
+export default GuildDeleteAction;

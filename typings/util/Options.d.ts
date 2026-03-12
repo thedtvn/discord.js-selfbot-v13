@@ -181,7 +181,7 @@ declare class Options extends null {
      *   }
      * });
      */
-    static cacheWithLimits(settings?: Record<string, number | Record<string, unknown>>): (manager: {
+    static cacheWithLimits(settings?: any): (manager: {
         name: string;
     }) => Collection<unknown, unknown>;
     /**

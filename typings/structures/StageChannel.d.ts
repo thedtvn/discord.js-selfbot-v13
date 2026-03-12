@@ -4,19 +4,20 @@ import BaseGuildVoiceChannel from './BaseGuildVoiceChannel';
  * @extends {BaseGuildVoiceChannel}
  */
 declare class StageChannel extends BaseGuildVoiceChannel {
-    _patch(data: any): void;
+    topic: string | null;
+    _patch(data: any): any;
     /**
      * The stage instance of this stage channel, if it exists
      * @type {?StageInstance}
      * @readonly
      */
-    get stageInstance(): any;
+    get stageInstance(): any | null;
     /**
      * Creates a stage instance associated with this stage channel.
      * @param {StageInstanceCreateOptions} options The options to create the stage instance
      * @returns {Promise<StageInstance>}
      */
-    createStageInstance(options: any): any;
+    createStageInstance(options: any): Promise<any>;
     /**
      * Sets a new topic for the guild channel.
      * @param {?string} topic The new topic for the guild channel
@@ -28,6 +29,6 @@ declare class StageChannel extends BaseGuildVoiceChannel {
      *   .then(newChannel => console.log(`Channel's new topic is ${newChannel.topic}`))
      *   .catch(console.error);
      */
-    setTopic(topic: any, reason: any): any;
+    setTopic(topic: string | null, reason?: string): Promise<any>;
 }
 export default StageChannel;

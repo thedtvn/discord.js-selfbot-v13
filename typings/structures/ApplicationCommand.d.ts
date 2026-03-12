@@ -4,8 +4,25 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class ApplicationCommand extends Base {
+    id: string;
+    applicationId: string;
+    guild: any | null;
+    guildId: string | null;
+    permissions: any;
+    type: string;
+    name: string;
+    nameLocalizations: Record<string, string> | null;
+    nameLocalized: string | null;
+    description: string;
+    descriptionLocalizations: Record<string, string> | null;
+    descriptionLocalized: string | null;
+    options: any[];
+    defaultPermission: boolean;
+    defaultMemberPermissions: any | null;
+    dmPermission: boolean | null;
+    version: string;
     constructor(client: any, data: any, guild: any, guildId: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The timestamp the command was created at
      * @type {number}
@@ -81,13 +98,13 @@ declare class ApplicationCommand extends Base {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    edit(data: any): any;
+    edit(data: any): Promise<ApplicationCommand>;
     /**
      * Edits the name of this ApplicationCommand
      * @param {string} name The new name of the command
      * @returns {Promise<ApplicationCommand>}
      */
-    setName(name: any): any;
+    setName(name: string): Promise<ApplicationCommand>;
     /**
      * Edits the localized names of this ApplicationCommand
      * @param {Object<Locale, string>} nameLocalizations The new localized names for the command
@@ -101,13 +118,13 @@ declare class ApplicationCommand extends Base {
      *   .then(console.log)
      *   .catch(console.error)
      */
-    setNameLocalizations(nameLocalizations: any): any;
+    setNameLocalizations(nameLocalizations: any): Promise<ApplicationCommand>;
     /**
      * Edits the description of this ApplicationCommand
      * @param {string} description The new description of the command
      * @returns {Promise<ApplicationCommand>}
      */
-    setDescription(description: any): any;
+    setDescription(description: string): Promise<ApplicationCommand>;
     /**
      * Edits the localized descriptions of this ApplicationCommand
      * @param {Object<Locale, string>} descriptionLocalizations The new localized descriptions for the command
@@ -121,32 +138,32 @@ declare class ApplicationCommand extends Base {
      *   .then(console.log)
      *   .catch(console.error)
      */
-    setDescriptionLocalizations(descriptionLocalizations: any): any;
+    setDescriptionLocalizations(descriptionLocalizations: any): Promise<ApplicationCommand>;
     /**
      * Edits the default permission of this ApplicationCommand
      * @param {boolean} [defaultPermission=true] The default permission for this command
      * @returns {Promise<ApplicationCommand>}
      * @deprecated Use {@link ApplicationCommand#setDefaultMemberPermissions} and {@link ApplicationCommand#setDMPermission} instead.
      */
-    setDefaultPermission(defaultPermission?: boolean): any;
+    setDefaultPermission(defaultPermission?: boolean): Promise<ApplicationCommand>;
     /**
      * Edits the default member permissions of this ApplicationCommand
      * @param {?PermissionResolvable} defaultMemberPermissions The default member permissions required to run this command
      * @returns {Promise<ApplicationCommand>}
      */
-    setDefaultMemberPermissions(defaultMemberPermissions: any): any;
+    setDefaultMemberPermissions(defaultMemberPermissions: any): Promise<ApplicationCommand>;
     /**
      * Edits the DM permission of this ApplicationCommand
      * @param {boolean} [dmPermission=true] Whether the command can be used in DMs
      * @returns {Promise<ApplicationCommand>}
      */
-    setDMPermission(dmPermission?: boolean): any;
+    setDMPermission(dmPermission?: boolean): Promise<ApplicationCommand>;
     /**
      * Edits the options of this ApplicationCommand
      * @param {ApplicationCommandOptionData[]} options The options to set for this command
      * @returns {Promise<ApplicationCommand>}
      */
-    setOptions(options: any): any;
+    setOptions(options: any[]): Promise<ApplicationCommand>;
     /**
      * Deletes this command.
      * @returns {Promise<ApplicationCommand>}
@@ -156,7 +173,7 @@ declare class ApplicationCommand extends Base {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    delete(): any;
+    delete(): Promise<ApplicationCommand>;
     /**
      * Whether this command equals another command. It compares all properties, so for most operations
      * it is advisable to just compare `command.id === command2.id` as it is much faster and is often
@@ -166,7 +183,7 @@ declare class ApplicationCommand extends Base {
      * order in the array <info>The client may not always respect this ordering!</info>
      * @returns {boolean}
      */
-    equals(command: any, enforceOptionOrder?: boolean): any;
+    equals(command: any, enforceOptionOrder?: boolean): boolean;
     /**
      * Recursively checks that all options for an {@link ApplicationCommand} are equal to the provided options.
      * In most cases it is better to compare using {@link ApplicationCommand#equals}
@@ -177,7 +194,7 @@ declare class ApplicationCommand extends Base {
      * order in the array <info>The client may not always respect this ordering!</info>
      * @returns {boolean}
      */
-    static optionsEqual(existing: any, options: any, enforceOptionOrder?: boolean): any;
+    static optionsEqual(existing: any[], options: any[], enforceOptionOrder?: boolean): boolean;
     /**
      * Checks that an option for an {@link ApplicationCommand} is equal to the provided option
      * In most cases it is better to compare using {@link ApplicationCommand#equals}
@@ -189,7 +206,7 @@ declare class ApplicationCommand extends Base {
      * @returns {boolean}
      * @private
      */
-    static _optionEquals(existing: any, option: any, enforceOptionOrder?: boolean): any;
+    static _optionEquals(existing: any, option: any, enforceOptionOrder?: boolean): boolean;
     /**
      * An option for an application command or subcommand.
      * @typedef {Object} ApplicationCommandOption
@@ -228,16 +245,7 @@ declare class ApplicationCommand extends Base {
      * @returns {APIApplicationCommandOption}
      * @private
      */
-    static transformOption(option: any, received: any): {
-        [x: string]: any;
-        type: any;
-        name: any;
-        description: any;
-        required: any;
-        autocomplete: any;
-        choices: any;
-        options: any;
-    };
+    static transformOption(option: any, received?: boolean): Record<string, any>;
 }
 export default ApplicationCommand;
 /**

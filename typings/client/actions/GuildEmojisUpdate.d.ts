@@ -1,4 +1,5 @@
-declare const Action: any;
+import Action from './Action';
 declare class GuildEmojisUpdateAction extends Action {
-    handle(data: any): void;
+    handle(data: any): any;
 }
+export default GuildEmojisUpdateAction;

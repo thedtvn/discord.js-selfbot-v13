@@ -1,7 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildRoleCreate extends Action {
-    handle(data: any): {
-        role: any;
-    };
+    handle(data: any): any;
 }
+export default GuildRoleCreate;

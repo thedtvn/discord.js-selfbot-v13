@@ -1,7 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class MessageReactionRemoveEmoji extends Action {
-    handle(data: any): false | {
-        reaction: any;
-    };
+    handle(data: any): any;
 }
+export default MessageReactionRemoveEmoji;

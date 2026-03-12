@@ -7,8 +7,9 @@ import GuildChannel from './GuildChannel';
  * @extends {GuildChannel}
  */
 declare class StoreChannel extends GuildChannel {
+    nsfw: boolean;
     constructor(guild: any, data: any, client: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Creates an invite to this guild channel.
      * @param {CreateInviteOptions} [options={}] The options for creating the invite
@@ -19,13 +20,13 @@ declare class StoreChannel extends GuildChannel {
      *   .then(invite => console.log(`Created an invite with a code of ${invite.code}`))
      *   .catch(console.error);
      */
-    createInvite(options: any): any;
+    createInvite(options?: any): Promise<any>;
     /**
      * Fetches a collection of invites to this guild channel.
      * Resolves with a collection mapping invites by their codes.
      * @param {boolean} [cache=true] Whether or not to cache the fetched invites
      * @returns {Promise<Collection<string, Invite>>}
      */
-    fetchInvites(cache?: boolean): any;
+    fetchInvites(cache?: boolean): Promise<any>;
 }
 export default StoreChannel;

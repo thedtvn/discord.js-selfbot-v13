@@ -3,11 +3,12 @@
 import process from 'node:process';
 import Base from './Base';
 import VoiceState from './VoiceState';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import { Error } from '../errors';
 import GuildMemberRoleManager from '../managers/GuildMemberRoleManager';
 import GuildMemberFlags from '../util/GuildMemberFlags';
 import Permissions from '../util/Permissions';
+
+let TextBasedChannel: any;
 import type Client from '../client/Client';
 import type { Guild } from './Guild';
 import type User from './User';
@@ -644,9 +645,10 @@ class GuildMember extends Base {
  * // Send a direct message
  * guildMember.send('Hello!')
  *   .then(message => console.log(`Sent message: ${message.content} to ${guildMember.displayName}`))
- *   .catch(console.error);
- */
+  *   .catch(console.error);
+  */
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(GuildMember);
 
 export { GuildMember };

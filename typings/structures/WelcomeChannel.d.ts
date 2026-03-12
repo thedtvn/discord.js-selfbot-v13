@@ -4,6 +4,13 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class WelcomeChannel extends Base {
+    guild: any;
+    description: string;
+    _emoji: {
+        name: string | null;
+        id: string | null;
+    };
+    channelId: string;
     constructor(guild: any, data: any);
     /**
      * The channel of this welcome channel

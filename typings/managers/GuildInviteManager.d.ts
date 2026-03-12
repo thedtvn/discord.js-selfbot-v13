@@ -1,21 +1,46 @@
+import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
 import Invite from '../structures/Invite';
+type InviteResolvable = string;
+type RawInviteData = {
+    code: string;
+};
+interface FetchInviteOptions {
+    code?: InviteResolvable;
+    cache?: boolean;
+    force?: boolean;
+    channelId?: Snowflake;
+}
+interface CreateInviteOptions {
+    temporary?: boolean;
+    maxAge?: number;
+    maxUses?: number;
+    unique?: boolean;
+    targetUser?: Snowflake | {
+        id?: Snowflake;
+    };
+    targetApplication?: {
+        id?: Snowflake;
+        applicationId?: Snowflake;
+    } | Snowflake;
+    targetType?: number;
+    reason?: string;
+}
 /**
  * Manages API methods for GuildInvites and stores their cache.
  * @extends {CachedManager}
  */
-declare class GuildInviteManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+declare class GuildInviteManager extends CachedManager<string, Invite, InviteResolvable, RawInviteData> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawInviteData>);
     /**
      * The cache of this Manager
      * @type {Collection<string, Invite>}
      * @name GuildInviteManager#cache
      */
-    _add(data: any, cache: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    _add(data: RawInviteData, cache?: boolean): Invite;
     /**
      * Data that resolves to give an Invite object. This can be:
      * * An invite code
@@ -98,14 +123,14 @@ declare class GuildInviteManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    fetch(options: any): Promise<any>;
+    fetch(options?: InviteResolvable | FetchInviteOptions): Promise<Invite | Collection<string, Invite>>;
     _fetchSingle({ code, cache, force }: {
-        code: any;
-        cache: any;
+        code?: string;
+        cache?: boolean;
         force?: boolean;
-    }): Promise<any>;
-    _fetchMany(cache: any): Promise<any>;
-    _fetchChannelMany(channelId: any, cache: any): Promise<any>;
+    }): Promise<Invite>;
+    _fetchMany(cache?: boolean): Promise<Collection<string, Invite>>;
+    _fetchChannelMany(channelId: Snowflake, cache?: boolean): Promise<Collection<string, Invite>>;
     /**
      * Create an invite to the guild from the provided channel.
      * @param {GuildInvitableChannelResolvable} channel The options for creating the invite from a channel.
@@ -117,17 +142,15 @@ declare class GuildInviteManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    create(channel: any, { temporary, maxAge, maxUses, unique, targetUser, targetApplication, targetType, reason }?: {
-        temporary?: boolean;
-        maxAge?: number;
-        maxUses?: number;
-    }): Promise<Invite>;
+    create(channel: Snowflake | {
+        id: Snowflake;
+    }, { temporary, maxAge, maxUses, unique, targetUser, targetApplication, targetType, reason }?: CreateInviteOptions): Promise<Invite>;
     /**
      * Deletes an invite.
      * @param {InviteResolvable} invite The invite to delete
      * @param {string} [reason] Reason for deleting the invite
      * @returns {Promise<void>}
      */
-    delete(invite: any, reason: any): Promise<void>;
+    delete(invite: InviteResolvable, reason?: string): Promise<void>;
 }
 export default GuildInviteManager;

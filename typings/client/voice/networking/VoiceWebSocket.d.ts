@@ -1,14 +1,16 @@
-declare const EventEmitter: any;
-declare const setTimeout: any, setInterval: any;
-declare const WebSocket: any;
-declare const Error: any;
-declare const Opcodes: any, VoiceOpcodes: any;
+import { EventEmitter } from 'events';
 /**
  * Represents a Voice Connection's WebSocket.
  * @extends {EventEmitter}
  * @private
  */
 declare class VoiceWebSocket extends EventEmitter {
+    connection: any;
+    attempts: number;
+    _sequenceNumber: number;
+    dead: boolean;
+    ws: any;
+    heartbeatInterval: NodeJS.Timeout | null;
     constructor(connection: any);
     /**
      * The client of this voice WebSocket
@@ -30,13 +32,13 @@ declare class VoiceWebSocket extends EventEmitter {
      * @param {string} data The data to send to the WebSocket
      * @returns {Promise<string>}
      */
-    send(data: any): Promise<unknown>;
+    send(data: string): Promise<string>;
     /**
      * JSON.stringify's a packet and then sends it to the WebSocket Server.
      * @param {Object} packet The packet to send
      * @returns {Promise<string>}
      */
-    sendPacket(packet: any): Promise<unknown>;
+    sendPacket(packet: Record<string, any>): Promise<string>;
     /**
      * Called whenever the WebSocket opens.
      */
@@ -51,12 +53,15 @@ declare class VoiceWebSocket extends EventEmitter {
      * Called whenever the connection to the WebSocket server is lost.
      * @param {CloseEvent} event The WebSocket close event
      */
-    onClose(event: any): void;
+    onClose(event: {
+        code: number;
+        reason: string;
+    }): void;
     /**
      * Called whenever an error occurs with the WebSocket.
      * @param {Error} error The error that occurred
      */
-    onError(error: any): void;
+    onError(error: unknown): void;
     /**
      * Called whenever a valid packet is received from the WebSocket.
      * @param {Object} packet The received packet
@@ -66,7 +71,7 @@ declare class VoiceWebSocket extends EventEmitter {
      * Sets an interval at which to send a heartbeat packet to the WebSocket.
      * @param {number} interval The interval at which to send a heartbeat packet
      */
-    setHeartbeat(interval: any): void;
+    setHeartbeat(interval: number): void;
     /**
      * Clears a heartbeat interval, if one exists.
      */
@@ -76,3 +81,4 @@ declare class VoiceWebSocket extends EventEmitter {
      */
     sendHeartbeat(): void;
 }
+export default VoiceWebSocket;

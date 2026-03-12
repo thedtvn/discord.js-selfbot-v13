@@ -1,5 +1,13 @@
+import { Collection } from '@discordjs/collection';
 import Base from './Base';
-import ReactionCollector from './ReactionCollector';
+import MessageAttachment from './MessageAttachment';
+import Embed from './MessageEmbed';
+import Mentions from './MessageMentions';
+import { Poll } from './Poll';
+import { Sticker } from './Sticker';
+import Application from './interfaces/Application';
+import ReactionManager from '../managers/ReactionManager';
+import MessageFlags from '../util/MessageFlags';
 /**
  * @type {WeakSet<Message>}
  * @private
@@ -11,15 +19,47 @@ declare const deletedMessages: WeakSet<WeakKey>;
  * @extends {Base}
  */
 declare class Message extends Base {
+    channelId: string;
+    guildId: string | null;
+    id: string;
+    position: number | null;
+    createdTimestamp: number;
+    type: string | null;
+    system: boolean | null;
+    content: string | null;
+    author: any;
+    pinned: boolean | null;
+    tts: boolean | null;
+    nonce: string | null;
+    embeds: Embed[];
+    components: any[];
+    attachments: Collection<string, MessageAttachment>;
+    stickers: Collection<string, Sticker>;
+    editedTimestamp: number | null;
+    reactions: ReactionManager;
+    mentions: Mentions;
+    webhookId: string | null;
+    poll: Poll | null;
+    groupActivityApplication: Application | null;
+    applicationId: string | null;
+    activity: {
+        partyId: string;
+        type: number;
+    } | null;
+    flags: MessageFlags;
+    reference: any;
+    interaction: any;
+    messageSnapshots: Collection<string, Message>;
+    call: any;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Whether or not the structure has been deleted
      * @type {boolean}
      * @deprecated This will be removed in the next major version, see https://github.com/discordjs/discord.js/issues/7091
      */
-    get deleted(): boolean;
-    set deleted(value: boolean);
+    get deleted(): any;
+    set deleted(value: any);
     /**
      * The channel that the message was sent in
      * @type {TextBasedChannels}
@@ -31,7 +71,7 @@ declare class Message extends Base {
      * @type {boolean}
      * @readonly
      */
-    get partial(): boolean;
+    get partial(): any;
     /**
      * Represents the author of the message as a guild member.
      * Only available if the message comes from a guild where the author is still a member
@@ -44,13 +84,13 @@ declare class Message extends Base {
      * @type {Date}
      * @readonly
      */
-    get createdAt(): Date;
+    get createdAt(): any;
     /**
      * The time the message was last edited at (if applicable)
      * @type {?Date}
      * @readonly
      */
-    get editedAt(): Date;
+    get editedAt(): any;
     /**
      * The guild the message was sent in (if in a guild channel)
      * @type {?Guild}
@@ -76,7 +116,7 @@ declare class Message extends Base {
      * @type {string}
      * @readonly
      */
-    get url(): string;
+    get url(): any;
     /**
      * The message contents with all mentions replaced by the equivalent text.
      * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
@@ -95,7 +135,7 @@ declare class Message extends Base {
      * collector.on('collect', r => console.log(`Collected ${r.emoji.name}`));
      * collector.on('end', collected => console.log(`Collected ${collected.size} items`));
      */
-    createReactionCollector(options?: {}): ReactionCollector;
+    createReactionCollector(options?: any): any;
     /**
      * An object containing the same properties as CollectorOptions, but a few more:
      * @typedef {ReactionCollectorOptions} AwaitReactionsOptions
@@ -113,19 +153,19 @@ declare class Message extends Base {
      *   .then(collected => console.log(`Collected ${collected.size} reactions`))
      *   .catch(console.error);
      */
-    awaitReactions(options?: {}): Promise<unknown>;
+    awaitReactions(options?: any): any;
     /**
      * Whether the message is editable by the client user
      * @type {boolean}
      * @readonly
      */
-    get editable(): boolean;
+    get editable(): any;
     /**
      * Whether the message is deletable by the client user
      * @type {boolean}
      * @readonly
      */
-    get deletable(): boolean;
+    get deletable(): any;
     /**
      * Whether the message is bulk deletable by the client user
      * @type {boolean}
@@ -134,13 +174,13 @@ declare class Message extends Base {
      * // Filter for bulk deletable messages
      * channel.bulkDelete(messages.filter(message => message.bulkDeletable));
      */
-    get bulkDeletable(): boolean;
+    get bulkDeletable(): any;
     /**
      * Whether the message is pinnable by the client user
      * @type {boolean}
      * @readonly
      */
-    get pinnable(): boolean;
+    get pinnable(): any;
     /**
      * Fetches the Message this crosspost/reply/pin-add references, if available to the client
      * @returns {Promise<Message>}
@@ -151,7 +191,7 @@ declare class Message extends Base {
      * @type {boolean}
      * @readonly
      */
-    get crosspostable(): boolean;
+    get crosspostable(): any;
     /**
      * Options that can be passed into {@link Message#edit}.
      * @typedef {Object} MessageEditOptions
@@ -175,7 +215,7 @@ declare class Message extends Base {
      *   .then(msg => console.log(`Updated the content of a message to ${msg.content}`))
      *   .catch(console.error);
      */
-    edit(options: any): Promise<any>;
+    edit(options: any): Promise<Message>;
     /**
      * Publishes a message in an announcement channel to all channels following it.
      * @returns {Promise<Message>}
@@ -198,7 +238,7 @@ declare class Message extends Base {
      *   .then(console.log)
      *   .catch(console.error)
      */
-    pin(reason: any): Promise<this>;
+    pin(reason: any): Promise<any>;
     /**
      * Unpins this message from the channel's pinned messages.
      * @param {string} [reason] Reason for unpinning
@@ -209,7 +249,7 @@ declare class Message extends Base {
      *   .then(console.log)
      *   .catch(console.error)
      */
-    unpin(reason: any): Promise<this>;
+    unpin(reason: any): Promise<any>;
     /**
      * Adds a reaction to the message.
      * @param {EmojiIdentifierResolvable} emoji The emoji to react with
@@ -236,7 +276,7 @@ declare class Message extends Base {
      *   .then(msg => console.log(`Deleted message from ${msg.author.username}`))
      *   .catch(console.error);
      */
-    delete(): Promise<this>;
+    delete(): Promise<Message>;
     /**
      * Options provided when sending a message as an inline reply.
      * @typedef {BaseMessageOptions} ReplyMessageOptions
@@ -254,7 +294,7 @@ declare class Message extends Base {
      *   .then(() => console.log(`Replied to message "${message.content}"`))
      *   .catch(console.error);
      */
-    reply(options: any): Promise<any>;
+    reply(options: any): Promise<Message>;
     /**
      * Forwards this message
      * @param {TextBasedChannelResolvable} channel The channel to forward this message to.
@@ -287,7 +327,7 @@ declare class Message extends Base {
      * @param {StartThreadOptions} [options] Options for starting a thread on this message
      * @returns {Promise<ThreadChannel>}
      */
-    startThread(options?: {}): Promise<any>;
+    startThread(options?: any): Promise<any>;
     /**
      * Submits a poll vote for the current user. Returns a 204 empty response on success.
      * @param  {...number[]} ids ID of the answer
@@ -304,7 +344,7 @@ declare class Message extends Base {
      * @param {boolean} [force=true] Whether to skip the cache check and request the API
      * @returns {Promise<Message>}
      */
-    fetch(force?: boolean): Promise<any>;
+    fetch(force?: any): Promise<any>;
     /**
      * Fetches the webhook used to create this message.
      * @returns {Promise<?Webhook>}
@@ -315,12 +355,12 @@ declare class Message extends Base {
      * @param {boolean} [suppress=true] If the embeds should be suppressed or not
      * @returns {Promise<Message>}
      */
-    suppressEmbeds(suppress?: boolean): Promise<any>;
+    suppressEmbeds(suppress?: any): any;
     /**
      * Removes the attachments from this message.
      * @returns {Promise<Message>}
      */
-    removeAttachments(): Promise<any>;
+    removeAttachments(): any;
     /**
      * Resolves a component by a custom id.
      * @param {string} customId The custom id to resolve against
@@ -340,7 +380,7 @@ declare class Message extends Base {
      * Whether this message is from a guild.
      * @returns {boolean}
      */
-    inGuild(): boolean;
+    inGuild(): any;
     /**
      * When concatenated with a string, this automatically concatenates the message's content instead of the object.
      * @returns {string}
@@ -349,13 +389,13 @@ declare class Message extends Base {
      * console.log(`Message: ${message}`);
      */
     toString(): any;
-    toJSON(): unknown;
+    toJSON(): any;
     /**
      * Check data
      * @type {boolean}
      * @readonly
      */
-    get isMessage(): boolean;
+    get isMessage(): any;
     /**
      * Click a specified button in the message based on the button's CustomID
      * @param {string} buttonid customId of the button to click
@@ -367,14 +407,14 @@ declare class Message extends Base {
      * Currently, only clicking by CustomID is supported.
      * @returns {Promise<Message|Modal>}
      */
-    clickButton(buttonid: any): Promise<unknown>;
+    clickButton(buttonid: any): any;
     /**
      * Select specific menu
      * @param {number|string} menu Target
      * @param {Array<UserResolvable | RoleResolvable | ChannelResolvable | string>} values Any value
      * @returns {Promise<Message|Modal>}
      */
-    selectMenu(menu: any, values?: any[]): Promise<unknown>;
+    selectMenu(menu: any, values?: any): any;
     /**
      * Marks the message as unread.
      * @returns {Promise<void>}
@@ -399,6 +439,6 @@ declare class Message extends Base {
      * message.report([3, 28, 72]).then(console.log);
      * // { "report_id": "1199663489988440124" }
      */
-    report(breadcrumbs: any, elements?: {}): any;
+    report(breadcrumbs: any, elements?: any): any;
 }
 export { Message, deletedMessages };

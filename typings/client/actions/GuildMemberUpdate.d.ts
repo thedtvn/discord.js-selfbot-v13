@@ -1,5 +1,5 @@
-declare const Action: any;
-declare const Status: any, Events: any;
+import Action from './Action';
 declare class GuildMemberUpdateAction extends Action {
-    handle(data: any, shard: any): void;
+    handle(data: any, shard: any): any;
 }
+export default GuildMemberUpdateAction;

@@ -1,11 +1,5 @@
-declare const process: any;
-declare const Action: any;
-declare const Events: any;
-declare let deprecationEmitted: boolean;
+import Action from './Action';
 declare class MessageCreateAction extends Action {
-    handle(data: any): {
-        message?: undefined;
-    } | {
-        message: any;
-    };
+    handle(data: any): any;
 }
+export default MessageCreateAction;

@@ -1,5 +1,7 @@
 import BaseMessageComponent from './BaseMessageComponent';
 declare class FileComponent extends BaseMessageComponent {
+    file: any;
+    spoiler: boolean;
     /**
      * @property {UnfurledMediaItem} [file] This unfurled media item is unique in that it only supports attachment references using the attachment://<filename> syntax
      * @property {Boolean} [spoiler] Whether the container should be a spoiler (or blurred out). Defaults to false.
@@ -7,15 +9,11 @@ declare class FileComponent extends BaseMessageComponent {
     /**
      * @param {FileComponent | APIFileComponent} [data={}] The data
      */
-    constructor(data?: {});
+    constructor(data?: any);
     setup(data: any): void;
     /**
      * @returns {APIFileComponent}
      */
-    toJSON(): {
-        type: any;
-        file: any;
-        spoiler: any;
-    };
+    toJSON(): any;
 }
 export default FileComponent;

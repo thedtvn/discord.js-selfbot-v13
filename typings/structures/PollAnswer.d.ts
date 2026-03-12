@@ -1,11 +1,19 @@
 import Base from './Base';
+import type { Poll } from './Poll';
+import type Client from '../client/Client';
+import type { Snowflake } from 'discord-api-types/v10';
 /**
  * Represents an answer to a {@link Poll}
  * @extends {Base}
  */
 declare class PollAnswer extends Base {
-    constructor(client: any, data: any, poll: any);
-    _patch(data: any): void;
+    readonly poll: Poll;
+    id: number;
+    text: string | null;
+    readonly _emoji: any | null;
+    voteCount: number;
+    constructor(client: Client, data: any, poll: Poll);
+    _patch(data: any): any;
     /**
      * The emoji of this answer
      * @type {?(GuildEmoji|Emoji)}
@@ -21,6 +29,9 @@ declare class PollAnswer extends Base {
      * @param {FetchPollVotersOptions} [options={}] The options for fetching voters
      * @returns {Promise<Collection<Snowflake, User>>}
      */
-    fetchVoters({ after, limit }?: {}): any;
+    fetchVoters({ after, limit }?: {
+        after?: Snowflake;
+        limit?: number;
+    }): Promise<any>;
 }
 export { PollAnswer };

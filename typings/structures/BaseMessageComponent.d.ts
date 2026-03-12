@@ -3,6 +3,8 @@
  * See {@link MessageComponent}
  */
 declare class BaseMessageComponent {
+    type: any;
+    data: any;
     /**
      * Options for a BaseMessageComponent
      * @typedef {Object} BaseMessageComponentOptions
@@ -50,7 +52,7 @@ declare class BaseMessageComponent {
      * @returns {?(MessageComponent|ModalComponent)}
      * @private
      */
-    static create(data: any, client: any): any;
+    static create(data: any, client?: any): any;
     /**
      * Resolves the type of a component
      * @param {MessageComponentTypeResolvable} type The type to resolve
@@ -58,6 +60,6 @@ declare class BaseMessageComponent {
      * @private
      */
     static resolveType(type: any): any;
-    static extractInteractiveComponents(component: any): any;
+    static extractInteractiveComponents(component: any): any[];
 }
 export default BaseMessageComponent;

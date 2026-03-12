@@ -1,15 +1,21 @@
+import type { Snowflake } from 'discord-api-types/v10';
+import type { Message } from '../structures/Message';
 import CachedManager from './CachedManager';
+import MessageReaction from '../structures/MessageReaction';
+type RawMessageReactionData = {
+    emoji: {
+        id?: Snowflake | null;
+        name: string;
+    };
+};
 /**
  * Manages API methods for reactions and holds their cache.
  * @extends {CachedManager}
  */
-declare class ReactionManager extends CachedManager {
-    constructor(message: any, iterable: any);
-    _add(data: any, cache: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+declare class ReactionManager extends CachedManager<string | Snowflake, MessageReaction, MessageReaction | string | Snowflake, RawMessageReactionData, [Message]> {
+    readonly message: Message;
+    constructor(message: Message, iterable?: Iterable<RawMessageReactionData>);
+    _add(data: RawMessageReactionData, cache?: boolean): MessageReaction;
     /**
      * The reaction cache of this manager
      * @type {Collection<string|Snowflake, MessageReaction>}
@@ -42,6 +48,6 @@ declare class ReactionManager extends CachedManager {
      * Removes all reactions from a message.
      * @returns {Promise<Message>}
      */
-    removeAll(): Promise<any>;
+    removeAll(): Promise<Message>;
 }
 export default ReactionManager;

@@ -1,40 +1,49 @@
 import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
 import BaseManager from './BaseManager';
+import { GuildMember } from '../structures/GuildMember';
+import { Message } from '../structures/Message';
+import ThreadMember from '../structures/ThreadMember';
+import User from '../structures/User';
 /**
  * Manages API methods for Relationships and stores their cache.
  */
 declare class RelationshipManager extends BaseManager {
-    constructor(client: any, users: any);
+    cache: Collection<Snowflake, number>;
+    friendNicknames: Collection<Snowflake, string>;
+    sinceCache: Collection<Snowflake, Date>;
+    constructor(client: Client, users?: Array<Record<string, unknown>>);
     /**
      * Get all friends
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get friendCache(): Collection<unknown, unknown>;
+    get friendCache(): Collection<Snowflake, User>;
     /**
      * Get all blocked users
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get blockedCache(): Collection<unknown, unknown>;
+    get blockedCache(): Collection<Snowflake, User>;
     /**
      * Get all ignored users
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get ignoredCache(): Collection<unknown, unknown>;
+    get ignoredCache(): Collection<Snowflake, User>;
     /**
      * Get all incoming friend requests
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get incomingCache(): Collection<unknown, unknown>;
+    get incomingCache(): Collection<Snowflake, User>;
     /**
      * Get all outgoing friend requests
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get outgoingCache(): Collection<unknown, unknown>;
+    get outgoingCache(): Collection<Snowflake, User>;
     /**
      * @typedef {Object} RelationshipJSONData
      * @property {Snowflake} id The ID of the target user
@@ -46,76 +55,81 @@ declare class RelationshipManager extends BaseManager {
      * Return array of cache
      * @returns {RelationshipJSONData[]}
      */
-    toJSON(): any;
+    toJSON(): Array<{
+        id: Snowflake;
+        type: string;
+        nickname: string | undefined;
+        since: string;
+    }>;
     /**
      * @private
      * @param {Array<User>} users An array of users to add to the cache
      * @returns {void}
      */
-    _setup(users: any): void;
+    _setup(users?: Array<Record<string, unknown>>): void;
     /**
      * Resolves a {@link UserResolvable} to a {@link User} id.
      * @param {UserResolvable} user The UserResolvable to identify
      * @returns {?Snowflake}
      */
-    resolveId(user: any): any;
+    resolveId(user: ThreadMember | GuildMember | Message | User | string): Snowflake | null;
     /**
      * Resolves a {@link UserResolvable} to a {@link User} username.
      * @param {UserResolvable} user The UserResolvable to identify
      * @returns {?string}
      */
-    resolveUsername(user: any): any;
+    resolveUsername(user: ThreadMember | GuildMember | Message | User | string): string | null;
     /**
      * Obtains a user from Discord, or the user cache if it's already available.
      * @param {UserResolvable} [user] The user to fetch
      * @param {BaseFetchOptions} [options] Additional options for this fetch
      * @returns {Promise<RelationshipType|RelationshipManager>}
      */
-    fetch(user: any, { force }?: {
+    fetch(user?: ThreadMember | GuildMember | Message | User | string, { force }?: {
         force?: boolean;
-    }): Promise<any>;
+    }): Promise<number | undefined | this>;
     /**
      * Deletes a friend / blocked relationship with a client user or cancels a friend request.
      * @param {UserResolvable} user Target
      * @returns {Promise<boolean>}
      */
-    deleteRelationship(user: any): Promise<boolean>;
+    deleteRelationship(user: ThreadMember | GuildMember | Message | User | string): Promise<boolean>;
     /**
      * Deletes an ignored relationship with a client user.
      * @param {UserResolvable} user Target
      * @returns {Promise<boolean>}
      */
-    deleteIgnored(user: any): Promise<boolean>;
+    deleteIgnored(user: ThreadMember | GuildMember | Message | User | string): Promise<boolean>;
     /**
      * Sends a friend request.
      * @param {UserResolvable} options Target (User Object, Username, User Id)
      * @returns {Promise<boolean>}
      */
-    sendFriendRequest(options: any): Promise<boolean>;
+    sendFriendRequest(options: ThreadMember | GuildMember | Message | User | string): Promise<boolean>;
     /**
      * Accepts a friend request.
      * @param {UserResolvable} user The user to add as a friend
      * @returns {Promise<boolean>}
      */
-    addFriend(user: any): Promise<boolean>;
+    addFriend(user: ThreadMember | GuildMember | Message | User | string): Promise<boolean>;
     /**
      * Changes the nickname of a friend.
      * @param {UserResolvable} user The user to change the nickname
      * @param {?string} nickname New nickname
      * @returns {Promise<boolean>}
      */
-    setNickname(user: any, nickname?: any): Promise<boolean>;
+    setNickname(user: ThreadMember | GuildMember | Message | User | string, nickname?: string | null): Promise<boolean>;
     /**
      * Blocks a user.
      * @param {UserResolvable} user User to block
      * @returns {Promise<boolean>}
      */
-    addBlocked(user: any): Promise<boolean>;
+    addBlocked(user: ThreadMember | GuildMember | Message | User | string): Promise<boolean>;
     /**
      * Ignores a user.
      * @param {UserResolvable} user User to ignore
      * @returns {Promise<boolean>}
      */
-    addIgnored(user: any): Promise<boolean>;
+    addIgnored(user: ThreadMember | GuildMember | Message | User | string): Promise<boolean>;
 }
 export default RelationshipManager;

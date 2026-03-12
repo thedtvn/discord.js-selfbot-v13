@@ -1,4 +1,6 @@
 import Base from './Base';
+import type Client from '../client/Client';
+import type { APIEmoji, Snowflake } from 'discord-api-types/v10';
 /**
  * @type {WeakSet<Emoji>}
  * @private
@@ -17,7 +19,10 @@ declare const deletedEmojis: WeakSet<WeakKey>;
  * @extends {Base}
  */
 declare class Emoji extends Base {
-    constructor(client: any, emoji: any);
+    animated: boolean | null;
+    name: string | null;
+    id: Snowflake | null;
+    constructor(client: Client, emoji: APIEmoji);
     /**
      * Whether or not the structure has been deleted
      * @type {boolean}
@@ -36,19 +41,19 @@ declare class Emoji extends Base {
      * @type {?string}
      * @readonly
      */
-    get url(): any;
+    get url(): string | null;
     /**
      * The timestamp the emoji was created at, or null if unicode
      * @type {?number}
      * @readonly
      */
-    get createdTimestamp(): number;
+    get createdTimestamp(): number | null;
     /**
      * The time the emoji was created at, or null if unicode
      * @type {?Date}
      * @readonly
      */
-    get createdAt(): Date;
+    get createdAt(): Date | null;
     /**
      * When concatenated with a string, this automatically returns the text required to form a graphical emoji on Discord
      * instead of the Emoji object.
@@ -61,7 +66,7 @@ declare class Emoji extends Base {
      * // Send the emoji used in a reaction to the channel the reaction is part of
      * reaction.message.channel.send(`The emoji used was: ${reaction.emoji}`);
      */
-    toString(): any;
+    toString(): string;
     toJSON(): unknown;
 }
 export { Emoji };

@@ -4,6 +4,21 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class WidgetMember extends Base {
+    id: string;
+    username: string;
+    discriminator: string;
+    avatar: string | null;
+    status: string;
+    deaf: boolean | null;
+    mute: boolean | null;
+    selfDeaf: boolean | null;
+    selfMute: boolean | null;
+    suppress: boolean | null;
+    channelId: string | null;
+    avatarURL: string;
+    activity: {
+        name: string;
+    } | null;
     /**
      * Activity sent in a {@link WidgetMember}.
      * @typedef {Object} WidgetActivity

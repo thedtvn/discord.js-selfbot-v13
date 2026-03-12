@@ -4,6 +4,22 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class Interaction extends Base {
+    type: any;
+    id: any;
+    token: any;
+    applicationId: any;
+    channelId: any;
+    guildId: any;
+    user: any;
+    member: any;
+    version: any;
+    appPermissions: any;
+    memberPermissions: any;
+    locale: any;
+    guildLocale: any;
+    targetId: any;
+    targetType: any;
+    componentType: any;
     constructor(client: any, data: any);
     /**
      * The timestamp the interaction was created at
@@ -22,13 +38,13 @@ declare class Interaction extends Base {
      * @type {?TextBasedChannels}
      * @readonly
      */
-    get channel(): any;
+    get channel(): any | null;
     /**
      * The guild this interaction was sent in
      * @type {?Guild}
      * @readonly
      */
-    get guild(): any;
+    get guild(): any | null;
     /**
      * Indicates whether this interaction is received from a guild.
      * @returns {boolean}

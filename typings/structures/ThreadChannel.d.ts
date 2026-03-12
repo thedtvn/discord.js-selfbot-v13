@@ -1,19 +1,42 @@
 import { Channel } from './Channel';
+import MessageManager from '../managers/MessageManager';
+import ThreadMemberManager from '../managers/ThreadMemberManager';
 /**
  * Represents a thread channel on Discord.
  * @extends {Channel}
  * @implements {TextBasedChannel}
  */
 declare class ThreadChannel extends Channel {
+    guild: any;
+    ownerId: string;
+    guildId: string;
+    messages: MessageManager;
+    members: ThreadMemberManager;
+    name: string;
+    parentId: string | null;
+    locked: boolean | null;
+    invitable: boolean | null;
+    type: string;
+    archived: boolean | null;
+    autoArchiveDuration: number | null;
+    archiveTimestamp: number | null;
+    _createdTimestamp: number | null;
+    lastMessageId: string | null;
+    lastPinTimestamp: number | null;
+    rateLimitPerUser: number | null;
+    messageCount: number | null;
+    memberCount: number | null;
+    totalMessageSent: number | null;
+    appliedTags: string[];
     constructor(guild: any, data: any, client: any);
-    _patch(data: any, partial?: boolean): void;
+    _patch(data: any, partial?: boolean): any;
     /**
      * The timestamp when this thread was created. This isn't available for threads
      * created before 2022-01-09
      * @type {?number}
      * @readonly
      */
-    get createdTimestamp(): any;
+    get createdTimestamp(): number | null;
     /**
      * A collection of associated guild member objects of this thread's members
      * @type {Collection<Snowflake, GuildMember>}
@@ -26,23 +49,19 @@ declare class ThreadChannel extends Channel {
      * @type {?Date}
      * @readonly
      */
-    get archivedAt(): Date;
+    get archivedAt(): Date | null;
     /**
      * The time the thread was created at
      * @type {?Date}
      * @readonly
      */
-    get createdAt(): Date;
+    get createdAt(): Date | null;
     /**
      * The parent channel of this thread
      * @type {?(NewsChannel|TextChannel|ForumChannel|MediaChannel)}
      * @readonly
      */
     get parent(): any;
-    /**
-     * Makes the client user join the thread.
-     * @returns {Promise<ThreadChannel>}
-     */
     join(): Promise<this>;
     /**
      * Makes the client user leave the thread.
@@ -56,7 +75,7 @@ declare class ThreadChannel extends Channel {
      * @param {boolean} [checkAdmin=true] Whether having `ADMINISTRATOR` will return all permissions
      * @returns {?Readonly<Permissions>}
      */
-    permissionsFor(memberOrRole: any, checkAdmin: any): any;
+    permissionsFor(memberOrRole: any, checkAdmin?: boolean): any;
     /**
      * Fetches the owner of this thread. If the thread member object isn't needed,
      * use {@link ThreadChannel#ownerId} instead.
@@ -75,7 +94,7 @@ declare class ThreadChannel extends Channel {
      * @param {BaseFetchOptions} [options] Additional options for this fetch
      * @returns {Promise<Message|null>}
      */
-    fetchStarterMessage(options: any): Promise<any>;
+    fetchStarterMessage(options?: any): Promise<any>;
     /**
      * The options used to edit a thread channel
      * @typedef {Object} ThreadEditData
@@ -101,7 +120,7 @@ declare class ThreadChannel extends Channel {
      *   .then(editedThread => console.log(editedThread))
      *   .catch(console.error);
      */
-    edit(data: any, reason: any): Promise<any>;
+    edit(data: any, reason?: string): Promise<ThreadChannel>;
     /**
      * Sets whether the thread is archived.
      * @param {boolean} [archived=true] Whether the thread is archived
@@ -113,7 +132,7 @@ declare class ThreadChannel extends Channel {
      *   .then(newThread => console.log(`Thread is now ${newThread.archived ? 'archived' : 'active'}`))
      *   .catch(console.error);
      */
-    setArchived(archived: boolean, reason: any): Promise<any>;
+    setArchived(archived?: boolean, reason?: string): Promise<ThreadChannel>;
     /**
      * Sets the duration after which the thread will automatically archive in case of no recent activity.
      * @param {ThreadAutoArchiveDuration} autoArchiveDuration The amount of time (in minutes) after which the thread
@@ -128,7 +147,7 @@ declare class ThreadChannel extends Channel {
      *    });
      *   .catch(console.error);
      */
-    setAutoArchiveDuration(autoArchiveDuration: any, reason: any): Promise<any>;
+    setAutoArchiveDuration(autoArchiveDuration: number | string, reason?: string): Promise<ThreadChannel>;
     /**
      * Sets whether members without the `MANAGE_THREADS` permission can invite other members without the
      * `MANAGE_THREADS` permission to this thread.
@@ -136,7 +155,7 @@ declare class ThreadChannel extends Channel {
      * @param {string} [reason] Reason for changing invite
      * @returns {Promise<ThreadChannel>}
      */
-    setInvitable(invitable: boolean, reason: any): Promise<any>;
+    setInvitable(invitable?: boolean, reason?: string): Promise<ThreadChannel>;
     /**
      * Sets whether the thread can be **unarchived** by anyone with `SEND_MESSAGES` permission.
      * When a thread is locked only members with `MANAGE_THREADS` can unarchive it.
@@ -149,7 +168,7 @@ declare class ThreadChannel extends Channel {
      *   .then(newThread => console.log(`Thread is now ${newThread.locked ? 'locked' : 'unlocked'}`))
      *   .catch(console.error);
      */
-    setLocked(locked: boolean, reason: any): Promise<any>;
+    setLocked(locked?: boolean, reason?: string): Promise<ThreadChannel>;
     /**
      * Sets a new name for this thread.
      * @param {string} name The new name for the thread
@@ -161,63 +180,63 @@ declare class ThreadChannel extends Channel {
      *   .then(newThread => console.log(`Thread's new name is ${newThread.name}`))
      *   .catch(console.error);
      */
-    setName(name: any, reason: any): Promise<any>;
+    setName(name: string, reason?: string): Promise<ThreadChannel>;
     /**
      * Sets the rate limit per user (slowmode) for this thread.
      * @param {number} rateLimitPerUser The new rate limit in seconds
      * @param {string} [reason] Reason for changing the thread's rate limit
      * @returns {Promise<ThreadChannel>}
      */
-    setRateLimitPerUser(rateLimitPerUser: any, reason: any): Promise<any>;
+    setRateLimitPerUser(rateLimitPerUser: number, reason?: string): Promise<ThreadChannel>;
     /**
      * Pins this thread from the forum channel.
      * @param {string} [reason] Reason for pinning
      * @returns {Promise<ThreadChannel>}
      */
-    pin(reason: any): Promise<any>;
+    pin(reason?: string): Promise<ThreadChannel>;
     /**
      * Unpins this thread from the forum channel.
      * @param {string} [reason] Reason for unpinning
      * @returns {Promise<ThreadChannel>}
      */
-    unpin(reason: any): Promise<any>;
+    unpin(reason?: string): Promise<ThreadChannel>;
     /**
      * Set the applied tags for this channel (only applicable to forum threads)
      * @param {Snowflake[]} appliedTags The tags to set for this channel
      * @param {string} [reason] Reason for changing the thread's applied tags
      * @returns {Promise<ThreadChannel>}
      */
-    setAppliedTags(appliedTags: any, reason: any): Promise<any>;
+    setAppliedTags(appliedTags: string[], reason?: string): Promise<ThreadChannel>;
     /**
      * Whether the client user is a member of the thread.
      * @type {boolean}
      * @readonly
      */
-    get joined(): any;
+    get joined(): boolean;
     /**
      * Whether the thread is editable by the client user (name, archived, autoArchiveDuration)
      * @type {boolean}
      * @readonly
      */
-    get editable(): any;
+    get editable(): boolean;
     /**
      * Whether the thread is joinable by the client user
      * @type {boolean}
      * @readonly
      */
-    get joinable(): any;
+    get joinable(): boolean;
     /**
      * Whether the thread is manageable by the client user, for deleting or editing rateLimitPerUser or locked.
      * @type {boolean}
      * @readonly
      */
-    get manageable(): any;
+    get manageable(): boolean;
     /**
      * Whether the thread is viewable by the client user
      * @type {boolean}
      * @readonly
      */
-    get viewable(): any;
+    get viewable(): boolean;
     /**
      * Whether the client user can send messages in this thread
      * @type {boolean}
@@ -229,7 +248,7 @@ declare class ThreadChannel extends Channel {
      * @type {boolean}
      * @readonly
      */
-    get unarchivable(): any;
+    get unarchivable(): boolean;
     /**
      * Whether this thread is a private thread
      * @returns {boolean}
@@ -245,12 +264,12 @@ declare class ThreadChannel extends Channel {
      *   .then(deletedThread => console.log(deletedThread))
      *   .catch(console.error);
      */
-    delete(reason: any): Promise<this>;
-    get lastMessage(): void;
-    get lastPinAt(): void;
-    send(): void;
-    sendTyping(): void;
-    createMessageCollector(): void;
-    awaitMessages(): void;
+    delete(reason?: string): Promise<this>;
+    get lastMessage(): any;
+    get lastPinAt(): any;
+    send(..._args: any[]): any;
+    sendTyping(..._args: any[]): any;
+    createMessageCollector(..._args: any[]): any;
+    awaitMessages(..._args: any[]): any;
 }
 export default ThreadChannel;

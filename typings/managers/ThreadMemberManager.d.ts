@@ -1,37 +1,47 @@
+import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type ThreadChannel from '../structures/ThreadChannel';
 import CachedManager from './CachedManager';
 import ThreadMember from '../structures/ThreadMember';
+type UserResolvableLike = Snowflake | {
+    id?: Snowflake;
+};
+type ThreadMemberResolvable = ThreadMember | UserResolvableLike;
+type RawThreadMemberData = {
+    user_id: Snowflake;
+} & Record<string, unknown>;
+interface FetchThreadMemberOptions {
+    cache?: boolean;
+    force?: boolean;
+    withMember?: boolean;
+    limit?: number;
+    after?: Snowflake;
+}
 /**
  * Manages API methods for GuildMembers and stores their cache.
  * @extends {CachedManager}
  */
-declare class ThreadMemberManager extends CachedManager {
-    constructor(thread: any, iterable: any);
+declare class ThreadMemberManager extends CachedManager<Snowflake, ThreadMember, ThreadMemberResolvable, RawThreadMemberData> {
+    readonly thread: ThreadChannel;
+    constructor(thread: ThreadChannel, iterable?: Iterable<RawThreadMemberData>);
     /**
      * The cache of this Manager
      * @type {Collection<Snowflake, ThreadMember>}
      * @name ThreadMemberManager#cache
      */
-    _add(data: any, cache?: boolean): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    } | ThreadMember;
+    _add(data: RawThreadMemberData, cache?: boolean): ThreadMember;
     /**
      * Fetches the client user as a ThreadMember of the thread.
      * @param {BaseFetchOptions} [options] The options for fetching the member
      * @returns {Promise<ThreadMember>}
      */
-    fetchMe(options: any): Promise<any>;
+    fetchMe(options?: FetchThreadMemberOptions): Promise<ThreadMember | Collection<Snowflake, ThreadMember>>;
     /**
      * The client user as a ThreadMember of this ThreadChannel
      * @type {?ThreadMember}
      * @readonly
      */
-    get me(): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    get me(): ThreadMember | null;
     /**
      * Data that resolves to give a ThreadMember object. This can be:
      * * A ThreadMember object
@@ -43,41 +53,29 @@ declare class ThreadMemberManager extends CachedManager {
      * @param {ThreadMemberResolvable} member The user that is part of the thread
      * @returns {?GuildMember}
      */
-    resolve(member: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    resolve(member: ThreadMemberResolvable): ThreadMember | null;
     /**
      * Resolves a {@link ThreadMemberResolvable} to a {@link ThreadMember} id string.
      * @param {ThreadMemberResolvable} member The user that is part of the guild
      * @returns {?Snowflake}
      */
-    resolveId(member: any): any;
+    resolveId(member: ThreadMemberResolvable): Snowflake | null;
     /**
      * Adds a member to the thread.
      * @param {UserResolvable|'@me'} member The member to add
      * @param {string} [reason] The reason for adding this member
      * @returns {Promise<Snowflake>}
      */
-    add(member: any, reason: any): Promise<any>;
+    add(member: UserResolvableLike | '@me', reason?: string): Promise<Snowflake | '@me'>;
     /**
      * Remove a user from the thread.
      * @param {Snowflake|'@me'} id The id of the member to remove
      * @param {string} [reason] The reason for removing this member from the thread
      * @returns {Promise<Snowflake>}
      */
-    remove(id: any, reason: any): Promise<any>;
-    _fetchOne(memberId: any, { cache, force, withMember }: {
-        cache: any;
-        force?: boolean;
-        withMember: any;
-    }): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    } | ThreadMember>;
-    _fetchMany({ cache, limit, after, withMember }?: {}): Promise<any>;
+    remove(id: Snowflake | '@me', reason?: string): Promise<Snowflake | '@me'>;
+    _fetchOne(memberId: Snowflake, { cache, force, withMember }: FetchThreadMemberOptions): Promise<ThreadMember>;
+    _fetchMany({ cache, limit, after, withMember }?: FetchThreadMemberOptions): Promise<Collection<Snowflake, ThreadMember>>;
     /**
      * Options used to fetch a thread member.
      * @typedef {BaseFetchOptions} FetchThreadMemberOptions
@@ -110,9 +108,6 @@ declare class ThreadMemberManager extends CachedManager {
      * @param {FetchThreadMemberOptions|FetchThreadMembersOptions} [options] Additional options for this fetch
      * @returns {Promise<ThreadMember|Collection<Snowflake, ThreadMember>>}
      */
-    fetch(member: any, options?: {
-        cache: boolean;
-        force: boolean;
-    }): Promise<any>;
+    fetch(member?: ThreadMemberResolvable | boolean, options?: FetchThreadMemberOptions): Promise<ThreadMember | Collection<Snowflake, ThreadMember>>;
 }
 export default ThreadMemberManager;

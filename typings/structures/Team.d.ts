@@ -1,17 +1,26 @@
+import { Collection } from '@discordjs/collection';
 import Base from './Base';
+import TeamMember from './TeamMember';
+import type Client from '../client/Client';
+import type { Snowflake } from 'discord-api-types/v10';
 /**
  * Represents a Client OAuth2 Application Team.
  * @extends {Base}
  */
 declare class Team extends Base {
-    constructor(client: any, data: any);
-    _patch(data: any): void;
+    id: Snowflake;
+    name: string;
+    icon: string | null;
+    ownerId: Snowflake | null;
+    members: Collection<Snowflake, TeamMember>;
+    constructor(client: Client, data: any);
+    _patch(data: any): any;
     /**
      * The owner of this team
      * @type {?TeamMember}
      * @readonly
      */
-    get owner(): any;
+    get owner(): TeamMember | null;
     /**
      * The timestamp the team was created at
      * @type {number}
@@ -29,7 +38,10 @@ declare class Team extends Base {
      * @param {StaticImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    iconURL({ format, size }?: {}): any;
+    iconURL({ format, size }?: {
+        format?: string;
+        size?: number;
+    }): string | null;
     /**
      * When concatenated with a string, this automatically returns the Team's name instead of the
      * Team object.
@@ -38,7 +50,7 @@ declare class Team extends Base {
      * // Logs: Team name: My Team
      * console.log(`Team name: ${team}`);
      */
-    toString(): any;
+    toString(): string;
     toJSON(): unknown;
 }
 export default Team;

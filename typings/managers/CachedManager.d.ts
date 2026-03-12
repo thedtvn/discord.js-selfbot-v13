@@ -14,12 +14,8 @@ interface CachedManagerAddOptions<K extends string, Extras extends unknown[]> {
 declare class CachedManager<K extends string = Snowflake, Holds extends {
     id: K;
     _patch(data: unknown): void;
-    _clone(): Holds;
-} = {
-    id: K;
-    _patch(data: unknown): void;
-    _clone(): Holds;
-}, Resolvable = K | Holds, RawData extends {
+    _clone(): any;
+} = any, Resolvable = K | Holds, RawData extends {
     id: K;
 } = {
     id: K;

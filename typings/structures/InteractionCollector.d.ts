@@ -1,3 +1,4 @@
+import { Collection } from '@discordjs/collection';
 import Collector from './interfaces/Collector';
 /**
  * @typedef {CollectorOptions} InteractionCollectorOptions
@@ -21,24 +22,32 @@ import Collector from './interfaces/Collector';
  * @extends {Collector}
  */
 declare class InteractionCollector extends Collector {
+    messageId: string | null;
+    channelId: string | null;
+    guildId: string | null;
+    interactionType: string | null;
+    componentType: string | null;
+    type: string | null;
+    users: Collection<string, any>;
+    total: number;
     /**
      * @param {Client} client The client on which to collect interactions
      * @param {InteractionCollectorOptions} [options={}] The options to apply to this collector
      */
-    constructor(client: any, options?: {});
+    constructor(client: any, options?: any);
     /**
      * Handles an incoming interaction for possible collection.
      * @param {Interaction} interaction The interaction to possibly collect
      * @returns {?Snowflake}
      * @private
      */
-    collect(interaction: any): any;
+    collect(interaction: any): string | null;
     /**
      * Handles an interaction for possible disposal.
      * @param {Interaction} interaction The interaction that could be disposed of
      * @returns {?Snowflake}
      */
-    dispose(interaction: any): any;
+    dispose(interaction: any): string | null;
     /**
      * Empties this interaction collector.
      */
@@ -48,7 +57,7 @@ declare class InteractionCollector extends Collector {
      * @type {?string}
      * @readonly
      */
-    get endReason(): "limit" | "userLimit" | "componentLimit";
+    get endReason(): string | null;
     /**
      * Handles checking if the message has been deleted, and if so, stops the collector with the reason 'messageDelete'.
      * @private

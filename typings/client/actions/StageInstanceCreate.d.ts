@@ -1,9 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class StageInstanceCreateAction extends Action {
-    handle(data: any): {
-        stageInstance: any;
-    } | {
-        stageInstance?: undefined;
-    };
+    handle(data: any): any;
 }
+export default StageInstanceCreateAction;

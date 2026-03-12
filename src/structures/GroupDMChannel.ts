@@ -3,10 +3,11 @@
 import { Collection } from '@discordjs/collection';
 import { Channel } from './Channel';
 import Invite from './Invite';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import MessageManager from '../managers/MessageManager';
 import { Status, Opcodes } from '../util/Constants';
 import DataResolver from '../util/DataResolver';
+
+let TextBasedChannel: any;
 
 /**
  * Represents a Group DM Channel on Discord.
@@ -392,6 +393,7 @@ class GroupDMChannel extends Channel {
   // Doesn't work on DM channels; setNSFW() {}
 }
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(GroupDMChannel, true, [
   'fetchWebhooks',
   'createWebhook',

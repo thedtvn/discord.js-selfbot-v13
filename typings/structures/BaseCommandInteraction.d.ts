@@ -6,6 +6,12 @@ import Interaction from './Interaction';
  * @abstract
  */
 declare class BaseCommandInteraction extends Interaction {
+    commandId: any;
+    commandName: string;
+    deferred: boolean;
+    replied: boolean;
+    ephemeral: boolean | null;
+    webhook: any;
     constructor(client: any, data: any);
     /**
      * The invoked application command, if it was fetched before
@@ -28,14 +34,7 @@ declare class BaseCommandInteraction extends Interaction {
      * @returns {CommandInteractionResolvedData}
      * @private
      */
-    transformResolved({ members, users, channels, roles, messages, attachments }: {
-        members: any;
-        users: any;
-        channels: any;
-        roles: any;
-        messages: any;
-        attachments: any;
-    }): {};
+    transformResolved(resolved: any): Record<string, any>;
     /**
      * Represents an option of a received command interaction.
      * @typedef {Object} CommandInteractionOption
@@ -58,10 +57,7 @@ declare class BaseCommandInteraction extends Interaction {
      * @returns {CommandInteractionOption}
      * @private
      */
-    transformOption(option: any, resolved: any): {
-        name: any;
-        type: any;
-    };
+    transformOption(option: any, resolved: any): Record<string, any>;
     deferReply(): void;
     reply(): void;
     fetchReply(): void;

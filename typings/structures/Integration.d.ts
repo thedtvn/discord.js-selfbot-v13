@@ -1,4 +1,5 @@
 import Base from './Base';
+import IntegrationApplication from './IntegrationApplication';
 /**
  * The information account for an integration
  * @typedef {Object} IntegrationAccount
@@ -18,6 +19,25 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class Integration extends Base {
+    guild: any;
+    id: string;
+    name: string;
+    type: string;
+    enabled: boolean;
+    syncing: boolean | null;
+    role: any;
+    enableEmoticons: boolean | null;
+    user: any | null;
+    account: {
+        id: string;
+        name: string;
+    };
+    syncedAt: string | null;
+    subscriberCount: number | null;
+    revoked: boolean | null;
+    expireBehavior: number | null;
+    expireGracePeriod: number | null;
+    application: IntegrationApplication | null;
     constructor(client: any, data: any, guild: any);
     /**
      * All roles that are managed by this integration
@@ -25,13 +45,13 @@ declare class Integration extends Base {
      * @readonly
      */
     get roles(): any;
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Deletes this integration.
      * @returns {Promise<Integration>}
      * @param {string} [reason] Reason for deleting this integration
      */
-    delete(reason: any): Promise<this>;
+    delete(reason?: string): Promise<this>;
     toJSON(): unknown;
 }
 export default Integration;

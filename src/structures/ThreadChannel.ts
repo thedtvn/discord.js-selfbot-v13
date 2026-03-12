@@ -1,11 +1,12 @@
 import { Channel } from './Channel';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import { RangeError } from '../errors';
 import MessageManager from '../managers/MessageManager';
 import ThreadMemberManager from '../managers/ThreadMemberManager';
 import ChannelFlags from '../util/ChannelFlags';
 import Permissions from '../util/Permissions';
 import Util from '../util/Util';
+
+let TextBasedChannel: any;
 
 /**
  * Represents a thread channel on Discord.
@@ -616,6 +617,7 @@ class ThreadChannel extends Channel {
   // Doesn't work on Thread channels; setNSFW() {}
 }
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(ThreadChannel, true, ['fetchWebhooks', 'setRateLimitPerUser', 'setNSFW']);
 
 

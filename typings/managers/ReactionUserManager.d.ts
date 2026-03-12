@@ -1,11 +1,27 @@
 import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type MessageReaction from '../structures/MessageReaction';
 import CachedManager from './CachedManager';
+import User from '../structures/User';
+import { ReactionTypes } from '../util/Constants';
+type RawUserData = {
+    id: Snowflake;
+};
+type UserResolvable = Snowflake | User | {
+    id: Snowflake;
+};
+interface FetchReactionUsersOptions {
+    type?: number | keyof typeof ReactionTypes;
+    limit?: number;
+    after?: Snowflake;
+}
 /**
  * Manages API methods for users who reacted to a reaction and stores their cache.
  * @extends {CachedManager}
  */
-declare class ReactionUserManager extends CachedManager {
-    constructor(reaction: any, iterable: any);
+declare class ReactionUserManager extends CachedManager<Snowflake, User, UserResolvable, RawUserData> {
+    readonly reaction: MessageReaction;
+    constructor(reaction: MessageReaction, iterable?: Iterable<RawUserData>);
     /**
      * The cache of this manager
      * @type {Collection<Snowflake, User>}
@@ -23,15 +39,12 @@ declare class ReactionUserManager extends CachedManager {
      * @param {FetchReactionUsersOptions} [options] Options for fetching the users
      * @returns {Promise<Collection<Snowflake, User>>}
      */
-    fetch({ limit, after, type }?: {
-        limit?: number;
-        type?: string;
-    }): Promise<Collection<unknown, unknown>>;
+    fetch({ limit, after, type }?: FetchReactionUsersOptions): Promise<Collection<Snowflake, User>>;
     /**
      * Removes a user from this reaction.
      * @param {UserResolvable} [user=this.client.user] The user to remove the reaction of
      * @returns {Promise<MessageReaction>}
      */
-    remove(user?: any): Promise<any>;
+    remove(user?: UserResolvable): Promise<MessageReaction>;
 }
 export default ReactionUserManager;

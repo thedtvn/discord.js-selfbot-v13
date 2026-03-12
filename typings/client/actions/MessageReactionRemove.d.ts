@@ -1,9 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class MessageReactionRemove extends Action {
-    handle(data: any): false | {
-        message: any;
-        reaction: any;
-        user: any;
-    };
+    handle(data: any): any;
 }
+export default MessageReactionRemove;

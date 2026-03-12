@@ -1,5 +1,12 @@
 import Base from './Base';
+import VoiceState from './VoiceState';
 import GuildMemberRoleManager from '../managers/GuildMemberRoleManager';
+import GuildMemberFlags from '../util/GuildMemberFlags';
+import Permissions from '../util/Permissions';
+import type Client from '../client/Client';
+import type { Guild } from './Guild';
+import type User from './User';
+import type { Snowflake } from 'discord-api-types/v10';
 /**
  * @type {WeakSet<GuildMember>}
  * @private
@@ -12,8 +19,23 @@ declare const deletedGuildMembers: WeakSet<WeakKey>;
  * @extends {Base}
  */
 declare class GuildMember extends Base {
-    constructor(client: any, data: any, guild: any);
-    _patch(data: any): void;
+    guild: Guild;
+    joinedTimestamp: number | null;
+    premiumSinceTimestamp: number | null;
+    nickname: string | null;
+    pending: boolean;
+    communicationDisabledUntilTimestamp: number | null;
+    _roles: Snowflake[];
+    user: User | null;
+    avatar: string | null;
+    banner: string | null;
+    flags: Readonly<GuildMemberFlags>;
+    avatarDecorationData: {
+        asset: string;
+        skuId: Snowflake;
+    } | null;
+    constructor(client: Client, data: any, guild: Guild);
+    _patch(data: any): any;
     _clone(): this;
     /**
      * Whether or not the structure has been deleted
@@ -39,62 +61,78 @@ declare class GuildMember extends Base {
      * @type {VoiceState}
      * @readonly
      */
-    get voice(): any;
+    get voice(): VoiceState;
     /**
      * A link to the user's avatar decoration.
      * @returns {?string}
      */
-    avatarDecorationURL(): any;
+    avatarDecorationURL(): string | null;
     /**
      * A link to the member's guild avatar.
      * @param {ImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    avatarURL({ format, size, dynamic }?: {}): any;
+    avatarURL({ format, size, dynamic }?: {
+        format?: string;
+        size?: number;
+        dynamic?: boolean;
+    }): string | null;
     /**
      * A link to the member's banner.
      * @param {ImageURLOptions} [options={}] Options for the banner URL
      * @returns {?string}
      */
-    bannerURL({ format, size, dynamic }?: {}): any;
+    bannerURL({ format, size, dynamic }?: {
+        format?: string;
+        size?: number;
+        dynamic?: boolean;
+    }): string | null;
     /**
      * A link to the member's guild avatar decoration if they have one.
      * Otherwise, a link to their {@link User#avatarDecorationURL} will be returned.
      * @returns {?string}
      */
-    displayAvatarDecorationURL(): any;
+    displayAvatarDecorationURL(): string | null;
     /**
      * A link to the member's guild avatar if they have one.
      * Otherwise, a link to their {@link User#displayAvatarURL} will be returned.
      * @param {ImageURLOptions} [options={}] Options for the Image URL
      * @returns {string}
      */
-    displayAvatarURL(options: any): any;
+    displayAvatarURL(options?: {
+        format?: string;
+        size?: number;
+        dynamic?: boolean;
+    }): string;
     /**
      * A link to the member's guild banner if they have one.
      * Otherwise, a link to their {@link User#bannerURL} will be returned.
      * @param {ImageURLOptions} [options={}] Options for the image URL
      * @returns {?string}
      */
-    displayBannerURL(options: any): any;
+    displayBannerURL(options?: {
+        format?: string;
+        size?: number;
+        dynamic?: boolean;
+    }): string | null;
     /**
      * The time this member joined the guild
      * @type {?Date}
      * @readonly
      */
-    get joinedAt(): Date;
+    get joinedAt(): Date | null;
     /**
      * The time this member's timeout will be removed
      * @type {?Date}
      * @readonly
      */
-    get communicationDisabledUntil(): Date;
+    get communicationDisabledUntil(): Date | null;
     /**
      * The last time this member started boosting the guild
      * @type {?Date}
      * @readonly
      */
-    get premiumSince(): Date;
+    get premiumSince(): Date | null;
     /**
      * The presence of this guild member
      * @type {?Presence}
@@ -106,31 +144,31 @@ declare class GuildMember extends Base {
      * @type {number}
      * @readonly
      */
-    get displayColor(): any;
+    get displayColor(): number;
     /**
      * The displayed color of this member in hexadecimal
      * @type {string}
      * @readonly
      */
-    get displayHexColor(): any;
+    get displayHexColor(): string;
     /**
      * The member's id
      * @type {Snowflake}
      * @readonly
      */
-    get id(): any;
+    get id(): string;
     /**
      * The nickname of this member, or their user display name if they don't have one
      * @type {?string}
      * @readonly
      */
-    get displayName(): any;
+    get displayName(): string;
     /**
      * The overall set of permissions for this member, taking only roles and owner status into account
      * @type {Readonly<Permissions>}
      * @readonly
      */
-    get permissions(): Readonly<import("../util/BitField").default<"CREATE_INSTANT_INVITE" | "KICK_MEMBERS" | "BAN_MEMBERS" | "ADMINISTRATOR" | "MANAGE_CHANNELS" | "MANAGE_GUILD" | "ADD_REACTIONS" | "VIEW_AUDIT_LOG" | "PRIORITY_SPEAKER" | "STREAM" | "VIEW_CHANNEL" | "SEND_MESSAGES" | "SEND_TTS_MESSAGES" | "MANAGE_MESSAGES" | "EMBED_LINKS" | "ATTACH_FILES" | "READ_MESSAGE_HISTORY" | "MENTION_EVERYONE" | "USE_EXTERNAL_EMOJIS" | "VIEW_GUILD_INSIGHTS" | "CONNECT" | "SPEAK" | "MUTE_MEMBERS" | "DEAFEN_MEMBERS" | "MOVE_MEMBERS" | "USE_VAD" | "CHANGE_NICKNAME" | "MANAGE_NICKNAMES" | "MANAGE_ROLES" | "MANAGE_WEBHOOKS" | "MANAGE_EMOJIS_AND_STICKERS" | "USE_APPLICATION_COMMANDS" | "REQUEST_TO_SPEAK" | "MANAGE_EVENTS" | "MANAGE_THREADS" | "USE_PUBLIC_THREADS" | "CREATE_PUBLIC_THREADS" | "USE_PRIVATE_THREADS" | "CREATE_PRIVATE_THREADS" | "USE_EXTERNAL_STICKERS" | "SEND_MESSAGES_IN_THREADS" | "START_EMBEDDED_ACTIVITIES" | "MODERATE_MEMBERS" | "VIEW_CREATOR_MONETIZATION_ANALYTICS" | "USE_SOUNDBOARD" | "CREATE_GUILD_EXPRESSIONS" | "CREATE_EVENTS" | "USE_EXTERNAL_SOUNDS" | "SEND_VOICE_MESSAGES" | "USE_CLYDE_AI" | "SET_VOICE_CHANNEL_STATUS" | "SEND_POLLS" | "USE_EXTERNAL_APPS", bigint>>;
+    get permissions(): Readonly<Permissions>;
     /**
      * Whether the client user is above this user in the hierarchy, according to role position and guild ownership.
      * This is a prerequisite for many moderative actions.
@@ -143,19 +181,19 @@ declare class GuildMember extends Base {
      * @type {boolean}
      * @readonly
      */
-    get kickable(): any;
+    get kickable(): boolean;
     /**
      * Whether this member is bannable by the client user
      * @type {boolean}
      * @readonly
      */
-    get bannable(): any;
+    get bannable(): boolean;
     /**
      * Whether this member is moderatable by the client user
      * @type {boolean}
      * @readonly
      */
-    get moderatable(): any;
+    get moderatable(): boolean;
     /**
      * Whether this member is currently timed out
      * @returns {boolean}
@@ -167,14 +205,14 @@ declare class GuildMember extends Base {
      * @param {GuildChannelResolvable} channel The guild channel to use as context
      * @returns {Readonly<Permissions>}
      */
-    permissionsIn(channel: any): any;
+    permissionsIn(channel: any): Readonly<Permissions>;
     /**
      * Edits this member.
      * @param {GuildMemberEditData} data The data to edit the member with
      * @param {string} [reason] Reason for editing this user
      * @returns {Promise<GuildMember>}
      */
-    edit(data: any, reason: any): any;
+    edit(data: any, reason?: string): Promise<GuildMember>;
     /**
      * Sets the nickname for this member.
      * @param {?string} nick The nickname for the guild member, or `null` if you want to reset their nickname
@@ -191,31 +229,31 @@ declare class GuildMember extends Base {
      *   .then(member => console.log(`Removed nickname for ${member.user.username}`))
      *   .catch(console.error);
      */
-    setNickname(nick: any, reason: any): any;
+    setNickname(nick: string | null, reason?: string): Promise<GuildMember>;
     /**
      * Sets the flags for this member.
      * @param {GuildMemberFlagsResolvable} flags The flags to set
      * @param {string} [reason] Reason for setting the flags
      * @returns {Promise<GuildMember>}
      */
-    setFlags(flags: any, reason: any): any;
+    setFlags(flags: any, reason?: string): Promise<GuildMember>;
     /**
      * Creates a DM channel between the client and this member.
      * @param {boolean} [force=false] Whether to skip the cache check and request the API
      * @returns {Promise<DMChannel>}
      */
-    createDM(force?: boolean): any;
+    createDM(force?: boolean): Promise<any>;
     /**
      * Deletes any DMs with this member.
      * @returns {Promise<DMChannel>}
      */
-    deleteDM(): any;
+    deleteDM(): Promise<any>;
     /**
      * Kicks this member from the guild.
      * @param {string} [reason] Reason for kicking user
      * @returns {Promise<GuildMember>}
      */
-    kick(reason: any): any;
+    kick(reason?: string): any;
     /**
      * Bans this guild member.
      * @param {BanOptions} [options] Options for the ban
@@ -226,7 +264,7 @@ declare class GuildMember extends Base {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    ban(options: any): any;
+    ban(options?: any): any;
     /**
      * Times this guild member out.
      * @param {DateResolvable|null} communicationDisabledUntil The date or timestamp
@@ -244,7 +282,7 @@ declare class GuildMember extends Base {
      *   .then(member => console.log(`Removed timeout for ${member.displayName}`))
      *   .catch(console.error);
      */
-    disableCommunicationUntil(communicationDisabledUntil: any, reason: any): any;
+    disableCommunicationUntil(communicationDisabledUntil: any, reason?: string): Promise<GuildMember>;
     /**
      * Times this guild member out.
      * @param {number|null} timeout The time in milliseconds
@@ -257,7 +295,7 @@ declare class GuildMember extends Base {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    timeout(timeout: any, reason: any): any;
+    timeout(timeout: number | null, reason?: string): Promise<GuildMember>;
     /**
      * Fetches this GuildMember.
      * @param {boolean} [force=true] Whether to skip the cache check and request the API
@@ -271,7 +309,7 @@ declare class GuildMember extends Base {
      * @param {GuildMember} member The member to compare with
      * @returns {boolean}
      */
-    equals(member: any): boolean;
+    equals(member: GuildMember): boolean;
     /**
      * When concatenated with a string, this automatically returns the user's mention instead of the GuildMember object.
      * @returns {string}
@@ -286,19 +324,19 @@ declare class GuildMember extends Base {
      * @param {?(BufferResolvable|Base64Resolvable)} avatar The new avatar
      * @returns {Promise<GuildMember>}
      */
-    setAvatar(avatar: any): any;
+    setAvatar(avatar: any): Promise<GuildMember>;
     /**
      * Sets the guild banner of the logged in client.
      * @param {?(BufferResolvable|Base64Resolvable)} banner The new banner
      * @returns {Promise<GuildMember>}
      */
-    setBanner(banner: any): any;
+    setBanner(banner: any): Promise<GuildMember>;
     /**
      * Set Guild About me
      * @param {string | null} bio Bio to set
      * @returns {Promise<GuildMember>}
      */
-    setAboutMe(bio?: any): any;
+    setAboutMe(bio?: string | null): Promise<GuildMember>;
 }
 export { GuildMember };
 export { deletedGuildMembers };

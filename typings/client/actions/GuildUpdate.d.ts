@@ -1,8 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildUpdateAction extends Action {
-    handle(data: any): {
-        old: any;
-        updated: any;
-    };
+    handle(data: any): any;
 }
+export default GuildUpdateAction;

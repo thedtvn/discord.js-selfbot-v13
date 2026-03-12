@@ -1,6 +1,5 @@
-declare const Action: any;
+import Action from './Action';
 declare class GuildRolesPositionUpdate extends Action {
-    handle(data: any): {
-        guild: any;
-    };
+    handle(data: any): any;
 }
+export default GuildRolesPositionUpdate;

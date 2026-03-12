@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import RESTManager from '../rest/RESTManager';
+import type { APIRouteProxy } from '../rest/APIRouter';
 export interface ClientOptions extends Record<string, unknown> {
     intents?: unknown;
 }
@@ -17,7 +18,7 @@ declare class BaseClient extends EventEmitter {
      * @readonly
      * @private
      */
-    get api(): unknown;
+    get api(): APIRouteProxy;
     /**
      * Destroys all assets used by the base client.
      * @returns {void}
@@ -33,7 +34,7 @@ declare class BaseClient extends EventEmitter {
      * @private
      */
     decrementMaxListeners(): void;
-    toJSON(...props: unknown[]): Record<string, unknown>;
+    toJSON(...props: Record<string, boolean | string>[]): Record<string, unknown>;
 }
 export default BaseClient;
 /**

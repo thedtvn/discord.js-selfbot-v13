@@ -1,11 +1,12 @@
-declare const VoiceConnection: any;
-declare const Error: any;
-declare const Events: any;
+import VoiceConnection from './VoiceConnection';
 /**
  * Manages voice connections for the client
  * Feat: Support both lib & djs/voice
  */
 declare class ClientVoiceManager {
+    client: any;
+    connection: VoiceConnection | null;
+    adapters: Map<string, any>;
     constructor(client: any);
     onVoiceServer(payload: any): void;
     onVoiceStateUpdate(payload: any): void;
@@ -22,5 +23,6 @@ declare class ClientVoiceManager {
      * @param {JoinChannelConfig} config Config to join voice channel
      * @returns {Promise<VoiceConnection>}
      */
-    joinChannel(channel: any, config?: {}): Promise<unknown>;
+    joinChannel(channel: any, config?: any): Promise<VoiceConnection>;
 }
+export default ClientVoiceManager;

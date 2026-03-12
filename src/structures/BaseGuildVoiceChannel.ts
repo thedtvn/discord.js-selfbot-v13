@@ -2,10 +2,11 @@
 
 import { Collection } from '@discordjs/collection';
 import GuildChannel from './GuildChannel';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import MessageManager from '../managers/MessageManager';
 import { VideoQualityModes } from '../util/Constants';
 import Permissions from '../util/Permissions';
+
+let TextBasedChannel: any;
 
 /**
  * Represents a voice-based guild channel on Discord.
@@ -246,6 +247,7 @@ class BaseGuildVoiceChannel extends GuildChannel {
   setNSFW() {}
 }
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(BaseGuildVoiceChannel, true, ['lastPinAt']);
 
 export default BaseGuildVoiceChannel;

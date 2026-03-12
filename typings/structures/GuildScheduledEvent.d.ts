@@ -4,14 +4,36 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class GuildScheduledEvent extends Base {
+    id: string;
+    guildId: string;
+    channelId: string | null;
+    creatorId: string | null;
+    name: string | null;
+    description: string | null;
+    scheduledStartTimestamp: number | null;
+    scheduledEndTimestamp: number | null;
+    privacyLevel: string | null;
+    status: string | null;
+    entityType: string | null;
+    entityId: string | null;
+    userCount: number | null;
+    creator: any | null;
+    entityMetadata: {
+        location: string | null;
+    } | null;
+    image: string | null;
+    recurrenceRule: any | null;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The URL of this scheduled event's cover image
      * @param {StaticImageURLOptions} [options={}] Options for image URL
      * @returns {?string}
      */
-    coverImageURL({ format, size }?: {}): any;
+    coverImageURL({ format, size }?: {
+        format?: string;
+        size?: number;
+    }): string | null;
     /**
      * Whether this guild scheduled event is partial.
      * @type {boolean}
@@ -42,7 +64,7 @@ declare class GuildScheduledEvent extends Base {
      * @type {?Date}
      * @readonly
      */
-    get scheduledEndAt(): Date;
+    get scheduledEndAt(): Date | null;
     /**
      * The channel associated with this scheduled event
      * @type {?(VoiceChannel|StageChannel)}
@@ -66,7 +88,7 @@ declare class GuildScheduledEvent extends Base {
      * @param {boolean} [force=true] Whether to skip the cache check and request the API
      * @returns {Promise<GuildScheduledEvent>}
      */
-    fetch(force?: boolean): any;
+    fetch(force?: boolean): Promise<GuildScheduledEvent>;
     /**
      * Options used to create an invite URL to a {@link GuildScheduledEvent}
      * @typedef {CreateInviteOptions} CreateGuildScheduledEventInviteURLOptions
@@ -78,7 +100,7 @@ declare class GuildScheduledEvent extends Base {
      * @param {CreateGuildScheduledEventInviteURLOptions} [options] The options to create the invite
      * @returns {Promise<string>}
      */
-    createInviteURL(options: any): Promise<string>;
+    createInviteURL(options?: any): Promise<string>;
     /**
      * Edits this guild scheduled event.
      * @param {GuildScheduledEventEditOptions} options The options to edit the guild scheduled event
@@ -89,7 +111,7 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(guildScheduledEvent))
      *  .catch(console.error);
      */
-    edit(options: any): any;
+    edit(options: any): Promise<GuildScheduledEvent>;
     /**
      * Deletes this guild scheduled event.
      * @returns {Promise<GuildScheduledEvent>}
@@ -99,7 +121,7 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(guildScheduledEvent))
      *  .catch(console.error);
      */
-    delete(): Promise<this>;
+    delete(): Promise<GuildScheduledEvent>;
     /**
      * Sets a new name for the guild scheduled event.
      * @param {string} name The new name of the guild scheduled event
@@ -111,7 +133,7 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(`Set the name to: ${guildScheduledEvent.name}`))
      *  .catch(console.error);
      */
-    setName(name: any, reason: any): any;
+    setName(name: string, reason?: string): Promise<GuildScheduledEvent>;
     /**
      * Sets a new time to schedule the event at.
      * @param {DateResolvable} scheduledStartTime The time to schedule the event at
@@ -123,7 +145,7 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(`Set the start time to: ${guildScheduledEvent.scheduledStartTime}`))
      *  .catch(console.error);
      */
-    setScheduledStartTime(scheduledStartTime: any, reason: any): any;
+    setScheduledStartTime(scheduledStartTime: any, reason?: string): Promise<GuildScheduledEvent>;
     /**
      * Sets a new time to end the event at.
      * @param {DateResolvable} scheduledEndTime The time to end the event at
@@ -135,7 +157,7 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(`Set the end time to: ${guildScheduledEvent.scheduledEndTime}`))
      *  .catch(console.error);
      */
-    setScheduledEndTime(scheduledEndTime: any, reason: any): any;
+    setScheduledEndTime(scheduledEndTime: any, reason?: string): Promise<GuildScheduledEvent>;
     /**
      * Sets the new description of the guild scheduled event.
      * @param {string} description The description of the guild scheduled event
@@ -147,7 +169,7 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(`Set the description to: ${guildScheduledEvent.description}`))
      *  .catch(console.error);
      */
-    setDescription(description: any, reason: any): any;
+    setDescription(description: string, reason?: string): Promise<GuildScheduledEvent>;
     /**
      * Sets the new status of the guild scheduled event.
      * <info>If you're working with TypeScript, use this method in conjunction with status type-guards
@@ -161,7 +183,7 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(`Set the status to: ${guildScheduledEvent.status}`))
      *  .catch(console.error);
      */
-    setStatus(status: any, reason: any): any;
+    setStatus(status: any, reason?: string): Promise<GuildScheduledEvent>;
     /**
      * Sets the new location of the guild scheduled event.
      * @param {string} location The location of the guild scheduled event
@@ -173,13 +195,13 @@ declare class GuildScheduledEvent extends Base {
      *  .then(guildScheduledEvent => console.log(`Set the location to: ${guildScheduledEvent.entityMetadata.location}`))
      *  .catch(console.error);
      */
-    setLocation(location: any, reason: any): any;
+    setLocation(location: string, reason?: string): Promise<GuildScheduledEvent>;
     /**
      * Fetches subscribers of this guild scheduled event.
      * @param {FetchGuildScheduledEventSubscribersOptions} [options] Options for fetching the subscribers
      * @returns {Promise<Collection<Snowflake, GuildScheduledEventUser>>}
      */
-    fetchSubscribers(options: any): any;
+    fetchSubscribers(options?: any): Promise<any>;
     /**
      * When concatenated with a string, this automatically concatenates the event's URL instead of the object.
      * @returns {string}

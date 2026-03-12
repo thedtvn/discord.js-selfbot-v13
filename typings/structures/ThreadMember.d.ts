@@ -4,8 +4,13 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class ThreadMember extends Base {
-    constructor(thread: any, data: any, extra?: {});
-    _patch(data: any, extra?: {}): void;
+    thread: any;
+    joinedTimestamp: number | null;
+    id: string;
+    flags: any;
+    member: any;
+    constructor(thread: any, data: any, extra?: any);
+    _patch(data: any, extra?: any): any;
     /**
      * The guild member associated with this thread member
      * @type {?GuildMember}
@@ -17,7 +22,7 @@ declare class ThreadMember extends Base {
      * @type {?Date}
      * @readonly
      */
-    get joinedAt(): Date;
+    get joinedAt(): Date | null;
     /**
      * The user associated with this thread member
      * @type {?User}
@@ -29,12 +34,12 @@ declare class ThreadMember extends Base {
      * @type {boolean}
      * @readonly
      */
-    get manageable(): any;
+    get manageable(): boolean;
     /**
      * Removes this member from the thread.
      * @param {string} [reason] Reason for removing the member
      * @returns {ThreadMember}
      */
-    remove(reason: any): Promise<this>;
+    remove(reason?: string): Promise<this>;
 }
 export default ThreadMember;

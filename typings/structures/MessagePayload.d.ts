@@ -1,8 +1,11 @@
-import { Buffer } from 'node:buffer';
 /**
  * Represents a message to be sent to the API.
  */
 declare class MessagePayload {
+    target: any;
+    options: any;
+    data: Record<string, any> | null;
+    files: Record<string, any>[] | null;
     /**
      * @param {MessageTarget} target The target for this message to be sent to
      * @param {MessageOptions|WebhookMessageOptions} options Options passed in from send
@@ -42,7 +45,7 @@ declare class MessagePayload {
      * Makes the content of this message.
      * @returns {?string}
      */
-    makeContent(): any;
+    makeContent(): string | undefined;
     /**
      * Resolves data.
      * @returns {MessagePayload}
@@ -58,14 +61,7 @@ declare class MessagePayload {
      * @param {BufferResolvable|Stream|FileOptions|MessageAttachment} fileLike Something that could be resolved to a file
      * @returns {Promise<MessageFile>}
      */
-    static resolveFile(fileLike: any): Promise<{
-        attachment: any;
-        name: any;
-        file: Buffer<ArrayBufferLike> | import("stream").Readable;
-        description: any;
-        duration_secs: any;
-        waveform: any;
-    }>;
+    static resolveFile(fileLike: any): Promise<Record<string, any>>;
     /**
      * Creates a {@link MessagePayload} from user-level arguments.
      * @param {MessageTarget} target Target to send to
@@ -73,7 +69,7 @@ declare class MessagePayload {
      * @param {MessageOptions|WebhookMessageOptions} [extra={}] Extra options to add onto specified options
      * @returns {MessagePayload}
      */
-    static create(target: any, options: any, extra?: {}): MessagePayload;
+    static create(target: any, options: any, extra?: any): MessagePayload;
 }
 /**
  * A target for a message.

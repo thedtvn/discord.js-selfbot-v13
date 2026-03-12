@@ -2,8 +2,19 @@
  * Represents a webhook.
  */
 declare class Webhook {
+    client: any;
+    name: string;
+    token: string | null;
+    avatar: string | null;
+    id: string;
+    type: string;
+    guildId: string;
+    channelId: string;
+    owner: any;
+    sourceGuild: any;
+    sourceChannel: any;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Options that can be passed into send.
      * @typedef {BaseMessageOptionsWithPoll} WebhookMessageOptions
@@ -116,10 +127,10 @@ declare class Webhook {
      * @returns {Promise<Webhook>}
      */
     edit({ name, avatar, channel }: {
-        name?: any;
-        avatar: any;
-        channel: any;
-    }, reason: any): Promise<this>;
+        name?: string;
+        avatar?: any;
+        channel?: any;
+    }, reason?: string): Promise<this>;
     /**
      * Options that can be passed into fetchMessage.
      * @typedef {options} WebhookFetchMessageOptions
@@ -135,9 +146,10 @@ declare class Webhook {
      * @returns {Promise<Message|APIMessage>} Returns the raw message data if the webhook was instantiated as a
      * {@link WebhookClient} or if the channel is uncached, otherwise a {@link Message} will be returned
      */
-    fetchMessage(message: any, cacheOrOptions?: {
-        cache: boolean;
-    }): Promise<any>;
+    fetchMessage(message: string, cacheOrOptions?: {
+        cache?: boolean;
+        threadId?: string;
+    } | boolean): Promise<any>;
     /**
      * Edits a message that was sent by this webhook.
      * @param {MessageResolvable|'@original'} message The message to edit
@@ -151,14 +163,14 @@ declare class Webhook {
      * @param {string} [reason] Reason for deleting this webhook
      * @returns {Promise<void>}
      */
-    delete(reason: any): Promise<void>;
+    delete(reason?: string): Promise<void>;
     /**
      * Delete a message that was sent by this webhook.
      * @param {MessageResolvable|'@original'} message The message to delete
      * @param {Snowflake} [threadId] The id of the thread this message belongs to
      * @returns {Promise<void>}
      */
-    deleteMessage(message: any, threadId: any): Promise<void>;
+    deleteMessage(message: any, threadId?: string): Promise<void>;
     /**
      * The channel the webhook belongs to
      * @type {?(TextChannel|VoiceChannel|NewsChannel|ForumChannel|MediaChannel)}
@@ -182,13 +194,16 @@ declare class Webhook {
      * @type {string}
      * @readonly
      */
-    get url(): any;
+    get url(): string;
     /**
      * A link to the webhook's avatar.
      * @param {StaticImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    avatarURL({ format, size }?: {}): any;
+    avatarURL({ format, size }?: {
+        format?: string;
+        size?: number;
+    }): string | null;
     /**
      * Whether or not this webhook is a channel follower webhook.
      * @returns {boolean}
@@ -199,6 +214,6 @@ declare class Webhook {
      * @returns {boolean}
      */
     isIncoming(): boolean;
-    static applyToClass(structure: any, ignore?: any[]): void;
+    static applyToClass(structure: any, ignore?: string[]): void;
 }
 export default Webhook;

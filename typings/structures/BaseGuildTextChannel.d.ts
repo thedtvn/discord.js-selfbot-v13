@@ -1,26 +1,36 @@
 import GuildChannel from './GuildChannel';
+import GuildTextThreadManager from '../managers/GuildTextThreadManager';
+import MessageManager from '../managers/MessageManager';
 /**
  * Represents a text-based guild channel on Discord.
  * @extends {GuildChannel}
  * @implements {TextBasedChannel}
  */
 declare class BaseGuildTextChannel extends GuildChannel {
+    messages: MessageManager;
+    threads: GuildTextThreadManager;
+    nsfw: boolean;
+    topic: string | null;
+    lastMessageId: string | null;
+    lastPinTimestamp: number | null;
+    defaultAutoArchiveDuration: number | null;
+    defaultThreadRateLimitPerUser: number | null;
     constructor(guild: any, data: any, client: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Sets the default auto archive duration for all newly created threads in this channel.
      * @param {ThreadAutoArchiveDuration} defaultAutoArchiveDuration The new default auto archive duration
      * @param {string} [reason] Reason for changing the channel's default auto archive duration
      * @returns {Promise<TextChannel>}
      */
-    setDefaultAutoArchiveDuration(defaultAutoArchiveDuration: any, reason: any): any;
+    setDefaultAutoArchiveDuration(defaultAutoArchiveDuration: any, reason?: string): any;
     /**
      * Sets the type of this channel (only conversion between text and news is supported)
      * @param {string} type The new channel type
      * @param {string} [reason] Reason for changing the channel's type
      * @returns {Promise<GuildChannel>}
      */
-    setType(type: any, reason: any): any;
+    setType(type: any, reason?: string): any;
     /**
      * Sets a new topic for the guild channel.
      * @param {?string} topic The new topic for the guild channel
@@ -32,7 +42,7 @@ declare class BaseGuildTextChannel extends GuildChannel {
      *   .then(newChannel => console.log(`Channel's new topic is ${newChannel.topic}`))
      *   .catch(console.error);
      */
-    setTopic(topic: any, reason: any): any;
+    setTopic(topic: any, reason?: string): any;
     /**
      * Data that can be resolved to an Application. This can be:
      * * An Application
@@ -65,7 +75,7 @@ declare class BaseGuildTextChannel extends GuildChannel {
      *   .then(invite => console.log(`Created an invite with a code of ${invite.code}`))
      *   .catch(console.error);
      */
-    createInvite(options: any): any;
+    createInvite(options?: any): any;
     /**
      * Fetches a collection of invites to this guild channel.
      * Resolves with a collection mapping invites by their codes.
@@ -73,15 +83,15 @@ declare class BaseGuildTextChannel extends GuildChannel {
      * @returns {Promise<Collection<string, Invite>>}
      */
     fetchInvites(cache?: boolean): any;
-    get lastMessage(): void;
-    get lastPinAt(): void;
+    get lastMessage(): any;
+    get lastPinAt(): any;
     send(): void;
     sendTyping(): void;
     createMessageCollector(): void;
     awaitMessages(): void;
     fetchWebhooks(): void;
     createWebhook(): void;
-    setRateLimitPerUser(): void;
+    setRateLimitPerUser(..._args: any[]): any;
     setNSFW(): void;
 }
 export default BaseGuildTextChannel;

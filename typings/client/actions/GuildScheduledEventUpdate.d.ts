@@ -1,11 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildScheduledEventUpdateAction extends Action {
-    handle(data: any): {
-        oldGuildScheduledEvent: any;
-        newGuildScheduledEvent: any;
-    } | {
-        oldGuildScheduledEvent?: undefined;
-        newGuildScheduledEvent?: undefined;
-    };
+    handle(data: any): any;
 }
+export default GuildScheduledEventUpdateAction;

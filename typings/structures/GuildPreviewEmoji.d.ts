@@ -4,6 +4,7 @@ import BaseGuildEmoji from './BaseGuildEmoji';
  * @extends {BaseGuildEmoji}
  */
 declare class GuildPreviewEmoji extends BaseGuildEmoji {
+    roles: any[];
     /**
      * The public guild this emoji is part of
      * @type {GuildPreview}

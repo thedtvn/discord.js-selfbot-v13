@@ -1,10 +1,5 @@
-declare const Action: any;
-declare const deletedStageInstances: any;
-declare const Events: any;
+import Action from './Action';
 declare class StageInstanceDeleteAction extends Action {
-    handle(data: any): {
-        stageInstance: any;
-    } | {
-        stageInstance?: undefined;
-    };
+    handle(data: any): any;
 }
+export default StageInstanceDeleteAction;

@@ -4,8 +4,20 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class VoiceState extends Base {
+    guild: any;
+    id: any;
+    serverDeaf: any;
+    serverMute: any;
+    selfDeaf: any;
+    selfMute: any;
+    selfVideo: any;
+    sessionId: any;
+    streaming: any;
+    channelId: any;
+    suppress: any;
+    requestToSpeakTimestamp: any;
     constructor(guild: any, data: any);
-    _patch(data: any): this;
+    _patch(data: any): any;
     /**
      * The member that this voice state belongs to
      * @type {?GuildMember}
@@ -42,14 +54,14 @@ declare class VoiceState extends Base {
      * @param {string} [reason] Reason for muting or unmuting
      * @returns {Promise<GuildMember>}
      */
-    setMute(mute: boolean, reason: any): any;
+    setMute(mute: any, reason: any): any;
     /**
      * Deafens/undeafens the member of this voice state.
      * @param {boolean} [deaf=true] Whether or not the member should be deafened
      * @param {string} [reason] Reason for deafening or undeafening
      * @returns {Promise<GuildMember>}
      */
-    setDeaf(deaf: boolean, reason: any): any;
+    setDeaf(deaf: any, reason: any): any;
     /**
      * Disconnects the member from the channel.
      * @param {string} [reason] Reason for disconnecting the member from the channel
@@ -76,7 +88,7 @@ declare class VoiceState extends Base {
      * guild.members.me.voice.setRequestToSpeak(false);
      * @returns {Promise<void>}
      */
-    setRequestToSpeak(request?: boolean): Promise<void>;
+    setRequestToSpeak(request?: any): Promise<any>;
     /**
      * Suppress/unsuppress the user. Only applicable for stage channels.
      * @param {boolean} [suppressed=true] Whether or not the user should be suppressed.
@@ -94,7 +106,7 @@ declare class VoiceState extends Base {
      * voiceState.setSuppressed(true);
      * @returns {Promise<void>}
      */
-    setSuppressed(suppressed?: boolean): Promise<void>;
+    setSuppressed(suppressed?: any): Promise<any>;
     /**
      * Sets the status of the voice channel
      * @param {string} [status=""] The message to set the channel status to
@@ -106,7 +118,7 @@ declare class VoiceState extends Base {
      * guild.members.me.voice.setStatus()
      * @returns {Promise<void>}
      */
-    setStatus(status?: string): any;
+    setStatus(status?: any): any;
     /**
      * Get URL Image of the user's streaming video (NOT STREAMING !!!)
      * @returns {Promise<string>} URL Image of the user's streaming video
@@ -123,7 +135,7 @@ declare class VoiceState extends Base {
      * @param {boolean} [force=true] Whether to skip the cache check and request the API
      * @returns {Promise<VoiceState>}
      */
-    fetch(force?: boolean): any;
-    toJSON(): unknown;
+    fetch(force?: any): any;
+    toJSON(): any;
 }
 export default VoiceState;

@@ -1,7 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class ThreadCreateAction extends Action {
-    handle(data: any): {
-        thread: any;
-    };
+    handle(data: any): any;
 }
+export default ThreadCreateAction;

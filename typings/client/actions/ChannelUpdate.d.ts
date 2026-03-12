@@ -1,12 +1,5 @@
-declare const Action: any;
-declare const Channel: any;
-declare const ChannelTypes: any;
+import Action from './Action';
 declare class ChannelUpdateAction extends Action {
-    handle(data: any): {
-        old?: undefined;
-        updated?: undefined;
-    } | {
-        old: any;
-        updated: any;
-    };
+    handle(data: any): any;
 }
+export default ChannelUpdateAction;

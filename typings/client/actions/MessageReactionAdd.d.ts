@@ -1,10 +1,5 @@
-declare const Action: any;
-declare const Events: any;
-declare const PartialTypes: any;
+import Action from './Action';
 declare class MessageReactionAdd extends Action {
-    handle(data: any, fromStructure?: boolean): false | {
-        message: any;
-        reaction: any;
-        user: any;
-    };
+    handle(data: any, fromStructure?: any): any;
 }
+export default MessageReactionAdd;

@@ -11,8 +11,13 @@ declare const deletedChannels: WeakSet<WeakKey>;
  * @abstract
  */
 declare class Channel extends Base {
+    type: string;
+    id: string;
+    flags: any;
+    messages?: any;
+    guild?: any;
     constructor(client: any, data: any, immediatePatch?: boolean);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The timestamp the channel was created at
      * @type {number}
@@ -88,7 +93,9 @@ declare class Channel extends Base {
      * @returns {boolean}
      */
     isDirectory(): boolean;
-    static create(client: any, data: any, guild: any, { allowUnknownGuild }?: {}): any;
+    static create(client: any, data: any, guild: any, { allowUnknownGuild }?: {
+        allowUnknownGuild?: boolean;
+    }): any;
     toJSON(...props: any[]): unknown;
 }
 export { Channel };

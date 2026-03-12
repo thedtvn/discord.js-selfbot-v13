@@ -1,20 +1,62 @@
+import { Collection } from '@discordjs/collection';
 import CachedManager from './CachedManager';
+import { Role } from '../structures/Role';
+import type { Snowflake } from 'discord-api-types/v10';
+import type { Guild } from '../structures/Guild';
+type RoleResolvable = Role | Snowflake;
+type RawRoleData = {
+    id: Snowflake;
+} & Record<string, unknown>;
+interface RoleColorsResolvable {
+    primaryColor: unknown;
+    secondaryColor?: unknown;
+    tertiaryColor?: unknown;
+}
+interface CreateRoleOptions {
+    name?: string;
+    color?: unknown;
+    colors?: RoleColorsResolvable;
+    hoist?: boolean;
+    permissions?: unknown;
+    position?: number;
+    mentionable?: boolean;
+    icon?: unknown;
+    unicodeEmoji?: string | null;
+    reason?: string;
+}
+interface RoleData {
+    name?: string;
+    color?: unknown;
+    colors?: RoleColorsResolvable;
+    hoist?: boolean;
+    permissions?: unknown;
+    position?: number;
+    mentionable?: boolean;
+    icon?: unknown;
+    unicodeEmoji?: string | null;
+    [key: string]: unknown;
+}
+interface SetRolePositionOptions {
+    relative?: boolean;
+    reason?: string;
+}
+interface GuildRolePosition {
+    role: RoleResolvable;
+    position: number;
+}
 /**
  * Manages API methods for roles and stores their cache.
  * @extends {CachedManager}
  */
-declare class RoleManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+declare class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRoleData, [Guild]> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawRoleData>);
     /**
      * The role cache of this manager
      * @type {Collection<Snowflake, Role>}
      * @name RoleManager#cache
      */
-    _add(data: any, cache: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    _add(data: RawRoleData, cache?: boolean): Role;
     /**
      * Obtains a role from Discord, or the role cache if they're already available.
      * @param {Snowflake} [id] The role's id
@@ -31,22 +73,22 @@ declare class RoleManager extends CachedManager {
      *   .then(role => console.log(`The role color is: ${role.colors.primaryColor}`))
      *   .catch(console.error);
      */
-    fetch(id: any, { cache, force }?: {
+    fetch(id?: Snowflake, { cache, force }?: {
         cache?: boolean;
         force?: boolean;
-    }): Promise<unknown>;
+    }): Promise<Role | null | Collection<Snowflake, Role>>;
     /**
      * Fetches the member counts for each role in the guild.
      * @returns {Promise<Record<Snowflake, number>>}
      */
-    fetchMemberCounts(): Promise<any>;
+    fetchMemberCounts(): Promise<Record<Snowflake, number>>;
     /**
      * Fetches the member ids for a role in the guild.
      * <info>This only returns 100 member ids</info>
      * @param {RoleResolvable} role The role to fetch member ids for
      * @returns {Promise<Snowflake[]>}
      */
-    fetchMemberIds(role: any): Promise<any>;
+    fetchMemberIds(role: RoleResolvable): Promise<Snowflake[]>;
     /**
      * Data that can be resolved to a Role object. This can be:
      * * A Role
@@ -131,7 +173,7 @@ declare class RoleManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    create(options?: {}): Promise<any>;
+    create(options?: CreateRoleOptions): Promise<Role>;
     /**
      * Edits a role of the guild.
      * @param {RoleResolvable} role The role to edit
@@ -144,7 +186,7 @@ declare class RoleManager extends CachedManager {
      *   .then(updated => console.log(`Edited role name to ${updated.name}`))
      *   .catch(console.error);
      */
-    edit(role: any, data: any, reason: any): Promise<any>;
+    edit(role: RoleResolvable, data: RoleData, reason?: string): Promise<Role>;
     /**
      * Deletes a role.
      * @param {RoleResolvable} role The role to delete
@@ -156,7 +198,7 @@ declare class RoleManager extends CachedManager {
      *   .then(() => console.log('Deleted the role.'))
      *   .catch(console.error);
      */
-    delete(role: any, reason: any): Promise<void>;
+    delete(role: RoleResolvable, reason?: string): Promise<void>;
     /**
      * Sets the new position of the role.
      * @param {RoleResolvable} role The role to change the position of
@@ -169,7 +211,7 @@ declare class RoleManager extends CachedManager {
      *   .then(updated => console.log(`Role position: ${updated.position}`))
      *   .catch(console.error);
      */
-    setPosition(role: any, position: any, { relative, reason }?: {}): Promise<any>;
+    setPosition(role: RoleResolvable, position: number, { relative, reason }?: SetRolePositionOptions): Promise<Role>;
     /**
      * The data needed for updating a guild role's position
      * @typedef {Object} GuildRolePosition
@@ -185,7 +227,7 @@ declare class RoleManager extends CachedManager {
      *  .then(guild => console.log(`Role positions updated for ${guild}`))
      *  .catch(console.error);
      */
-    setPositions(rolePositions: any): Promise<any>;
+    setPositions(rolePositions: GuildRolePosition[]): Promise<Guild>;
     /**
      * Compares the positions of two roles.
      * @param {RoleResolvable} role1 First role to compare
@@ -193,47 +235,31 @@ declare class RoleManager extends CachedManager {
      * @returns {number} Negative number if the first role's position is lower (second role's is higher),
      * positive number if the first's is higher (second's is lower), 0 if equal
      */
-    comparePositions(role1: any, role2: any): number;
+    comparePositions(role1: RoleResolvable, role2: RoleResolvable): number;
     /**
      * Gets the managed role a user created when joining the guild, if any
      * <info>Only ever available for bots</info>
      * @param {UserResolvable} user The user to access the bot role for
      * @returns {?Role}
      */
-    botRoleFor(user: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    botRoleFor(user: unknown): Role | null;
     /**
      * The `@everyone` role of the guild
      * @type {Role}
      * @readonly
      */
-    get everyone(): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    get everyone(): Role;
     /**
      * The premium subscriber role of the guild, if any
      * @type {?Role}
      * @readonly
      */
-    get premiumSubscriberRole(): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    get premiumSubscriberRole(): Role | null;
     /**
      * The role with the highest position in the cache
      * @type {Role}
      * @readonly
      */
-    get highest(): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    get highest(): Role;
 }
 export default RoleManager;

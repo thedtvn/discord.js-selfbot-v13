@@ -1,10 +1,16 @@
-declare const fs: any;
-declare const net: any;
-declare const path: any;
-declare const process: any;
-declare let counter: number;
+import { type Socket } from 'net';
+import type { Writable } from 'stream';
 declare class UnixStream {
-    constructor(stream: any, onSocket: any);
+    socketPath: string;
+    url: string;
+    constructor(stream: Writable, onSocket: (socket: Socket) => void);
 }
-declare function StreamInput(stream: any): UnixStream;
-declare function StreamOutput(stream: any): UnixStream;
+declare function StreamInput(stream: Writable): UnixStream;
+declare function StreamOutput(stream: Writable): UnixStream;
+export { StreamOutput, StreamInput, UnixStream };
+declare const _default: {
+    StreamOutput: typeof StreamOutput;
+    StreamInput: typeof StreamInput;
+    UnixStream: typeof UnixStream;
+};
+export default _default;

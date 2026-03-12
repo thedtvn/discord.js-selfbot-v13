@@ -1,5 +1,7 @@
 import BaseMessageComponent from './BaseMessageComponent';
 declare class SeparatorComponent extends BaseMessageComponent {
+    spacing: number;
+    divider: boolean;
     /**
      * @property {SeparatorSpacingSizes} [spacing] Size of separator padding — SeparatorSpacingSizes.SMALL for small padding, SeparatorSpacingSizes.LARGE for large padding. Defaults to SeparatorSpacingSizes.SMALL
      * @property {Boolean} [divider] Whether a visual divider should be displayed in the component. Defaults to true
@@ -7,15 +9,15 @@ declare class SeparatorComponent extends BaseMessageComponent {
     /**
      * @param {SeparatorComponent | APISeparatorComponent} [data={}] The data
      */
-    constructor(data?: {});
+    constructor(data?: any);
     setup(data: any): void;
     /**
      * @returns {APISeparatorComponent}
      */
     toJSON(): {
         type: any;
-        spacing: any;
-        divider: any;
+        spacing: number;
+        divider: boolean;
     };
 }
 export default SeparatorComponent;

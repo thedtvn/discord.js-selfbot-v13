@@ -1,6 +1,4 @@
-declare const Readable: any;
-declare const prism: any;
-declare const Error: any;
+import { Readable } from 'stream';
 /**
  * Options that can be passed to stream-playing methods:
  * @typedef {Object} StreamOptions
@@ -30,6 +28,7 @@ declare const Error: any;
  * An interface class to allow you to play audio over VoiceConnections.
  */
 declare class PlayInterface {
+    player: any;
     constructor(player: any);
     /**
      * Play an audio resource.
@@ -46,7 +45,7 @@ declare class PlayInterface {
      * connection.playAudio('http://www.sample-videos.com/audio/mp3/wave.mp3');
      * @returns {AudioDispatcher}
      */
-    playAudio(resource: any, options?: {}): any;
+    playAudio(resource: Readable | string, options?: any): any;
     /**
      * Options that can be passed to stream-playing methods:
      * @typedef {Object} VideoOptions
@@ -77,6 +76,7 @@ declare class PlayInterface {
      * connection.playVideo('http://www.sample-videos.com/video/mp4/wave.mp4');
      * @returns {VideoDispatcher}
      */
-    playVideo(resource: any, options?: {}): any;
+    playVideo(resource: Readable | string, options?: any): any;
     static applyToClass(structure: any): void;
 }
+export default PlayInterface;

@@ -1,5 +1,8 @@
 import BaseMessageComponent from './BaseMessageComponent';
 declare class ContainerComponent extends BaseMessageComponent {
+    components: any[];
+    accentColor: number | null;
+    spoiler: boolean;
     /**
      * @typedef {MessageActionRow|TextDisplayComponent|SectionComponent|MediaGalleryComponent|SeparatorComponent|FileComponent} ContainerComponents
      * @property {ContainerComponents[]} [components] Components of the type action row, text display, section, media gallery, separator, or file
@@ -9,22 +12,17 @@ declare class ContainerComponent extends BaseMessageComponent {
     /**
      * @param {ContainerComponent | APIContainerComponent} [data={}] The data
      */
-    constructor(data?: {});
+    constructor(data?: any);
     setup(data: any): void;
     /**
      * The hex accent color of this container
      * @type {?string}
      * @readonly
      */
-    get hexAccentColor(): any;
+    get hexAccentColor(): string | null;
     /**
      * @returns {APIContainerComponent}
      */
-    toJSON(): {
-        type: any;
-        components: any;
-        accent_color: any;
-        spoiler: any;
-    };
+    toJSON(): any;
 }
 export default ContainerComponent;

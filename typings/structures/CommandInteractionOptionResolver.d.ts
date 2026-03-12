@@ -2,6 +2,9 @@
  * A resolver for command interaction options.
  */
 declare class CommandInteractionOptionResolver {
+    _group: string | null;
+    _subcommand: string | null;
+    _hoistedOptions: any[];
     constructor(client: any, options: any, resolved: any);
     /**
      * Gets an option by its name.
@@ -9,7 +12,7 @@ declare class CommandInteractionOptionResolver {
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?CommandInteractionOption} The option, if found.
      */
-    get(name: any, required?: boolean): any;
+    get(name: string, required?: boolean): any;
     /**
      * Gets an option by name and property and checks its type.
      * @param {string} name The name of the option.
@@ -19,26 +22,26 @@ declare class CommandInteractionOptionResolver {
      * @returns {?CommandInteractionOption} The option, if found.
      * @private
      */
-    _getTypedOption(name: any, type: any, properties: any, required: any): any;
+    _getTypedOption(name: string, type: string, properties: string[], required: boolean): any;
     /**
      * Gets the selected subcommand.
      * @param {boolean} [required=true] Whether to throw an error if there is no subcommand.
      * @returns {?string} The name of the selected subcommand, or null if not set and not required.
      */
-    getSubcommand(required?: boolean): any;
+    getSubcommand(required?: boolean): string | null;
     /**
      * Gets the selected subcommand group.
      * @param {boolean} [required=true] Whether to throw an error if there is no subcommand group.
      * @returns {?string} The name of the selected subcommand group, or null if not set and not required.
      */
-    getSubcommandGroup(required?: boolean): any;
+    getSubcommandGroup(required?: boolean): string | null;
     /**
      * Gets a boolean option.
      * @param {string} name The name of the option.
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?boolean} The value of the option, or null if not set and not required.
      */
-    getBoolean(name: any, required?: boolean): any;
+    getBoolean(name: string, required?: boolean): boolean | null;
     /**
      * Gets a channel option.
      * @param {string} name The name of the option.
@@ -46,35 +49,35 @@ declare class CommandInteractionOptionResolver {
      * @returns {?(GuildChannel|ThreadChannel|APIChannel)}
      * The value of the option, or null if not set and not required.
      */
-    getChannel(name: any, required?: boolean): any;
+    getChannel(name: string, required?: boolean): any;
     /**
      * Gets a string option.
      * @param {string} name The name of the option.
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?string} The value of the option, or null if not set and not required.
      */
-    getString(name: any, required?: boolean): any;
+    getString(name: string, required?: boolean): string | null;
     /**
      * Gets an integer option.
      * @param {string} name The name of the option.
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?number} The value of the option, or null if not set and not required.
      */
-    getInteger(name: any, required?: boolean): any;
+    getInteger(name: string, required?: boolean): number | null;
     /**
      * Gets a number option.
      * @param {string} name The name of the option.
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?number} The value of the option, or null if not set and not required.
      */
-    getNumber(name: any, required?: boolean): any;
+    getNumber(name: string, required?: boolean): number | null;
     /**
      * Gets a user option.
      * @param {string} name The name of the option.
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?User} The value of the option, or null if not set and not required.
      */
-    getUser(name: any, required?: boolean): any;
+    getUser(name: string, required?: boolean): any;
     /**
      * Gets a member option.
      * @param {string} name The name of the option.
@@ -82,14 +85,14 @@ declare class CommandInteractionOptionResolver {
      * @returns {?(GuildMember|APIGuildMember)}
      * The value of the option, or null if not set and not required.
      */
-    getMember(name: any, required?: boolean): any;
+    getMember(name: string, required?: boolean): any;
     /**
      * Gets a role option.
      * @param {string} name The name of the option.
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?(Role|APIRole)} The value of the option, or null if not set and not required.
      */
-    getRole(name: any, required?: boolean): any;
+    getRole(name: string, required?: boolean): any;
     /**
      * Gets a mentionable option.
      * @param {string} name The name of the option.
@@ -97,7 +100,7 @@ declare class CommandInteractionOptionResolver {
      * @returns {?(User|GuildMember|APIGuildMember|Role|APIRole)}
      * The value of the option, or null if not set and not required.
      */
-    getMentionable(name: any, required?: boolean): any;
+    getMentionable(name: string, required?: boolean): any;
     /**
      * Gets a message option.
      * @param {string} name The name of the option.
@@ -105,7 +108,7 @@ declare class CommandInteractionOptionResolver {
      * @returns {?(Message|APIMessage)}
      * The value of the option, or null if not set and not required.
      */
-    getMessage(name: any, required?: boolean): any;
+    getMessage(name: string, required?: boolean): any;
     /**
      * The full autocomplete option object.
      * @typedef {Object} AutocompleteFocusedOption
@@ -127,6 +130,6 @@ declare class CommandInteractionOptionResolver {
      * @param {boolean} [required=false] Whether to throw an error if the option is not found.
      * @returns {?MessageAttachment} The value of the option, or null if not set and not required.
      */
-    getAttachment(name: any, required?: boolean): any;
+    getAttachment(name: string, required?: boolean): any;
 }
 export default CommandInteractionOptionResolver;

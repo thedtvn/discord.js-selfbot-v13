@@ -1,11 +1,5 @@
-declare const Collection: any;
-declare const Action: any;
-declare const deletedMessages: any;
-declare const Events: any;
+import Action from './Action';
 declare class MessageDeleteBulkAction extends Action {
-    handle(data: any): {
-        messages?: undefined;
-    } | {
-        messages: any;
-    };
+    handle(data: any): any;
 }
+export default MessageDeleteBulkAction;

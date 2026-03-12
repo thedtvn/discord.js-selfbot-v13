@@ -1,10 +1,81 @@
+import { Collection } from '@discordjs/collection';
 import CachedManager from './CachedManager';
+import { GuildScheduledEvent } from '../structures/GuildScheduledEvent';
+import type { Snowflake } from 'discord-api-types/v10';
+import type { Guild } from '../structures/Guild';
+type GuildScheduledEventResolvable = GuildScheduledEvent | Snowflake;
+type RawGuildScheduledEventData = {
+    id: Snowflake;
+} & Record<string, unknown>;
+interface GuildScheduledEventRecurrenceRuleOptions {
+    startAt: unknown;
+    frequency: unknown;
+    interval: number;
+    byWeekday?: unknown[] | null;
+    byNWeekday?: unknown[] | null;
+    byMonth?: unknown[] | null;
+    byMonthDay?: number[] | null;
+}
+interface GuildScheduledEventEntityMetadataOptions {
+    location?: string;
+}
+interface GuildScheduledEventCreateOptions {
+    name: string;
+    scheduledStartTime: unknown;
+    scheduledEndTime?: unknown;
+    privacyLevel: string | number;
+    entityType: string | number;
+    description?: string;
+    channel?: unknown;
+    entityMetadata?: GuildScheduledEventEntityMetadataOptions;
+    image?: unknown;
+    reason?: string;
+    recurrenceRule?: GuildScheduledEventRecurrenceRuleOptions;
+}
+interface FetchGuildScheduledEventOptions {
+    guildScheduledEvent?: GuildScheduledEventResolvable;
+    cache?: boolean;
+    force?: boolean;
+    withUserCount?: boolean;
+}
+interface FetchGuildScheduledEventsOptions {
+    cache?: boolean;
+    withUserCount?: boolean;
+}
+interface GuildScheduledEventEditOptions {
+    name?: string;
+    scheduledStartTime?: unknown;
+    scheduledEndTime?: unknown;
+    privacyLevel?: string | number;
+    entityType?: string | number;
+    description?: string;
+    channel?: unknown;
+    status?: string | number;
+    entityMetadata?: GuildScheduledEventEntityMetadataOptions;
+    image?: unknown;
+    reason?: string;
+    recurrenceRule?: GuildScheduledEventRecurrenceRuleOptions | null;
+}
+interface FetchGuildScheduledEventSubscribersOptions {
+    limit?: number;
+    withMember?: boolean;
+    before?: Snowflake;
+    after?: Snowflake;
+}
+interface GuildScheduledEventUser {
+    guildScheduledEventId: Snowflake;
+    user: unknown;
+    member: unknown;
+}
 /**
  * Manages API methods for GuildScheduledEvents and stores their cache.
  * @extends {CachedManager}
  */
-declare class GuildScheduledEventManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+declare class GuildScheduledEventManager extends CachedManager<Snowflake, GuildScheduledEvent, GuildScheduledEventResolvable, RawGuildScheduledEventData, [
+    Guild
+]> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawGuildScheduledEventData>);
     /**
      * The cache of this manager
      * @type {Collection<Snowflake, GuildScheduledEvent>}
@@ -58,11 +129,7 @@ declare class GuildScheduledEventManager extends CachedManager {
      * @param {GuildScheduledEventCreateOptions} options Options for creating the guild scheduled event
      * @returns {Promise<GuildScheduledEvent>}
      */
-    create(options: any): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    create(options: GuildScheduledEventCreateOptions): Promise<GuildScheduledEvent>;
     /**
      * Options used to fetch a single guild scheduled event from a guild.
      * @typedef {BaseFetchOptions} FetchGuildScheduledEventOptions
@@ -82,7 +149,7 @@ declare class GuildScheduledEventManager extends CachedManager {
      * The id of the guild scheduled event or options
      * @returns {Promise<GuildScheduledEvent|Collection<Snowflake, GuildScheduledEvent>>}
      */
-    fetch(options?: {}): Promise<any>;
+    fetch(options?: GuildScheduledEventResolvable | FetchGuildScheduledEventOptions | FetchGuildScheduledEventsOptions): Promise<GuildScheduledEvent | Collection<Snowflake, GuildScheduledEvent>>;
     /**
      * Options used to edit a guild scheduled event.
      * @typedef {Object} GuildScheduledEventEditOptions
@@ -108,17 +175,13 @@ declare class GuildScheduledEventManager extends CachedManager {
      * @param {GuildScheduledEventEditOptions} options Options to edit the guild scheduled event
      * @returns {Promise<GuildScheduledEvent>}
      */
-    edit(guildScheduledEvent: any, options: any): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    edit(guildScheduledEvent: GuildScheduledEventResolvable, options: GuildScheduledEventEditOptions): Promise<GuildScheduledEvent>;
     /**
      * Deletes a guild scheduled event.
      * @param {GuildScheduledEventResolvable} guildScheduledEvent The guild scheduled event to delete
      * @returns {Promise<void>}
      */
-    delete(guildScheduledEvent: any): Promise<void>;
+    delete(guildScheduledEvent: GuildScheduledEventResolvable): Promise<void>;
     /**
      * Options used to fetch subscribers of a guild scheduled event
      * @typedef {Object} FetchGuildScheduledEventSubscribersOptions
@@ -141,6 +204,6 @@ declare class GuildScheduledEventManager extends CachedManager {
      * @param {FetchGuildScheduledEventSubscribersOptions} [options={}] Options for fetching the subscribers
      * @returns {Promise<Collection<Snowflake, GuildScheduledEventUser>>}
      */
-    fetchSubscribers(guildScheduledEvent: any, options?: {}): Promise<any>;
+    fetchSubscribers(guildScheduledEvent: GuildScheduledEventResolvable, options?: FetchGuildScheduledEventSubscribersOptions): Promise<Collection<Snowflake, GuildScheduledEventUser>>;
 }
 export default GuildScheduledEventManager;

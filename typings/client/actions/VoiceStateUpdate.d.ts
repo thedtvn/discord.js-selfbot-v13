@@ -1,6 +1,5 @@
-declare const Action: any;
-declare const VoiceState: any;
-declare const Events: any;
+import Action from './Action';
 declare class VoiceStateUpdate extends Action {
-    handle(data: any): void;
+    handle(data: any): any;
 }
+export default VoiceStateUpdate;

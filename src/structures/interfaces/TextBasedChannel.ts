@@ -3,11 +3,12 @@
 /* eslint-disable import/order */
 import MessageCollector from '../MessageCollector';
 import MessagePayload from '../MessagePayload';
-import User from '../User';
-import { GuildMember } from '../GuildMember';
 import { InteractionTypes, ApplicationCommandOptionTypes, Events } from '../../util/Constants';
 import { Error } from '../../errors';
 import SnowflakeUtil from '../../util/SnowflakeUtil';
+
+let User: any;
+let GuildMember: any;
 import { setTimeout } from 'node:timers';
 import { s } from '@sapphire/shapeshift';
 import Util from '../../util/Util';
@@ -29,6 +30,7 @@ class TextBasedChannel {
   public declare id: any;
   public declare guild: any;
   public declare edit: any;
+  public declare createDM: any;
   public messages: any;
   public lastMessageId: string | null;
   public lastPinTimestamp: number | null;
@@ -189,6 +191,9 @@ class TextBasedChannel {
    *   .catch(console.error);
    */
   async send(options: any): Promise<any> {
+    User ??= require('../User').default;
+    GuildMember ??= require('../GuildMember').GuildMember;
+    
     if (this instanceof User || this instanceof GuildMember) {
       const dm = await this.createDM();
       return dm.send(options);

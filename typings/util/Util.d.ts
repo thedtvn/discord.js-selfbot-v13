@@ -9,7 +9,7 @@ declare class Util extends null {
      * @param {...Object<string, boolean|string>} [props] Specific properties to include/exclude.
      * @returns {Object}
      */
-    static flatten(obj: Record<string, unknown>, ...props: Record<string, boolean | string>[]): {};
+    static flatten(obj: any, ...props: Record<string, boolean | string>[]): any;
     /**
      * Options for splitting a message.
      * @typedef {Object} SplitOptions
@@ -56,7 +56,7 @@ declare class Util extends null {
      * @param {EscapeMarkdownOptions} [options={}] Options for escaping the markdown
      * @returns {string}
      */
-    static escapeMarkdown(text: any, { codeBlock, inlineCode, bold, italic, underline, strikethrough, spoiler, codeBlockContent, inlineCodeContent, escape, heading, bulletedList, numberedList, maskedLink, }?: {
+    static escapeMarkdown(text: string, { codeBlock, inlineCode, bold, italic, underline, strikethrough, spoiler, codeBlockContent, inlineCodeContent, escape, heading, bulletedList, numberedList, maskedLink, }?: {
         codeBlock?: boolean;
         inlineCode?: boolean;
         bold?: boolean;
@@ -71,7 +71,7 @@ declare class Util extends null {
         bulletedList?: boolean;
         numberedList?: boolean;
         maskedLink?: boolean;
-    }): any;
+    }): string;
     /**
      * Escapes code block markdown in a string.
      * @param {string} text Content to escape
@@ -195,7 +195,7 @@ declare class Util extends null {
      * @returns {Object}
      * @private
      */
-    static mergeDefault(def: Record<string, unknown>, given: Record<string, unknown>): Record<string, unknown>;
+    static mergeDefault(def: any, given: any): any;
     /**
      * Options used to make an error object.
      * @typedef {Object} MakeErrorOptions
@@ -243,7 +243,7 @@ declare class Util extends null {
      * @param {boolean} [allowEmpty=true] Whether an empty string should be allowed
      * @returns {string}
      */
-    static verifyString(data: string, error?: ErrorConstructor, errorMessage?: string, allowEmpty?: boolean): string;
+    static verifyString(data: string, error?: any, errorMessage?: string, allowEmpty?: boolean): string;
     /**
      * Can be a number, hex string, a {@link Color}, or an RGB array like:
      * ```js
@@ -256,7 +256,7 @@ declare class Util extends null {
      * @param {ColorResolvable} color Color to resolve
      * @returns {number} A color
      */
-    static resolveColor(color: string | number | [number, number, number]): string | number | [number, number, number];
+    static resolveColor(color: string | number | [number, number, number]): number;
     /**
      * Sorts by Discord's position and id.
      * @param {Collection} collection Collection of objects to sort
@@ -286,9 +286,7 @@ declare class Util extends null {
             }[];
             reason?: string;
         }) => Promise<unknown>;
-    }, reason?: string): Promise<{
-        id: string;
-    }[]>;
+    }, reason?: string): Promise<any[]>;
     /**
      * Alternative to Node's `path.basename`, removing query string after the extension if it exists.
      * @param {string} path Path to get the basename of
@@ -313,7 +311,7 @@ declare class Util extends null {
      * @param {TextBasedChannels} channel The channel the string was sent in
      * @returns {string}
      */
-    static cleanContent(str: any, channel: any): any;
+    static cleanContent(str: string, channel: any): string;
     /**
      * The content to put in a code block with all code block fences replaced by the equivalent backticks.
      * @param {string} text The string to be converted
@@ -326,7 +324,9 @@ declare class Util extends null {
      * @deprecated When not using with `makeCache` use `Sweepers.archivedThreadSweepFilter` instead
      * @returns {SweepFilter}
      */
-    static archivedThreadSweepFilter(lifetime?: number): () => (entry: any, key: any, coll: any) => boolean;
+    static archivedThreadSweepFilter(lifetime?: number): (() => ((value: any, key: string) => boolean) | null) & {
+        isDefault?: boolean;
+    };
     /**
      * Resolves the maximum time a guild's thread channels should automatically archive in case of no recent activity.
      * @param {Guild} guild The guild to resolve this limit from.
@@ -340,13 +340,19 @@ declare class Util extends null {
      * @returns {GuildForumTag}
      * @ignore
      */
-    static transformAPIGuildForumTag(tag: any): {
-        id: any;
-        name: any;
-        moderated: any;
+    static transformAPIGuildForumTag(tag: {
+        id: string;
+        name: string;
+        moderated: boolean;
+        emoji_id: string | null;
+        emoji_name: string | null;
+    }): {
+        id: string;
+        name: string;
+        moderated: boolean;
         emoji: {
-            id: any;
-            name: any;
+            id: string;
+            name: string;
         };
     };
     /**
@@ -355,12 +361,20 @@ declare class Util extends null {
      * @returns {APIGuildForumTag}
      * @ignore
      */
-    static transformGuildForumTag(tag: any): {
-        id: any;
-        name: any;
-        moderated: any;
-        emoji_id: any;
-        emoji_name: any;
+    static transformGuildForumTag(tag: {
+        id: string;
+        name: string;
+        moderated: boolean;
+        emoji?: {
+            id?: string | null;
+            name?: string | null;
+        } | null;
+    }): {
+        id: string;
+        name: string;
+        moderated: boolean;
+        emoji_id: string;
+        emoji_name: string;
     };
     /**
      * Transforms an API guild forum default reaction object to a
@@ -369,9 +383,12 @@ declare class Util extends null {
      * @returns {DefaultReactionEmoji}
      * @ignore
      */
-    static transformAPIGuildDefaultReaction(defaultReaction: any): {
-        id: any;
-        name: any;
+    static transformAPIGuildDefaultReaction(defaultReaction: {
+        emoji_id: string | null;
+        emoji_name: string | null;
+    }): {
+        id: string;
+        name: string;
     };
     /**
      * Transforms a camel-cased guild forum default reaction object to an
@@ -380,9 +397,12 @@ declare class Util extends null {
      * @returns {APIGuildForumDefaultReactionEmoji}
      * @ignore
      */
-    static transformGuildDefaultReaction(defaultReaction: any): {
-        emoji_id: any;
-        emoji_name: any;
+    static transformGuildDefaultReaction(defaultReaction: {
+        id: string | null;
+        name: string | null;
+    }): {
+        emoji_id: string;
+        emoji_name: string;
     };
     /**
      * Transforms a guild scheduled event recurrence rule object to a snake-cased variant.
@@ -390,14 +410,28 @@ declare class Util extends null {
      * @returns {APIGuildScheduledEventRecurrenceRule}
      * @ignore
      */
-    static transformGuildScheduledEventRecurrenceRule(recurrenceRule: any): {
+    static transformGuildScheduledEventRecurrenceRule(recurrenceRule: {
+        startAt: string | number | Date;
+        frequency: number;
+        interval: number;
+        byWeekday: number[] | null;
+        byNWeekday: {
+            n: number;
+            day: number;
+        }[] | null;
+        byMonth: number[] | null;
+        byMonthDay: number[] | null;
+    }): {
         start: string;
-        frequency: any;
-        interval: any;
-        by_weekday: any;
-        by_n_weekday: any;
-        by_month: any;
-        by_month_day: any;
+        frequency: number;
+        interval: number;
+        by_weekday: number[];
+        by_n_weekday: {
+            n: number;
+            day: number;
+        }[];
+        by_month: number[];
+        by_month_day: number[];
     };
     /**
      * Transforms API incidents data to a camel-cased variant.
@@ -405,7 +439,12 @@ declare class Util extends null {
      * @returns {IncidentActions}
      * @ignore
      */
-    static transformAPIIncidentsData(data: any): {
+    static transformAPIIncidentsData(data: {
+        invites_disabled_until: string | null;
+        dms_disabled_until: string | null;
+        dm_spam_detected_at: string | null;
+        raid_detected_at: string | null;
+    }): {
         invitesDisabledUntil: Date;
         dmsDisabledUntil: Date;
         dmSpamDetectedAt: Date;
@@ -420,14 +459,16 @@ declare class Util extends null {
      * @returns {ChannelType[]}
      * @ignore
      */
-    static getSortableGroupTypes(type: any): any[];
+    static getSortableGroupTypes(type: string): string[];
     /**
      * Calculates the default avatar index for a given user id.
      * @param {Snowflake} userId - The user id to calculate the default avatar index for
      * @returns {number}
      */
     static calculateUserDefaultAvatarIndex(userId: string): number;
-    static getUploadURL(client: any, channelId: any, files: any): Promise<any>;
+    static getUploadURL(client: any, channelId: string, files: {
+        name: string;
+    }[]): Promise<any[]>;
     static uploadFile(data: Buffer | NodeJS.ReadableStream | string, url: string): Promise<unknown>;
     /**
      * Lazily evaluates a callback function (yea it's v14 :yay:)
@@ -447,7 +488,7 @@ declare class Util extends null {
     static checkUndiciProxyAgent(data: string | URL | {
         uri: string;
     } | unknown): false | object;
-    static createPromiseInteraction(client: any, nonce: any, timeoutMs: number, isHandlerDeferUpdate: boolean, parent: any): Promise<unknown>;
+    static createPromiseInteraction(client: any, nonce: string, timeoutMs?: number, isHandlerDeferUpdate?: boolean, parent?: unknown): Promise<unknown>;
     static clearNullOrUndefinedObject(object: Record<string, unknown>): {};
     static getAllPayloadType(): ({
         name: string;
@@ -471,7 +512,7 @@ declare class Util extends null {
      * @param {'opus' | 'H264' | 'H265' | 'VP8' | 'VP9' | 'AV1'} codecName - Codec name
      * @returns {number}
      */
-    static getPayloadType(codecName: any): number;
-    static getSDPCodecName(portUdpH264: any, portUdpH265: any, portUdpOpus: any): string;
+    static getPayloadType(codecName: string): number;
+    static getSDPCodecName(portUdpH264: number, portUdpH265: number | null, portUdpOpus: number): string;
 }
 export default Util;

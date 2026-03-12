@@ -1,7 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class ChannelCreateAction extends Action {
-    handle(data: any): {
-        channel: any;
-    };
+    handle(data: any): any;
 }
+export default ChannelCreateAction;

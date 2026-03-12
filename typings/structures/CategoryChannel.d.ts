@@ -64,6 +64,6 @@ declare class CategoryChannel extends GuildChannel {
      * @param {CategoryCreateChannelOptions} options Options for creating the new channel
      * @returns {Promise<GuildChannel>}
      */
-    createChannel(name: any, options: any): any;
+    createChannel(name: string, options: any): Promise<any>;
 }
 export default CategoryChannel;

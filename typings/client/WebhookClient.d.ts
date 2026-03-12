@@ -1,12 +1,17 @@
-declare const BaseClient: any;
-declare const Error: any;
-declare const Webhook: any;
+import BaseClient, { type ClientOptions } from './BaseClient';
+interface WebhookClientData {
+    id?: string;
+    token?: string;
+    url?: string;
+}
 /**
  * The webhook client.
  * @implements {Webhook}
  * @extends {BaseClient}
  */
 declare class WebhookClient extends BaseClient {
+    id: string;
+    token: string;
     /**
      * The data for the webhook client containing either an id and token or just a URL
      * @typedef {Object} WebhookClientData
@@ -18,15 +23,16 @@ declare class WebhookClient extends BaseClient {
      * @param {WebhookClientData} data The data of the webhook
      * @param {ClientOptions} [options] Options for the client
      */
-    constructor(data: any, options: any);
-    send(): void;
-    sendSlackMessage(): void;
-    fetchMessage(): void;
-    edit(): void;
-    editMessage(): void;
-    delete(): void;
-    deleteMessage(): void;
-    get createdTimestamp(): void;
-    get createdAt(): void;
-    get url(): void;
+    constructor(data: WebhookClientData, options?: ClientOptions);
+    send(..._args: unknown[]): void;
+    sendSlackMessage(..._args: unknown[]): void;
+    fetchMessage(..._args: unknown[]): void;
+    edit(..._args: unknown[]): void;
+    editMessage(..._args: unknown[]): void;
+    delete(..._args: unknown[]): void;
+    deleteMessage(..._args: unknown[]): void;
+    get createdTimestamp(): number;
+    get createdAt(): Date;
+    get url(): string;
 }
+export default WebhookClient;

@@ -4,6 +4,7 @@ import MessageComponentInteraction from './MessageComponentInteraction';
  * @extends {MessageComponentInteraction}
  */
 declare class SelectMenuInteraction extends MessageComponentInteraction {
+    values: string[];
     constructor(client: any, data: any);
 }
 export default SelectMenuInteraction;

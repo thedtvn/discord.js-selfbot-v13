@@ -1,30 +1,28 @@
-declare const EventEmitter: any;
-declare const Buffer: any;
-declare const crypto: any;
-declare const setTimeout: any;
-declare const RtpPacket: any;
-declare const Recorder: any;
-declare const Speaking: any;
-declare const Util: any;
-declare const secretbox: any;
-declare const SILENCE_FRAME: any;
-declare const DISCORD_SPEAKING_DELAY = 250;
-declare const UNPADDED_NONCE_LENGTH = 4;
-declare const AUTH_TAG_LENGTH = 16;
-declare const Readable_base: any;
-declare class Readable extends Readable_base {
+import { EventEmitter } from 'events';
+import { Buffer } from 'node:buffer';
+import { Readable as NodeReadable } from 'stream';
+import { RtpPacket } from 'werift-rtp';
+import Recorder from './Recorder';
+declare class Readable extends NodeReadable {
     _read(): void;
 }
 declare class PacketHandler extends EventEmitter {
+    receiver: any;
+    streams: Map<string, {
+        stream: Readable;
+        end: string;
+    }>;
+    videoStreams: Map<string, Recorder>;
+    speakingTimeouts: Map<number, NodeJS.Timeout>;
     constructor(receiver: any);
-    getNonceBuffer(): any;
+    getNonceBuffer(): Buffer;
     get connection(): any;
-    _stoppedSpeaking(userId: any): void;
-    makeStream(user: any, end: any): any;
-    makeVideoStream(user: any, output: any): any;
-    parseBuffer(buffer: any): any;
-    audioReceiver(ssrc: any, userStat: any, opusPacket: any): void;
-    audioReceiverForStream(ssrc: any, userStat: any, packet: any): void;
+    _stoppedSpeaking(userId: string): void;
+    makeStream(user: string, end: string): Readable;
+    makeVideoStream(user: string, output: any): Recorder;
+    parseBuffer(buffer: Buffer): RtpPacket | Error;
+    audioReceiver(ssrc: number, userStat: any, opusPacket: RtpPacket | Error): void;
+    audioReceiverForStream(ssrc: number, userStat: any, packet: RtpPacket | Error): void;
     /**
      * Test
      * @param {number} ssrc ssrc
@@ -32,7 +30,8 @@ declare class PacketHandler extends EventEmitter {
      * @param {RtpPacket} packet RtpPacket
      * @returns {void}
      */
-    videoReceiver(ssrc: any, userStat: any, packet: any): void;
-    push(buffer: any): void;
+    videoReceiver(ssrc: number, userStat: any, packet: RtpPacket | Error): void;
+    push(buffer: Buffer): void;
     destroyAllStream(): void;
 }
+export default PacketHandler;

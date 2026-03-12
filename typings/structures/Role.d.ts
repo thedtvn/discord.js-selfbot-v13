@@ -1,4 +1,11 @@
+import { Collection } from '@discordjs/collection';
 import Base from './Base';
+import Permissions from '../util/Permissions';
+import RoleFlags from '../util/RoleFlags';
+import type Client from '../client/Client';
+import type { Guild } from './Guild';
+import type { GuildMember } from './GuildMember';
+import type { Snowflake } from 'discord-api-types/v10';
 /**
  * @type {WeakSet<Role>}
  * @private
@@ -10,8 +17,33 @@ declare const deletedRoles: WeakSet<WeakKey>;
  * @extends {Base}
  */
 declare class Role extends Base {
-    constructor(client: any, data: any, guild: any);
-    _patch(data: any): void;
+    guild: Guild;
+    icon: string | null;
+    unicodeEmoji: string | null;
+    id: string;
+    name: string;
+    color: number;
+    colors: {
+        primaryColor: number;
+        secondaryColor: number | null;
+        tertiaryColor: number | null;
+    };
+    hoist: boolean;
+    rawPosition: number;
+    permissions: Readonly<Permissions>;
+    managed: boolean;
+    mentionable: boolean;
+    tags: {
+        botId?: Snowflake;
+        integrationId?: Snowflake | string;
+        premiumSubscriberRole?: true;
+        subscriptionListingId?: Snowflake;
+        availableForPurchase?: true;
+        guildConnections?: true;
+    } | null;
+    flags: Readonly<RoleFlags>;
+    constructor(client: Client, data: any, guild: Guild);
+    _patch(data: any): any;
     /**
      * The timestamp the role was created at
      * @type {number}
@@ -42,7 +74,7 @@ declare class Role extends Base {
      * @type {Collection<Snowflake, GuildMember>}
      * @readonly
      */
-    get members(): any;
+    get members(): Collection<Snowflake, GuildMember>;
     /**
      * Whether the role is editable by the client user
      * @type {boolean}
@@ -65,7 +97,7 @@ declare class Role extends Base {
      * const roleCompare = role.comparePositionTo(otherRole);
      * if (roleCompare >= 1) console.log(`${role.name} is higher than ${otherRole.name}`);
      */
-    comparePositionTo(role: any): any;
+    comparePositionTo(role: Role | Snowflake): number;
     /**
      * The data for a role.
      * @typedef {Object} RoleData
@@ -93,7 +125,7 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Edited role name to ${updated.name}`))
      *   .catch(console.error);
      */
-    edit(data: any, reason: any): any;
+    edit(data: any, reason?: string): Promise<Role>;
     /**
      * Returns `channel.permissionsFor(role)`. Returns permissions for a role in a guild channel,
      * taking into account permission overwrites.
@@ -101,7 +133,7 @@ declare class Role extends Base {
      * @param {boolean} [checkAdmin=true] Whether having `ADMINISTRATOR` will return all permissions
      * @returns {Readonly<Permissions>}
      */
-    permissionsIn(channel: any, checkAdmin?: boolean): any;
+    permissionsIn(channel: any, checkAdmin?: boolean): Readonly<Permissions>;
     /**
      * Sets a new name for the role.
      * @param {string} name The new name of the role
@@ -113,7 +145,7 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Updated role name to ${updated.name}`))
      *   .catch(console.error);
      */
-    setName(name: any, reason: any): any;
+    setName(name: string, reason?: string): Promise<Role>;
     /**
      * Sets a new color for the role.
      * @param {ColorResolvable} color The color of the role
@@ -121,7 +153,7 @@ declare class Role extends Base {
      * @returns {Promise<Role>}
      * @deprecated Use {@link Role#setColors} instead.
      */
-    setColor(color: any, reason: any): any;
+    setColor(color: unknown, reason?: string): Promise<Role>;
     /**
      * Sets new colors for the role.
      *
@@ -143,7 +175,7 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Set holographic colors for role ${updated.name}`))
      *   .catch(console.error);
      */
-    setColors(colors: any, reason: any): any;
+    setColors(colors: unknown, reason?: string): Promise<Role>;
     /**
      * Sets whether or not the role should be hoisted.
      * @param {boolean} [hoist=true] Whether or not to hoist the role
@@ -155,7 +187,7 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Role hoisted: ${updated.hoist}`))
      *   .catch(console.error);
      */
-    setHoist(hoist: boolean, reason: any): any;
+    setHoist(hoist?: boolean, reason?: string): Promise<Role>;
     /**
      * Sets the permissions of the role.
      * @param {PermissionResolvable} permissions The permissions of the role
@@ -172,7 +204,7 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Updated permissions to ${updated.permissions.bitfield}`))
      *   .catch(console.error);
      */
-    setPermissions(permissions: any, reason: any): any;
+    setPermissions(permissions: unknown, reason?: string): Promise<Role>;
     /**
      * Sets whether this role is mentionable.
      * @param {boolean} [mentionable=true] Whether this role should be mentionable
@@ -184,7 +216,7 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Role updated ${updated.name}`))
      *   .catch(console.error);
      */
-    setMentionable(mentionable: boolean, reason: any): any;
+    setMentionable(mentionable?: boolean, reason?: string): Promise<Role>;
     /**
      * Sets a new icon for the role.
      * @param {?(BufferResolvable|Base64Resolvable|EmojiResolvable)} icon The icon for the role
@@ -193,7 +225,7 @@ declare class Role extends Base {
      * @param {string} [reason] Reason for changing the role's icon
      * @returns {Promise<Role>}
      */
-    setIcon(icon: any, reason: any): any;
+    setIcon(icon: unknown, reason?: string): Promise<Role>;
     /**
      * Sets a new unicode emoji for the role.
      * @param {?string} unicodeEmoji The new unicode emoji for the role
@@ -205,7 +237,7 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Set unicode emoji for the role to ${updated.unicodeEmoji}`))
      *   .catch(console.error);
      */
-    setUnicodeEmoji(unicodeEmoji: any, reason: any): any;
+    setUnicodeEmoji(unicodeEmoji: string | null, reason?: string): Promise<Role>;
     /**
      * Options used to set the position of a role.
      * @typedef {Object} SetRolePositionOptions
@@ -223,7 +255,10 @@ declare class Role extends Base {
      *   .then(updated => console.log(`Role position: ${updated.position}`))
      *   .catch(console.error);
      */
-    setPosition(position: any, options?: {}): any;
+    setPosition(position: number, options?: {
+        relative?: boolean;
+        reason?: string;
+    }): Promise<Role>;
     /**
      * Deletes the role.
      * @param {string} [reason] Reason for deleting this role
@@ -234,19 +269,22 @@ declare class Role extends Base {
      *   .then(deleted => console.log(`Deleted role ${deleted.name}`))
      *   .catch(console.error);
      */
-    delete(reason: any): Promise<this>;
+    delete(reason?: string): Promise<this>;
     /**
      * Fetches the member ids for this role in the guild.
      * <info>This only returns 100 member ids</info>
      * @returns {Promise<Snowflake[]>}
      */
-    fetchMemberIds(): any;
+    fetchMemberIds(): Promise<Snowflake[]>;
     /**
      * A link to the role's icon
      * @param {StaticImageURLOptions} [options={}] Options for the image URL
      * @returns {?string}
      */
-    iconURL({ format, size }?: {}): any;
+    iconURL({ format, size }?: {
+        format?: string;
+        size?: number;
+    }): string | null;
     /**
      * Whether this role equals another role. It compares all properties, so for most operations
      * it is advisable to just compare `role.id === role2.id` as it is much faster and is often
@@ -254,7 +292,7 @@ declare class Role extends Base {
      * @param {Role} role Role to compare with
      * @returns {boolean}
      */
-    equals(role: any): boolean;
+    equals(role: Role): boolean;
     /**
      * When concatenated with a string, this automatically returns the role's mention instead of the Role object.
      * @returns {string}
@@ -263,7 +301,7 @@ declare class Role extends Base {
      * console.log(`Role: ${role}`);
      */
     toString(): string;
-    toJSON(): any;
+    toJSON(): unknown;
     /**
      * Compares the positions of two roles.
      * @param {Role} role1 First role to compare
@@ -272,7 +310,7 @@ declare class Role extends Base {
      * positive number if the first's is higher (second's is lower), 0 if equal
      * @deprecated Use {@link RoleManager#comparePositions} instead.
      */
-    static comparePositions(role1: any, role2: any): any;
+    static comparePositions(role1: Role, role2: Role): number;
 }
 /**
  * @external APIRole

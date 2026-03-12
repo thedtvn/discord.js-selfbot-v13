@@ -1,4 +1,15 @@
+import type { Snowflake } from 'discord-api-types/v10';
+import type ThreadChannel from '../structures/ThreadChannel';
 import ThreadManager from './ThreadManager';
+import MessagePayload from '../structures/MessagePayload';
+interface GuildForumThreadCreateOptions {
+    name?: string;
+    autoArchiveDuration?: number | 'MAX';
+    message?: MessagePayload | Record<string, unknown>;
+    reason?: string;
+    rateLimitPerUser?: number;
+    appliedTags?: Snowflake[];
+}
 /**
  * Manages API methods for threads in forum channels and stores their cache.
  * @extends {ThreadManager}
@@ -39,8 +50,6 @@ declare class GuildForumThreadManager extends ThreadManager {
      *   .then(threadChannel => console.log(threadChannel))
      *   .catch(console.error);
      */
-    create({ name, autoArchiveDuration, message, reason, rateLimitPerUser, appliedTags, }?: {
-        autoArchiveDuration?: any;
-    }): Promise<any>;
+    create({ name, autoArchiveDuration, message, reason, rateLimitPerUser, appliedTags, }?: GuildForumThreadCreateOptions): Promise<ThreadChannel>;
 }
 export default GuildForumThreadManager;

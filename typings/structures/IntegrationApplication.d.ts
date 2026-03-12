@@ -4,6 +4,14 @@ import Application from './interfaces/Application';
  * @extends {Application}
  */
 declare class IntegrationApplication extends Application {
-    _patch(data: any): void;
+    bot: any;
+    termsOfServiceURL: any;
+    privacyPolicyURL: any;
+    rpcOrigins: any;
+    summary: any;
+    hook: any;
+    cover: any;
+    verifyKey: any;
+    _patch(data: any): any;
 }
 export default IntegrationApplication;

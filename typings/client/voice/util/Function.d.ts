@@ -1,5 +1,4 @@
-declare const dgram: any;
-declare const setImmediate: any;
+import { type SocketType } from 'dgram';
 /**
  * @typedef {Object} InterfaceAddresses
  * @property {string} [udp4] - IPv4 address
@@ -11,14 +10,18 @@ declare const setImmediate: any;
  * @param {InterfaceAddresses} [interfaceAddresses] - The interface addresses mapping.
  * @returns {string|undefined} The interface address if available.
  */
-declare function interfaceAddress(type: any, interfaceAddresses: any): any;
+export type InterfaceAddresses = {
+    udp4?: string;
+    udp6?: string;
+};
+declare function interfaceAddress(type: SocketType, interfaceAddresses?: InterfaceAddresses): string | undefined;
 /**
  * Get a random available port.
  * @param {"udp4"|"udp6"} [protocol="udp4"] - The socket type.
  * @param {InterfaceAddresses} [interfaceAddresses] - The interface addresses mapping.
  * @returns {Promise<number>} The assigned random port.
  */
-declare function randomPort(protocol: string, interfaceAddresses: any): Promise<any>;
+declare function randomPort(protocol?: SocketType, interfaceAddresses?: InterfaceAddresses): Promise<number>;
 /**
  * Get multiple random available ports.
  * @param {number} num - Number of ports to find.
@@ -26,7 +29,7 @@ declare function randomPort(protocol: string, interfaceAddresses: any): Promise<
  * @param {InterfaceAddresses} [interfaceAddresses] - The interface addresses mapping.
  * @returns {Promise<number[]>} An array of assigned random ports.
  */
-declare function randomPorts(num: any, protocol: string, interfaceAddresses: any): Promise<any[]>;
+declare function randomPorts(num: number, protocol?: SocketType, interfaceAddresses?: InterfaceAddresses): Promise<number[]>;
 /**
  * Find an available port within a given range.
  * @param {number} min - The minimum port number.
@@ -36,10 +39,19 @@ declare function randomPorts(num: any, protocol: string, interfaceAddresses: any
  * @returns {Promise<number>} The available port within range.
  * @throws {Error} If no port is found within the range.
  */
-declare function findPort(min: any, max: any, protocol: string, interfaceAddresses: any): Promise<any>;
-declare function parseStreamKey(key: any): {
-    type: any;
-    guildId: any;
-    channelId: any;
-    userId: any;
+declare function findPort(min: number, max: number, protocol?: SocketType, interfaceAddresses?: InterfaceAddresses): Promise<number>;
+declare function parseStreamKey(key: string): {
+    type: string;
+    guildId: string | null;
+    channelId: string;
+    userId: string;
 };
+export { randomPort, randomPorts, findPort, interfaceAddress, parseStreamKey };
+declare const _default: {
+    randomPort: typeof randomPort;
+    randomPorts: typeof randomPorts;
+    findPort: typeof findPort;
+    interfaceAddress: typeof interfaceAddress;
+    parseStreamKey: typeof parseStreamKey;
+};
+export default _default;

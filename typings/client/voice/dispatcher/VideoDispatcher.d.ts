@@ -1,4 +1,4 @@
-declare const BaseDispatcher: any;
+import BaseDispatcher from './BaseDispatcher';
 /**
  * The class that sends video packet data to the voice connection.
  * ```js
@@ -11,7 +11,9 @@ declare const BaseDispatcher: any;
  * @extends {BaseDispatcher}
  */
 declare class VideoDispatcher extends BaseDispatcher {
-    constructor(player: any, highWaterMark: number, streams: any, fps: any, payloadType: any);
+    fps: number;
+    mtu: number;
+    constructor(player: any, highWaterMark: number, streams: any, fps: number, payloadType: number);
     get TIMESTAMP_INC(): number;
     get FRAME_LENGTH(): number;
     /**
@@ -19,11 +21,12 @@ declare class VideoDispatcher extends BaseDispatcher {
      * @returns {'video'}
      */
     getTypeDispatcher(): string;
-    partitionMtu(data: any): any[];
+    partitionMtu(data: Buffer): Buffer[];
     /**
      * Set FPS
      * @param {number} value fps
      */
-    setFPSSource(value: any): void;
-    _codecCallback(): void;
+    setFPSSource(value: number): void;
+    _codecCallback(chunk: Buffer): void;
 }
+export default VideoDispatcher;

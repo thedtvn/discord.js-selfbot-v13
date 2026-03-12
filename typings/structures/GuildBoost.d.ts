@@ -4,8 +4,15 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class GuildBoost extends Base {
+    id: any;
+    subscriptionId: any;
+    premiumGuildSubscriptionId: any;
+    guildId: any;
+    ended: boolean | null;
+    canceled: boolean;
+    cooldownEndsAt: Date;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The guild of the boost
      * @type {?Guild}
@@ -16,12 +23,12 @@ declare class GuildBoost extends Base {
      * Cancel the boost
      * @returns {Promise<GuildBoost>}
      */
-    unsubscribe(): Promise<this>;
+    unsubscribe(): Promise<GuildBoost>;
     /**
      * Use the boost
      * @param {GuildResolvable} guild The guild to use the boost on
      * @returns {Promise<GuildBoost>}
      */
-    subscribe(guild: any): Promise<this>;
+    subscribe(guild: any): Promise<GuildBoost>;
 }
 export default GuildBoost;

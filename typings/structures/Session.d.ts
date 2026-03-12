@@ -1,17 +1,26 @@
 import Base from './Base';
+import type Client from '../client/Client';
 /**
  * @typedef {Object} SessionClientInfo
  * @property {string} location Location of the client (using IP address)
  * @property {string} platform Platform of the client
  * @property {string} os Operating system of the client
  */
+interface SessionClientInfo {
+    location: string;
+    platform: string;
+    os: string;
+}
 /**
  * Represents a Client OAuth2 Application Team.
  * @extends {Base}
  */
 declare class Session extends Base {
-    constructor(client: any, data: any);
-    _patch(data: any): void;
+    id: string;
+    approxLastUsedTime: string;
+    clientInfo: SessionClientInfo;
+    constructor(client: Client, data: any);
+    _patch(data: any): any;
     /**
      * The timestamp the client was last used at.
      * @type {number}

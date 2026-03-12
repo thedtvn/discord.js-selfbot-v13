@@ -1,10 +1,19 @@
+import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
 import CachedManager from './CachedManager';
+import GuildEmoji from '../structures/GuildEmoji';
+import ReactionEmoji from '../structures/ReactionEmoji';
+type EmojiResolvable = Snowflake | GuildEmoji | ReactionEmoji;
+type EmojiIdentifierResolvable = string | EmojiResolvable;
+type RawGuildEmojiData = {
+    id: Snowflake;
+};
 /**
  * Holds methods to resolve GuildEmojis and stores their cache.
  * @extends {CachedManager}
  */
-declare class BaseGuildEmojiManager extends CachedManager {
-    constructor(client: any, iterable: any);
+declare class BaseGuildEmojiManager extends CachedManager<Snowflake, GuildEmoji, EmojiResolvable, RawGuildEmojiData> {
+    constructor(client: Client, iterable?: Iterable<RawGuildEmojiData>);
     /**
      * The cache of GuildEmojis
      * @type {Collection<Snowflake, GuildEmoji>}
@@ -22,17 +31,13 @@ declare class BaseGuildEmojiManager extends CachedManager {
      * @param {EmojiResolvable} emoji The Emoji resolvable to identify
      * @returns {?GuildEmoji}
      */
-    resolve(emoji: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    resolve(emoji: EmojiResolvable): GuildEmoji | null;
     /**
      * Resolves an EmojiResolvable to an Emoji id string.
      * @param {EmojiResolvable} emoji The Emoji resolvable to identify
      * @returns {?Snowflake}
      */
-    resolveId(emoji: any): string;
+    resolveId(emoji: EmojiResolvable): Snowflake | null;
     /**
      * Data that can be resolved to give an emoji identifier. This can be:
      * * An EmojiResolvable
@@ -45,6 +50,6 @@ declare class BaseGuildEmojiManager extends CachedManager {
      * @param {EmojiIdentifierResolvable} emoji The emoji resolvable to resolve
      * @returns {?string}
      */
-    resolveIdentifier(emoji: any): any;
+    resolveIdentifier(emoji: EmojiIdentifierResolvable): string | null;
 }
 export default BaseGuildEmojiManager;

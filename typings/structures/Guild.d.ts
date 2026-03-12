@@ -4,6 +4,22 @@ import GuildAuditLogs from './GuildAuditLogs';
 import GuildPreview from './GuildPreview';
 import GuildTemplate from './GuildTemplate';
 import WelcomeScreen from './WelcomeScreen';
+import AutoModerationRuleManager from '../managers/AutoModerationRuleManager';
+import GuildBanManager from '../managers/GuildBanManager';
+import GuildChannelManager from '../managers/GuildChannelManager';
+import GuildEmojiManager from '../managers/GuildEmojiManager';
+import GuildInviteManager from '../managers/GuildInviteManager';
+import GuildMemberManager from '../managers/GuildMemberManager';
+import GuildScheduledEventManager from '../managers/GuildScheduledEventManager';
+import GuildSettingManager from '../managers/GuildSettingManager';
+import GuildStickerManager from '../managers/GuildStickerManager';
+import PresenceManager from '../managers/PresenceManager';
+import RoleManager from '../managers/RoleManager';
+import StageInstanceManager from '../managers/StageInstanceManager';
+import VoiceStateManager from '../managers/VoiceStateManager';
+import SystemChannelFlags from '../util/SystemChannelFlags';
+import type Client from '../client/Client';
+import type { Snowflake } from 'discord-api-types/v10';
 /**
  * @type {WeakSet<Guild>}
  * @private
@@ -17,7 +33,56 @@ declare const deletedGuilds: WeakSet<WeakKey>;
  * @extends {AnonymousGuild}
  */
 declare class Guild extends AnonymousGuild {
-    constructor(client: any, data: any);
+    members: GuildMemberManager;
+    channels: GuildChannelManager;
+    bans: GuildBanManager;
+    roles: RoleManager;
+    presences: PresenceManager;
+    voiceStates: VoiceStateManager;
+    stageInstances: StageInstanceManager;
+    invites: GuildInviteManager;
+    scheduledEvents: GuildScheduledEventManager;
+    autoModerationRules: AutoModerationRuleManager;
+    settings: GuildSettingManager;
+    available: boolean;
+    shardId: number;
+    id: Snowflake;
+    name: string;
+    icon: string | null;
+    discoverySplash: string | null;
+    memberCount: number;
+    large: boolean;
+    premiumProgressBarEnabled: boolean;
+    applicationId: Snowflake | null;
+    afkTimeout: number | null;
+    afkChannelId: Snowflake | null;
+    systemChannelId: Snowflake | null;
+    premiumTier: string;
+    widgetEnabled: boolean | null;
+    widgetChannelId: string | null;
+    explicitContentFilter: string;
+    mfaLevel: string;
+    joinedTimestamp: number;
+    defaultMessageNotifications: string;
+    systemChannelFlags: Readonly<SystemChannelFlags>;
+    maximumMembers: number | null;
+    maximumPresences: number | null;
+    maxVideoChannelUsers: number | null;
+    maxStageVideoChannelUsers: number | null;
+    approximateMemberCount: number | null;
+    approximatePresenceCount: number | null;
+    vanityURLUses: number | null;
+    rulesChannelId: Snowflake | null;
+    publicUpdatesChannelId: Snowflake | null;
+    preferredLocale: string;
+    safetyAlertsChannelId: Snowflake | null;
+    emojis: GuildEmojiManager;
+    stickers: GuildStickerManager;
+    ownerId: Snowflake;
+    incidentsData: any;
+    features: string[];
+    vanityURLCode: string | null;
+    constructor(client: Client, data: any);
     /**
      * Whether or not the structure has been deleted
      * @type {boolean}
@@ -31,7 +96,7 @@ declare class Guild extends AnonymousGuild {
      * @readonly
      */
     get shard(): any;
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The time the client user joined the guild
      * @type {Date}
@@ -43,14 +108,17 @@ declare class Guild extends AnonymousGuild {
      * @param {StaticImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    discoverySplashURL({ format, size }?: {}): any;
+    discoverySplashURL({ format, size }?: {
+        format?: string;
+        size?: number;
+    }): string | null;
     /**
      * Fetches the owner of the guild.
      * If the member object isn't needed, use {@link Guild#ownerId} instead.
      * @param {BaseFetchOptions} [options] The options for fetching the member
      * @returns {Promise<GuildMember>}
      */
-    fetchOwner(options: any): any;
+    fetchOwner(options?: any): Promise<any>;
     /**
      * AFK voice channel for this guild
      * @type {?VoiceChannel}
@@ -99,7 +167,7 @@ declare class Guild extends AnonymousGuild {
      * @type {number}
      * @readonly
      */
-    get maximumBitrate(): 384000 | 128000 | 256000 | 96000;
+    get maximumBitrate(): number;
     /**
      * Fetches a collection of integrations to this guild.
      * Resolves with a collection mapping integrations by their ids.
@@ -110,13 +178,13 @@ declare class Guild extends AnonymousGuild {
      *   .then(integrations => console.log(`Fetched ${integrations.size} integrations`))
      *   .catch(console.error);
      */
-    fetchIntegrations(): Promise<any>;
+    fetchIntegrations(): Promise<Collection<string, any>>;
     /**
      * Fetches a collection of templates from this guild.
      * Resolves with a collection mapping templates by their codes.
      * @returns {Promise<Collection<string, GuildTemplate>>}
      */
-    fetchTemplates(): Promise<any>;
+    fetchTemplates(): Promise<Collection<string, GuildTemplate>>;
     /**
      * Fetches the welcome screen for this guild.
      * @returns {Promise<WelcomeScreen>}
@@ -128,7 +196,7 @@ declare class Guild extends AnonymousGuild {
      * @param {string} [description] The description for the template
      * @returns {Promise<GuildTemplate>}
      */
-    createTemplate(name: any, description: any): Promise<GuildTemplate>;
+    createTemplate(name: string, description?: string): Promise<GuildTemplate>;
     /**
      * Obtains a guild preview for this guild from Discord.
      * @returns {Promise<GuildPreview>}
@@ -162,7 +230,7 @@ declare class Guild extends AnonymousGuild {
      *   .then(webhooks => console.log(`Fetched ${webhooks.size} webhooks`))
      *   .catch(console.error);
      */
-    fetchWebhooks(): Promise<Collection<unknown, unknown>>;
+    fetchWebhooks(): Promise<Collection<string, any>>;
     /**
      * Fetches the guild widget data, requires the widget to be enabled.
      * @returns {Promise<Widget>}
@@ -195,7 +263,7 @@ declare class Guild extends AnonymousGuild {
      *   .catch(console.error);
      */
     fetchWidgetSettings(): Promise<{
-        enabled: any;
+        enabled: boolean;
         channel: any;
     }>;
     /**
@@ -217,7 +285,13 @@ declare class Guild extends AnonymousGuild {
      *   .then(audit => console.log(audit.entries.first()))
      *   .catch(console.error);
      */
-    fetchAuditLogs({ before, after, limit, user, type }?: {}): Promise<GuildAuditLogs>;
+    fetchAuditLogs({ before, after, limit, user, type }?: {
+        before?: any;
+        after?: any;
+        limit?: number;
+        user?: any;
+        type?: any;
+    }): Promise<GuildAuditLogs>;
     /**
      * The data for editing a guild.
      * @typedef {Object} GuildEditData
@@ -268,7 +342,7 @@ declare class Guild extends AnonymousGuild {
      *   .then(updated => console.log(`New guild name ${updated}`))
      *   .catch(console.error);
      */
-    edit(data: any, reason: any): Promise<any>;
+    edit(data: any, reason?: string): Promise<Guild>;
     /**
      * Welcome channel data
      * @typedef {Object} WelcomeChannelData
@@ -320,21 +394,21 @@ declare class Guild extends AnonymousGuild {
      * @param {string} [reason] Reason for changing the level of the guild's explicit content filter
      * @returns {Promise<Guild>}
      */
-    setExplicitContentFilter(explicitContentFilter: any, reason: any): Promise<any>;
+    setExplicitContentFilter(explicitContentFilter: any, reason?: string): Promise<Guild>;
     /**
      * Edits the setting of the default message notifications of the guild.
      * @param {?(DefaultMessageNotificationLevel|number)} defaultMessageNotifications The new default message notification level of the guild
      * @param {string} [reason] Reason for changing the setting of the default message notifications
      * @returns {Promise<Guild>}
      */
-    setDefaultMessageNotifications(defaultMessageNotifications: any, reason: any): Promise<any>;
+    setDefaultMessageNotifications(defaultMessageNotifications: any, reason?: string): Promise<Guild>;
     /**
      * Edits the flags of the default message notifications of the guild.
      * @param {SystemChannelFlagsResolvable} systemChannelFlags The new flags for the default message notifications
      * @param {string} [reason] Reason for changing the flags of the default message notifications
      * @returns {Promise<Guild>}
      */
-    setSystemChannelFlags(systemChannelFlags: any, reason: any): Promise<any>;
+    setSystemChannelFlags(systemChannelFlags: any, reason?: string): Promise<Guild>;
     /**
      * Edits the name of the guild.
      * @param {string} name The new name of the guild
@@ -346,7 +420,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild name to ${updated.name}`))
      *  .catch(console.error);
      */
-    setName(name: any, reason: any): Promise<any>;
+    setName(name: string, reason?: string): Promise<Guild>;
     /**
      * Edits the verification level of the guild.
      * @param {?(VerificationLevel|number)} verificationLevel The new verification level of the guild
@@ -358,7 +432,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild verification level to ${guild.verificationLevel}`))
      *  .catch(console.error);
      */
-    setVerificationLevel(verificationLevel: any, reason: any): Promise<any>;
+    setVerificationLevel(verificationLevel: any, reason?: string): Promise<Guild>;
     /**
      * Edits the AFK channel of the guild.
      * @param {?VoiceChannelResolvable} afkChannel The new AFK channel
@@ -370,7 +444,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild AFK channel to ${guild.afkChannel.name}`))
      *  .catch(console.error);
      */
-    setAFKChannel(afkChannel: any, reason: any): Promise<any>;
+    setAFKChannel(afkChannel: any, reason?: string): Promise<Guild>;
     /**
      * Edits the system channel of the guild.
      * @param {?TextChannelResolvable} systemChannel The new system channel
@@ -382,7 +456,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild system channel to ${guild.systemChannel.name}`))
      *  .catch(console.error);
      */
-    setSystemChannel(systemChannel: any, reason: any): Promise<any>;
+    setSystemChannel(systemChannel: any, reason?: string): Promise<Guild>;
     /**
      * Edits the AFK timeout of the guild.
      * @param {number} afkTimeout The time in seconds that a user must be idle to be considered AFK
@@ -394,7 +468,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild AFK timeout to ${guild.afkTimeout}`))
      *  .catch(console.error);
      */
-    setAFKTimeout(afkTimeout: any, reason: any): Promise<any>;
+    setAFKTimeout(afkTimeout: number, reason?: string): Promise<Guild>;
     /**
      * Sets a new guild icon.
      * @param {?(Base64Resolvable|BufferResolvable)} icon The new icon of the guild
@@ -406,7 +480,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log('Updated the guild icon'))
      *  .catch(console.error);
      */
-    setIcon(icon: any, reason: any): Promise<any>;
+    setIcon(icon: any, reason?: string): Promise<Guild>;
     /**
      * Sets a new owner of the guild.
      * @param {GuildMemberResolvable} owner The new owner of the guild
@@ -419,7 +493,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(owner => console.log(`Updated the guild owner to ${owner.displayName}`))
      *  .catch(console.error);
      */
-    setOwner(owner: any, reason: any): Promise<any>;
+    setOwner(owner: any, reason?: string): Promise<Guild>;
     /**
      * Sets a new guild invite splash image.
      * @param {?(Base64Resolvable|BufferResolvable)} splash The new invite splash image of the guild
@@ -431,7 +505,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log('Updated the guild splash'))
      *  .catch(console.error);
      */
-    setSplash(splash: any, reason: any): Promise<any>;
+    setSplash(splash: any, reason?: string): Promise<Guild>;
     /**
      * Sets a new guild discovery splash image.
      * @param {?(Base64Resolvable|BufferResolvable)} discoverySplash The new discovery splash image of the guild
@@ -443,7 +517,7 @@ declare class Guild extends AnonymousGuild {
      *   .then(updated => console.log('Updated the guild discovery splash'))
      *   .catch(console.error);
      */
-    setDiscoverySplash(discoverySplash: any, reason: any): Promise<any>;
+    setDiscoverySplash(discoverySplash: any, reason?: string): Promise<Guild>;
     /**
      * Sets a new guild banner.
      * @param {?(Base64Resolvable|BufferResolvable)} banner The new banner of the guild
@@ -454,7 +528,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log('Updated the guild banner'))
      *  .catch(console.error);
      */
-    setBanner(banner: any, reason: any): Promise<any>;
+    setBanner(banner: any, reason?: string): Promise<Guild>;
     /**
      * Edits the rules channel of the guild.
      * @param {?TextChannelResolvable} rulesChannel The new rules channel
@@ -466,7 +540,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild rules channel to ${guild.rulesChannel.name}`))
      *  .catch(console.error);
      */
-    setRulesChannel(rulesChannel: any, reason: any): Promise<any>;
+    setRulesChannel(rulesChannel: any, reason?: string): Promise<Guild>;
     /**
      * Edits the community updates channel of the guild.
      * @param {?TextChannelResolvable} publicUpdatesChannel The new community updates channel
@@ -478,7 +552,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild community updates channel to ${guild.publicUpdatesChannel.name}`))
      *  .catch(console.error);
      */
-    setPublicUpdatesChannel(publicUpdatesChannel: any, reason: any): Promise<any>;
+    setPublicUpdatesChannel(publicUpdatesChannel: any, reason?: string): Promise<Guild>;
     /**
      * Edits the preferred locale of the guild.
      * @param {?string} preferredLocale The new preferred locale of the guild
@@ -490,7 +564,7 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild preferred locale to ${guild.preferredLocale}`))
      *  .catch(console.error);
      */
-    setPreferredLocale(preferredLocale: any, reason: any): Promise<any>;
+    setPreferredLocale(preferredLocale: string, reason?: string): Promise<Guild>;
     /**
      * Edits the safety alerts channel of the guild.
      * @param {?TextChannelResolvable} safetyAlertsChannel The new safety alerts channel
@@ -502,14 +576,14 @@ declare class Guild extends AnonymousGuild {
      *  .then(updated => console.log(`Updated guild safety alerts channel to ${updated.safetyAlertsChannel.name}`))
      *  .catch(console.error);
      */
-    setSafetyAlertsChannel(safetyAlertsChannel: any, reason: any): Promise<any>;
+    setSafetyAlertsChannel(safetyAlertsChannel: any, reason?: string): Promise<Guild>;
     /**
      * Edits the enabled state of the guild's premium progress bar
      * @param {boolean} [enabled=true] The new enabled state of the guild's premium progress bar
      * @param {string} [reason] Reason for changing the state of the guild's premium progress bar
      * @returns {Promise<Guild>}
      */
-    setPremiumProgressBarEnabled(enabled: boolean, reason: any): Promise<any>;
+    setPremiumProgressBarEnabled(enabled?: boolean, reason?: string): Promise<Guild>;
     /**
      * Data that can be resolved to give a Category Channel object. This can be:
      * * A CategoryChannel object
@@ -535,7 +609,7 @@ declare class Guild extends AnonymousGuild {
      *   .then(guild => console.log(`Updated channel positions for ${guild}`))
      *   .catch(console.error);
      */
-    setChannelPositions(channelPositions: any): any;
+    setChannelPositions(channelPositions: any[]): Promise<Guild>;
     /**
      * The data needed for updating a guild role's position
      * @typedef {Object} GuildRolePosition
@@ -552,20 +626,20 @@ declare class Guild extends AnonymousGuild {
      *  .then(guild => console.log(`Role positions updated for ${guild}`))
      *  .catch(console.error);
      */
-    setRolePositions(rolePositions: any): any;
+    setRolePositions(rolePositions: any[]): Promise<Guild>;
     /**
      * Edits the guild's widget settings.
      * @param {GuildWidgetSettingsData} settings The widget settings for the guild
      * @param {string} [reason] Reason for changing the guild's widget settings
      * @returns {Promise<Guild>}
      */
-    setWidgetSettings(settings: any, reason: any): Promise<this>;
+    setWidgetSettings(settings: any, reason?: string): Promise<this>;
     /**
      * Sets whether this guild's invites are disabled.
      * @param {boolean} [disabled=true] Whether the invites are disabled
      * @returns {Promise<Guild>}
      */
-    disableInvites(disabled?: boolean): Promise<any>;
+    disableInvites(disabled?: boolean): Promise<Guild>;
     /**
      * Sets the incident actions for a guild.
      * @param {IncidentActionsEditOptions} incidentActions The incident actions to set
@@ -581,7 +655,7 @@ declare class Guild extends AnonymousGuild {
      *   .then(guild => console.log(`Left the guild: ${guild.name}`))
      *   .catch(console.error);
      */
-    leave(): Promise<any>;
+    leave(): Promise<Guild>;
     /**
      * Deletes the guild.
      * @returns {Promise<Guild>}
@@ -591,7 +665,7 @@ declare class Guild extends AnonymousGuild {
      *   .then(g => console.log(`Deleted the guild ${g}`))
      *   .catch(console.error);
      */
-    delete(): Promise<any>;
+    delete(): Promise<Guild>;
     /**
      * Whether this guild equals another guild. It compares all properties, so for most operations
      * it is advisable to just compare `guild.id === guild2.id` as it is much faster and is often
@@ -599,7 +673,7 @@ declare class Guild extends AnonymousGuild {
      * @param {Guild} guild The guild to compare with
      * @returns {boolean}
      */
-    equals(guild: any): any;
+    equals(guild: Guild): boolean;
     toJSON(): unknown;
     /**
      * Marks the guild as read.
@@ -608,7 +682,7 @@ declare class Guild extends AnonymousGuild {
      * const guild = client.guilds.cache.get('id');
      * guild.markAsRead();
      */
-    markAsRead(): any;
+    markAsRead(): Promise<void>;
     /**
      * Set Community Feature.
      * @param {boolean} stats True / False to enable / disable Community Feature
@@ -617,12 +691,12 @@ declare class Guild extends AnonymousGuild {
      * @param {string} [reason] Reason for changing the community feature
      * @returns {Promise<Guild>}
      */
-    setCommunity(stats: boolean, publicUpdatesChannel: any, rulesChannel: any, reason: any): Promise<any>;
+    setCommunity(stats?: boolean, publicUpdatesChannel?: any, rulesChannel?: any, reason?: string): Promise<Guild>;
     /**
      * Get the top emojis of this guild.
      * @returns {Promise<Collection<number, GuildEmoji>>}
      */
-    topEmojis(): Promise<unknown>;
+    topEmojis(): Promise<Collection<number, any>>;
     /**
      * Set the vanity URL to this guild.
      * Resolves with an object containing the vanity URL invite code and the use count.

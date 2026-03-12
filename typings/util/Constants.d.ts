@@ -71,7 +71,7 @@ export declare const Endpoints: {
         RoleIcon: (roleId: any, hash: any, format: string, size: any) => string;
         GuildScheduledEventCover: (scheduledEventId: any, coverHash: any, format: any, size: any) => string;
     };
-    invite: (root: any, code: any, eventId: any) => string;
+    invite: (root: string, code: string, eventId?: string) => string;
     scheduledEvent: (root: any, guildId: any, eventId: any) => string;
     botGateway: string;
 };
@@ -402,6 +402,7 @@ export declare const Events: {
     CHANNEL_RECIPIENT_ADD: string;
     CHANNEL_RECIPIENT_REMOVE: string;
     INTERACTION_MODAL_CREATE: string;
+    INTERACTION_CREATE: string;
     CALL_CREATE: string;
     CALL_UPDATE: string;
     CALL_DELETE: string;
@@ -535,7 +536,7 @@ export declare const InviteScopes: string[];
  * @typedef {string} IntegrationExpireBehavior
  * @see {@link https://discord.com/developers/docs/resources/guild#integration-object-integration-expire-behaviors}
  */
-export declare const IntegrationExpireBehaviors: {};
+export declare const IntegrationExpireBehaviors: Record<string, any>;
 /**
  * The type of a message, e.g. `DEFAULT`. Here are the available types:
  * * DEFAULT
@@ -594,7 +595,7 @@ export declare const MessageTypes: string[];
  * @typedef {string} MessageReferenceType
  * @see {@link https://discord.com/developers/docs/resources/message#message-reference-types}
  */
-export declare const MessageReferenceTypes: {};
+export declare const MessageReferenceTypes: Record<string, any>;
 /**
  * The name of an item to be swept in Sweepers
  * * `applicationCommands` - both global and guild commands
@@ -637,7 +638,7 @@ export declare const SystemMessageTypes: string[];
  * @typedef {string} ActivityType
  * @see {@link https://discord.com/developers/docs/game-sdk/activities#data-models-activitytype-enum}
  */
-export declare const ActivityTypes: {};
+export declare const ActivityTypes: Record<string, any>;
 /**
  * All available channel types:
  * * `GUILD_TEXT` - a guild text channel
@@ -661,7 +662,7 @@ export declare const ActivityTypes: {};
  * @typedef {string} ChannelType
  * @see {@link https://discord.com/developers/docs/resources/channel#channel-object-channel-types}
  */
-export declare const ChannelTypes: {};
+export declare const ChannelTypes: Record<string, any>;
 /**
  * The channels that are text-based.
  * * DMChannel
@@ -804,7 +805,7 @@ export declare const HolographicStyles: {
  * @typedef {string} ExplicitContentFilterLevel
  * @see {@link https://discord.com/developers/docs/resources/guild#guild-object-explicit-content-filter-level}
  */
-export declare const ExplicitContentFilterLevels: {};
+export declare const ExplicitContentFilterLevels: Record<string, any>;
 /**
  * The value set for the verification levels for a guild:
  * * NONE
@@ -815,7 +816,7 @@ export declare const ExplicitContentFilterLevels: {};
  * @typedef {string} VerificationLevel
  * @see {@link https://discord.com/developers/docs/resources/guild#guild-object-verification-level}
  */
-export declare const VerificationLevels: {};
+export declare const VerificationLevels: Record<string, any>;
 /**
  * An error encountered while performing an API request. Here are the potential errors:
  * * UNKNOWN_ACCOUNT
@@ -1127,7 +1128,7 @@ export declare const APIErrors: {
  * @typedef {string} DefaultMessageNotificationLevel
  * @see {@link https://discord.com/developers/docs/resources/guild#guild-object-default-message-notification-level}
  */
-export declare const DefaultMessageNotificationLevels: {};
+export declare const DefaultMessageNotificationLevels: Record<string, any>;
 /**
  * The value set for a team member's membership state:
  * * INVITED
@@ -1135,7 +1136,7 @@ export declare const DefaultMessageNotificationLevels: {};
  * @typedef {string} MembershipState
  * @see {@link https://discord.com/developers/docs/topics/teams#data-models-membership-state-enum}
  */
-export declare const MembershipStates: {};
+export declare const MembershipStates: Record<string, any>;
 /**
  * The value set for a webhook's type:
  * * Incoming
@@ -1144,7 +1145,7 @@ export declare const MembershipStates: {};
  * @typedef {string} WebhookType
  * @see {@link https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types}
  */
-export declare const WebhookTypes: {};
+export declare const WebhookTypes: Record<string, any>;
 /**
  * The value set for a sticker's type:
  * * STANDARD
@@ -1152,7 +1153,7 @@ export declare const WebhookTypes: {};
  * @typedef {string} StickerType
  * @see {@link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types}
  */
-export declare const StickerTypes: {};
+export declare const StickerTypes: Record<string, any>;
 /**
  * The value set for a sticker's format type:
  * * PNG
@@ -1162,7 +1163,7 @@ export declare const StickerTypes: {};
  * @typedef {string} StickerFormatType
  * @see {@link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types}
  */
-export declare const StickerFormatTypes: {};
+export declare const StickerFormatTypes: Record<string, any>;
 /**
  * An overwrite type:
  * * role
@@ -1170,7 +1171,7 @@ export declare const StickerFormatTypes: {};
  * @typedef {string} OverwriteType
  * @see {@link https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure}
  */
-export declare const OverwriteTypes: {};
+export declare const OverwriteTypes: Record<string, any>;
 /**
  * The type of an {@link ApplicationCommand} object:
  * * CHAT_INPUT
@@ -1179,7 +1180,7 @@ export declare const OverwriteTypes: {};
  * @typedef {string} ApplicationCommandType
  * @see {@link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types}
  */
-export declare const ApplicationCommandTypes: {};
+export declare const ApplicationCommandTypes: Record<string, any>;
 /**
  * The type of an {@link ApplicationCommandOption} object:
  * * SUB_COMMAND
@@ -1196,7 +1197,7 @@ export declare const ApplicationCommandTypes: {};
  * @typedef {string} ApplicationCommandOptionType
  * @see {@link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type}
  */
-export declare const ApplicationCommandOptionTypes: {};
+export declare const ApplicationCommandOptionTypes: Record<string, any>;
 /**
  * The type of an {@link ApplicationCommandPermissions} object:
  * * ROLE
@@ -1204,7 +1205,7 @@ export declare const ApplicationCommandOptionTypes: {};
  * @typedef {string} ApplicationCommandPermissionType
  * @see {@link https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permission-type}
  */
-export declare const ApplicationCommandPermissionTypes: {};
+export declare const ApplicationCommandPermissionTypes: Record<string, any>;
 /**
  * Each metadata type offers a comparison operation that allows
  * guilds to configure role requirements based on metadata values stored by the bot.
@@ -1222,7 +1223,7 @@ export declare const ApplicationCommandPermissionTypes: {};
  * @typedef {string} ApplicationRoleConnectionMetadataType
  * @see{@link https://discord.com/developers/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object-application-role-connection-metadata-type}
  */
-export declare const ApplicationRoleConnectionMetadataTypes: {};
+export declare const ApplicationRoleConnectionMetadataTypes: Record<string, any>;
 /**
  * The type of an {@link AutoModerationRuleTriggerTypes} object:
  * * KEYWORD
@@ -1232,7 +1233,7 @@ export declare const ApplicationRoleConnectionMetadataTypes: {};
  * @typedef {string} AutoModerationRuleTriggerType
  * @see {@link https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-types}
  */
-export declare const AutoModerationRuleTriggerTypes: {};
+export declare const AutoModerationRuleTriggerTypes: Record<string, any>;
 /**
  * The type of an {@link AutoModerationRuleKeywordPresetTypes} object:
  * * KEYWORD
@@ -1242,7 +1243,7 @@ export declare const AutoModerationRuleTriggerTypes: {};
  * @typedef {string} AutoModerationRuleKeywordPresetType
  * @see {@link https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-keyword-preset-types}
  */
-export declare const AutoModerationRuleKeywordPresetTypes: {};
+export declare const AutoModerationRuleKeywordPresetTypes: Record<string, any>;
 /**
  * The type of an {@link AutoModerationActionTypes} object:
  * * BLOCK_MESSAGE
@@ -1251,14 +1252,14 @@ export declare const AutoModerationRuleKeywordPresetTypes: {};
  * @typedef {string} AutoModerationActionType
  * @see {@link https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-action-types}
  */
-export declare const AutoModerationActionTypes: {};
+export declare const AutoModerationActionTypes: Record<string, any>;
 /**
  * The type of an {@link AutoModerationRuleEventTypes} object:
  * * MESSAGE_SEND
  * @typedef {string} AutoModerationRuleEventType
  * @see {@link https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-event-types}
  */
-export declare const AutoModerationRuleEventTypes: {};
+export declare const AutoModerationRuleEventTypes: Record<string, any>;
 /**
  * The type of an {@link Interaction} object:
  * * PING
@@ -1269,7 +1270,7 @@ export declare const AutoModerationRuleEventTypes: {};
  * @typedef {string} InteractionType
  * @see {@link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-type}
  */
-export declare const InteractionTypes: {};
+export declare const InteractionTypes: Record<string, any>;
 /**
  * The type of an interaction response:
  * * PONG
@@ -1282,7 +1283,7 @@ export declare const InteractionTypes: {};
  * @typedef {string} InteractionResponseType
  * @see {@link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-type}
  */
-export declare const InteractionResponseTypes: {};
+export declare const InteractionResponseTypes: Record<string, any>;
 /**
  * The type of a message component
  * * ACTION_ROW
@@ -1296,7 +1297,7 @@ export declare const InteractionResponseTypes: {};
  * @typedef {string} MessageComponentType
  * @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-types}
  */
-export declare const MessageComponentTypes: {};
+export declare const MessageComponentTypes: Record<string, any>;
 /**
  * The types of components that are select menus. The available types are:
  * * STRING_MENU
@@ -1307,7 +1308,7 @@ export declare const MessageComponentTypes: {};
  * @typedef {string} SelectMenuComponentType
  * @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-types}
  */
-export declare const SelectMenuComponentTypes: {};
+export declare const SelectMenuComponentTypes: Record<string, any>;
 /**
  * The style of a message button
  * * PRIMARY
@@ -1318,7 +1319,7 @@ export declare const SelectMenuComponentTypes: {};
  * @typedef {string} MessageButtonStyle
  * @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-styles}
  */
-export declare const MessageButtonStyles: {};
+export declare const MessageButtonStyles: Record<string, any>;
 /**
  * The required MFA level for a guild
  * * NONE
@@ -1326,7 +1327,7 @@ export declare const MessageButtonStyles: {};
  * @typedef {string} MFALevel
  * @see {@link https://discord.com/developers/docs/resources/guild#guild-object-mfa-level}
  */
-export declare const MFALevels: {};
+export declare const MFALevels: Record<string, any>;
 /**
  * NSFW level of a Guild:
  * * DEFAULT
@@ -1336,7 +1337,7 @@ export declare const MFALevels: {};
  * @typedef {string} NSFWLevel
  * @see {@link https://discord.com/developers/docs/resources/guild#guild-object-guild-nsfw-level}
  */
-export declare const NSFWLevels: {};
+export declare const NSFWLevels: Record<string, any>;
 /**
  * Privacy level of a {@link StageInstance} object:
  * * PUBLIC
@@ -1344,7 +1345,7 @@ export declare const NSFWLevels: {};
  * @typedef {string} PrivacyLevel
  * @see {@link https://discord.com/developers/docs/resources/stage-instance#stage-instance-object-privacy-level}
  */
-export declare const PrivacyLevels: {};
+export declare const PrivacyLevels: Record<string, any>;
 /**
  * The style of a text input component
  * * SHORT
@@ -1352,14 +1353,14 @@ export declare const PrivacyLevels: {};
  * @typedef {string} TextInputStyle
  * @see {@link https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-styles}
  */
-export declare const TextInputStyles: {};
+export declare const TextInputStyles: Record<string, any>;
 /**
  * Privacy level of a {@link GuildScheduledEvent} object:
  * * GUILD_ONLY
  * @typedef {string} GuildScheduledEventPrivacyLevel
  * @see {@link https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-privacy-level}
  */
-export declare const GuildScheduledEventPrivacyLevels: {};
+export declare const GuildScheduledEventPrivacyLevels: Record<string, any>;
 /**
  * The premium tier (Server Boost level) of a guild:
  * * NONE
@@ -1369,7 +1370,7 @@ export declare const GuildScheduledEventPrivacyLevels: {};
  * @typedef {string} PremiumTier
  * @see {@link https://discord.com/developers/docs/resources/guild#guild-object-premium-tier}
  */
-export declare const PremiumTiers: {};
+export declare const PremiumTiers: Record<string, any>;
 /**
  * The status of a {@link GuildScheduledEvent}:
  * * SCHEDULED
@@ -1379,7 +1380,7 @@ export declare const PremiumTiers: {};
  * @typedef {string} GuildScheduledEventStatus
  * @see {@link https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-status}
  */
-export declare const GuildScheduledEventStatuses: {};
+export declare const GuildScheduledEventStatuses: Record<string, any>;
 /**
  * The entity type of a {@link GuildScheduledEvent}:
  * * NONE
@@ -1389,7 +1390,7 @@ export declare const GuildScheduledEventStatuses: {};
  * @typedef {string} GuildScheduledEventEntityType
  * @see {@link https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-entity-types}
  */
-export declare const GuildScheduledEventEntityTypes: {};
+export declare const GuildScheduledEventEntityTypes: Record<string, any>;
 /**
  * The camera video quality mode of a {@link VoiceChannel}:
  * * AUTO
@@ -1397,7 +1398,7 @@ export declare const GuildScheduledEventEntityTypes: {};
  * @typedef {string} VideoQualityMode
  * @see {@link https://discord.com/developers/docs/resources/channel#channel-object-video-quality-modes}
  */
-export declare const VideoQualityModes: {};
+export declare const VideoQualityModes: Record<string, any>;
 /**
  * The type of reaction
  * * NORMAL
@@ -1405,7 +1406,7 @@ export declare const VideoQualityModes: {};
  * @typedef {string} ReactionType
  * @see {@link https://discord.com/developers/docs/resources/channel#channel-object-video-quality-modes}
  */
-export declare const ReactionTypes: {};
+export declare const ReactionTypes: Record<string, any>;
 /**
  * Sort {@link ThreadOnlyChannel} posts by creation time or activity
  * * LATEST_ACTIVITY
@@ -1413,7 +1414,7 @@ export declare const ReactionTypes: {};
  * @typedef {string} SortOrderType
  * @see {@link https://discord.com/developers/docs/resources/channel/#channel-object-sort-order-types}
  */
-export declare const SortOrderTypes: {};
+export declare const SortOrderTypes: Record<string, any>;
 /**
  * The default forum layout to set on the {@link ForumChannel}
  * * NOT_SET
@@ -1422,7 +1423,7 @@ export declare const SortOrderTypes: {};
  * @typedef {string} ForumLayoutType
  * @see {@link https://discord.com/developers/docs/resources/channel/#channel-object-forum-layout-types}
  */
-export declare const ForumLayoutTypes: {};
+export declare const ForumLayoutTypes: Record<string, any>;
 /**
  * Different layouts for {@link MessagePoll} will come in the future. For now though, this value will always be `DEFAULT`.
  * * DEFAULT
@@ -1430,7 +1431,7 @@ export declare const ForumLayoutTypes: {};
  * @typedef {string} PollLayoutType
  * @see {@link https://docs.discord.food/resources/message#poll-layout-type}
  */
-export declare const PollLayoutTypes: {};
+export declare const PollLayoutTypes: Record<string, any>;
 /**
  * Relationship Enums:
  * * 0: IGNORED
@@ -1443,8 +1444,8 @@ export declare const PollLayoutTypes: {};
  * @typedef {string} RelationshipType
  * @see {@link https://luna.gitlab.io/discord-unofficial-docs/relationships.html}
  */
-export declare const RelationshipTypes: {};
-export declare const SeparatorSpacingSizes: {};
+export declare const RelationshipTypes: Record<string, any>;
+export declare const SeparatorSpacingSizes: Record<string, any>;
 export declare const _cleanupSymbol: unique symbol;
 /**
  * @typedef {Object} Constants Constants that can be used in an enum or object-like way.

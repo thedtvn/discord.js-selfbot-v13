@@ -1,5 +1,5 @@
-declare const Action: any;
-declare const Events: any;
+import Action from './Action';
 declare class WebhooksUpdate extends Action {
-    handle(data: any): void;
+    handle(data: any): any;
 }
+export default WebhooksUpdate;

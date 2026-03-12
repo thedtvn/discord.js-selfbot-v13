@@ -1,13 +1,19 @@
-import { Collection } from '@discordjs/collection';
 import { Channel } from './Channel';
+import MessageManager from '../managers/MessageManager';
 /**
  * Represents a direct message channel between two users.
  * @extends {Channel}
  * @implements {TextBasedChannel}
  */
 declare class DMChannel extends Channel {
+    messages: MessageManager;
+    recipient: any;
+    lastMessageId: string | null;
+    lastPinTimestamp: number | null;
+    messageRequest: boolean | null;
+    messageRequestTimestamp: number | null;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * Accept this DMChannel.
      * @returns {Promise<DMChannel>}
@@ -38,7 +44,7 @@ declare class DMChannel extends Channel {
      * // Logs: Hello from <@123456789012345678>!
      * console.log(`Hello from ${channel}!`);
      */
-    toString(): any;
+    toString(): string;
     /**
      * Sync VoiceState of this DMChannel.
      * @returns {undefined}
@@ -54,7 +60,7 @@ declare class DMChannel extends Channel {
      * @type {Collection<Snowflake, User>}
      * @readonly
      */
-    get voiceUsers(): Collection<unknown, unknown>;
+    get voiceUsers(): any;
     /**
      * Get current shard
      * @type {WebSocketShard}
@@ -70,8 +76,8 @@ declare class DMChannel extends Channel {
         sendPayload: (data: any) => boolean;
         destroy: () => void;
     };
-    get lastMessage(): void;
-    get lastPinAt(): void;
+    get lastMessage(): any;
+    get lastPinAt(): any;
     send(): void;
     sendTyping(): void;
     createMessageCollector(): void;

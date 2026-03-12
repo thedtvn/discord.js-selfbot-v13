@@ -1,8 +1,5 @@
-declare const EventEmitter: any;
-declare const prism: any;
-declare const PacketHandler: any;
-declare const Error: any;
-declare const PCMInsertSilence: any;
+import { EventEmitter } from 'events';
+import PacketHandler from './PacketHandler';
 /**
  * Receives audio packets from a voice connection.
  * @example
@@ -11,6 +8,8 @@ declare const PCMInsertSilence: any;
  * const opusStream = receiver.createStream(user);
  */
 declare class VoiceReceiver extends EventEmitter {
+    connection: any;
+    packets: PacketHandler;
     constructor(connection: any);
     /**
      * Options passed to `VoiceReceiver#createStream`.
@@ -30,11 +29,7 @@ declare class VoiceReceiver extends EventEmitter {
      * @param {ReceiveStreamOptions} options Options.
      * @returns {ReadableStream}
      */
-    createStream(user: any, { mode, end, paddingSilence }?: {
-        mode?: string;
-        end?: string;
-        paddingSilence?: boolean;
-    }): any;
+    createStream(user: any, { mode, end, paddingSilence }?: any): any;
     /**
      * Creates a new video receiving stream. If a stream already exists for a user, then that stream will be returned
      * rather than generating a new one.
@@ -45,3 +40,4 @@ declare class VoiceReceiver extends EventEmitter {
      */
     createVideoStream(user: any, output: any): any;
 }
+export default VoiceReceiver;

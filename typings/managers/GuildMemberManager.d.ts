@@ -1,20 +1,85 @@
+import { Collection } from '@discordjs/collection';
 import CachedManager from './CachedManager';
+import { GuildMember } from '../structures/GuildMember';
+import type { Snowflake } from 'discord-api-types/v10';
+import { Guild } from '../structures/Guild';
 /**
  * Manages API methods for GuildMembers and stores their cache.
  * @extends {CachedManager}
  */
-declare class GuildMemberManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+type GuildMemberResolvable = GuildMember | Snowflake;
+type RawGuildMemberData = {
+    id: Snowflake;
+    user: {
+        id: Snowflake;
+    };
+} & Record<string, unknown>;
+interface AddGuildMemberOptions {
+    accessToken: string;
+    nick?: string;
+    roles?: Collection<Snowflake, unknown> | unknown[];
+    mute?: boolean;
+    deaf?: boolean;
+    force?: boolean;
+    fetchWhenExisting?: boolean;
+}
+interface FetchMemberOptions {
+    user: unknown;
+    cache?: boolean;
+    force?: boolean;
+}
+interface FetchMembersOptions {
+    user?: unknown;
+    query?: string | null;
+    limit?: number;
+    withPresences?: boolean;
+    time?: number;
+    nonce?: string;
+    force?: boolean;
+}
+interface GuildSearchMembersOptions {
+    query?: string;
+    limit?: number;
+    cache?: boolean;
+}
+interface GuildMemberEditData {
+    nick?: string | null;
+    roles?: unknown[] | Collection<Snowflake, unknown>;
+    mute?: boolean;
+    deaf?: boolean;
+    channel?: unknown;
+    communicationDisabledUntil?: unknown;
+    flags?: unknown;
+    avatar?: unknown;
+    banner?: unknown;
+    bio?: string | null;
+    [key: string]: unknown;
+}
+interface GuildPruneMembersOptions {
+    days?: number;
+    dry?: boolean;
+    count?: boolean;
+    roles?: unknown[];
+    reason?: string;
+}
+interface BanOptions {
+    days?: number;
+    deleteMessageSeconds?: number;
+    reason?: string;
+}
+interface BulkBanOptions {
+    deleteMessageSeconds?: number;
+    reason?: string;
+}
+declare class GuildMemberManager extends CachedManager<Snowflake, GuildMember, GuildMemberResolvable, RawGuildMemberData, [Guild]> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawGuildMemberData>);
     /**
      * The cache of this Manager
      * @type {Collection<Snowflake, GuildMember>}
      * @name GuildMemberManager#cache
      */
-    _add(data: any, cache?: boolean): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    _add(data: RawGuildMemberData, cache?: boolean): GuildMember;
     /**
      * Data that resolves to give a GuildMember object. This can be:
      * * A GuildMember object
@@ -26,17 +91,13 @@ declare class GuildMemberManager extends CachedManager {
      * @param {GuildMemberResolvable} member The user that is part of the guild
      * @returns {?GuildMember}
      */
-    resolve(member: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    resolve(member: GuildMemberResolvable): GuildMember | null;
     /**
      * Resolves a {@link GuildMemberResolvable} to a member id.
      * @param {GuildMemberResolvable} member The user that is part of the guild
      * @returns {?Snowflake}
      */
-    resolveId(member: any): any;
+    resolveId(member: GuildMemberResolvable): Snowflake | null;
     /**
      * Options used to add a user to a guild using OAuth2.
      * @typedef {Object} AddGuildMemberOptions
@@ -56,17 +117,13 @@ declare class GuildMemberManager extends CachedManager {
      * @param {AddGuildMemberOptions} options Options for adding the user to the guild
      * @returns {Promise<GuildMember|null>}
      */
-    add(user: any, options: any): Promise<unknown>;
+    add(user: string | GuildMember, options: AddGuildMemberOptions): Promise<GuildMember | null>;
     /**
      * The client user as a GuildMember of this guild
      * @type {?GuildMember}
      * @readonly
      */
-    get me(): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    get me(): GuildMember | null;
     /**
      * Options used to fetch a single member from a guild.
      * @typedef {BaseFetchOptions} FetchMemberOptions
@@ -120,13 +177,16 @@ declare class GuildMemberManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    fetch(options: any): Promise<unknown>;
+    fetch(options?: string | FetchMemberOptions | FetchMembersOptions): Promise<GuildMember | Collection<Snowflake, GuildMember>>;
     /**
      * Fetches the client user as a GuildMember of the guild.
      * @param {BaseFetchOptions} [options] The options for fetching the member
      * @returns {Promise<GuildMember>}
      */
-    fetchMe(options: any): Promise<unknown>;
+    fetchMe(options?: {
+        cache?: boolean;
+        force?: boolean;
+    }): Promise<GuildMember>;
     /**
      * Options used for searching guild members.
      * @typedef {Object} GuildSearchMembersOptions
@@ -139,10 +199,7 @@ declare class GuildMemberManager extends CachedManager {
      * @param {GuildSearchMembersOptions} options Options for searching members
      * @returns {Promise<Collection<Snowflake, GuildMember>>}
      */
-    search({ query, limit, cache }?: {
-        limit?: number;
-        cache?: boolean;
-    }): Promise<any>;
+    search({ query, limit, cache }?: GuildSearchMembersOptions): Promise<Collection<Snowflake, GuildMember>>;
     /**
      * The data for editing a guild member.
      * @typedef {Object} GuildMemberEditData
@@ -167,7 +224,7 @@ declare class GuildMemberManager extends CachedManager {
      * @param {string} [reason] Reason for editing this user
      * @returns {Promise<GuildMember>}
      */
-    edit(user: any, data: any, reason: any): Promise<any>;
+    edit(user: string | GuildMember, data: GuildMemberEditData, reason?: string): Promise<GuildMember>;
     /**
      * Options used for pruning guild members.
      * <info>It's recommended to set {@link GuildPruneMembersOptions#count options.count}
@@ -199,12 +256,7 @@ declare class GuildMemberManager extends CachedManager {
      *    .then(pruned => console.log(`I just pruned ${pruned} people!`))
      *    .catch(console.error);
      */
-    prune({ days, dry, count: compute_prune_count, roles, reason }?: {
-        days?: number;
-        dry?: boolean;
-        count?: boolean;
-        roles?: any[];
-    }): Promise<any>;
+    prune({ days, dry, count: compute_prune_count, roles, reason }?: GuildPruneMembersOptions): Promise<number | null>;
     /**
      * Kicks a user from the guild.
      * <info>The user must be a member of the guild</info>
@@ -219,7 +271,7 @@ declare class GuildMemberManager extends CachedManager {
      *   .then(kickInfo => console.log(`Kicked ${kickInfo.user?.tag ?? kickInfo.tag ?? kickInfo}`))
      *   .catch(console.error);
      */
-    kick(user: any, reason: any): Promise<any>;
+    kick(user: string | GuildMember, reason?: string): Promise<GuildMember | unknown>;
     /**
      * Bans a user from the guild.
      * @param {UserResolvable} user The user to ban
@@ -234,7 +286,7 @@ declare class GuildMemberManager extends CachedManager {
      *   .then(banInfo => console.log(`Banned ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`))
      *   .catch(console.error);
      */
-    ban(user: any, options: any): any;
+    ban(user: unknown, options?: BanOptions): Promise<unknown>;
     /**
      * Unbans a user from the guild. Internally calls the {@link GuildBanManager#remove} method.
      * @param {UserResolvable} user The user to unban
@@ -246,16 +298,12 @@ declare class GuildMemberManager extends CachedManager {
      *   .then(user => console.log(`Unbanned ${user.username} from ${guild.name}`))
      *   .catch(console.error);
      */
-    unban(user: any, reason: any): any;
+    unban(user: unknown, reason?: string): Promise<unknown>;
     _fetchSingle({ user, cache, force }: {
-        user: any;
-        cache: any;
+        user: Snowflake;
+        cache?: boolean;
         force?: boolean;
-    }): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    }): Promise<GuildMember>;
     /**
      * Adds a role to a member.
      * @param {GuildMemberResolvable} user The user to add the role from
@@ -263,7 +311,7 @@ declare class GuildMemberManager extends CachedManager {
      * @param {string} [reason] Reason for adding the role
      * @returns {Promise<GuildMember|User|Snowflake>}
      */
-    addRole(user: any, role: any, reason: any): Promise<any>;
+    addRole(user: string | GuildMember, role: unknown, reason?: string): Promise<unknown>;
     /**
      * Removes a role from a member.
      * @param {UserResolvable} user The user to remove the role from
@@ -271,20 +319,15 @@ declare class GuildMemberManager extends CachedManager {
      * @param {string} [reason] Reason for removing the role
      * @returns {Promise<GuildMember|User|Snowflake>}
      */
-    removeRole(user: any, role: any, reason: any): Promise<any>;
+    removeRole(user: string | GuildMember, role: unknown, reason?: string): Promise<unknown>;
     /**
      * Experimental method to fetch members from the guild.
      * <info>Lists up to 10000 members of the guild.</info>
      * @param {number} [timeout=15_000] Timeout for receipt of members in ms
      * @returns {Promise<Collection<Snowflake, GuildMember>>}
      */
-    fetchByMemberSafety(timeout?: number): Promise<unknown>;
-    _fetchMany({ limit, withPresences: presences, user: user_ids, query, time, nonce, }?: {
-        limit?: number;
-        withPresences?: boolean;
-        time?: number;
-        nonce?: string;
-    }): Promise<unknown>;
+    fetchByMemberSafety(timeout?: number): Promise<Collection<Snowflake, GuildMember>>;
+    _fetchMany(options?: FetchMembersOptions): Promise<GuildMember | Collection<Snowflake, GuildMember>>;
     /**
      * Bulk ban users from a guild, and optionally delete previous messages sent by them.
      * @param {Collection<Snowflake, UserResolvable>|UserResolvable[]} users The users to ban
@@ -301,6 +344,9 @@ declare class GuildMemberManager extends CachedManager {
      *   .catch(console.error);
      * @deprecated This method will not be usable until an effective MFA implementation is in place.
      */
-    bulkBan(users: any, options?: {}): any;
+    bulkBan(users: Collection<Snowflake, unknown> | unknown[], options?: BulkBanOptions): Promise<{
+        bannedUsers: Snowflake[];
+        failedUsers: Snowflake[];
+    }>;
 }
 export default GuildMemberManager;

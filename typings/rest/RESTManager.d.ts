@@ -4,10 +4,10 @@ import { fetch as fetchOriginal } from 'undici';
 import { type APIRequestOptions } from './APIRequest';
 import { type APIRouteProxy } from './APIRouter';
 import RequestHandler from './RequestHandler';
-import type Client from '../client/Client';
+import type BaseClient from '../client/BaseClient';
 type HTTPMethod = 'get' | 'post' | 'delete' | 'patch' | 'put';
 declare class RESTManager {
-    client: Client;
+    client: BaseClient;
     handlers: Collection<string, RequestHandler>;
     versioned: boolean;
     globalLimit: number;
@@ -17,10 +17,10 @@ declare class RESTManager {
     cookieJar: CookieJar;
     fetch: typeof fetchOriginal;
     sweepInterval?: NodeJS.Timeout;
-    constructor(client: Client);
+    constructor(client: BaseClient);
     get api(): APIRouteProxy;
     getAuth(): string;
-    get cdn(): string;
+    get cdn(): any;
     request(method: HTTPMethod, url: string, options?: Partial<APIRequestOptions>): Promise<unknown>;
     get endpoint(): string;
     set endpoint(endpoint: string);

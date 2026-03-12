@@ -4,6 +4,7 @@ import { Channel } from './Channel';
  * @extends {Channel}
  */
 declare class DirectoryChannel extends Channel {
-    _patch(data: any): void;
+    name: string;
+    _patch(data: any): any;
 }
 export default DirectoryChannel;

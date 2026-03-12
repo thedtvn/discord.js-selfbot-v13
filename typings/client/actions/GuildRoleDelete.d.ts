@@ -1,8 +1,5 @@
-declare const Action: any;
-declare const deletedRoles: any;
-declare const Events: any;
+import Action from './Action';
 declare class GuildRoleDeleteAction extends Action {
-    handle(data: any): {
-        role: any;
-    };
+    handle(data: any): any;
 }
+export default GuildRoleDeleteAction;

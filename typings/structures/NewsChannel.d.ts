@@ -17,6 +17,6 @@ declare class NewsChannel extends BaseGuildTextChannel {
      *     .catch(console.error);
      * }
      */
-    addFollower(channel: any, reason: any): Promise<this>;
+    addFollower(channel: any, reason?: string): Promise<NewsChannel>;
 }
 export default NewsChannel;

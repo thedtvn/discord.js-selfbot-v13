@@ -1,9 +1,5 @@
-declare const Action: any;
-declare const deletedGuildMembers: any;
-declare const Events: any, Status: any;
+import Action from './Action';
 declare class GuildMemberRemoveAction extends Action {
-    handle(data: any, shard: any): {
-        guild: any;
-        member: any;
-    };
+    handle(data: any, shard: any): any;
 }
+export default GuildMemberRemoveAction;

@@ -29,6 +29,6 @@ declare class APIRequest {
     fullUserAgent: string;
     path: string;
     constructor(rest: RESTManager, method: string, path: string, options: APIRequestOptions);
-    make(captchaKey?: string, captchaRqToken?: string): Promise<Response>;
+    make(captchaKey?: string, captchaRqToken?: string): Promise<any>;
 }
 export default APIRequest;

@@ -1,11 +1,76 @@
+import { Collection } from '@discordjs/collection';
 import CachedManager from './CachedManager';
+import GuildChannel from '../structures/GuildChannel';
+import ThreadChannel from '../structures/ThreadChannel';
 import Webhook from '../structures/Webhook';
+import type { Snowflake } from 'discord-api-types/v10';
+import { Guild } from '../structures/Guild';
+type GuildChannelResolvable = GuildChannel | ThreadChannel | Snowflake;
+type RawGuildChannelData = {
+    id: Snowflake;
+} & Record<string, unknown>;
+interface GuildChannelCreateOptions {
+    type?: string | number;
+    topic?: string;
+    nsfw?: boolean;
+    bitrate?: number;
+    userLimit?: number;
+    parent?: unknown;
+    permissionOverwrites?: unknown[];
+    position?: number;
+    rateLimitPerUser?: number;
+    rtcRegion?: string | null;
+    videoQualityMode?: string | number;
+    availableTags?: unknown[];
+    defaultReactionEmoji?: unknown;
+    defaultSortOrder?: string | number | null;
+    defaultForumLayout?: string | number;
+    defaultThreadRateLimitPerUser?: number;
+    reason?: string;
+}
+interface ChannelWebhookCreateOptions {
+    avatar?: unknown;
+    reason?: string;
+}
+interface ChannelData {
+    name?: string;
+    type?: string | number;
+    position?: number;
+    topic?: string;
+    nsfw?: boolean;
+    bitrate?: number;
+    userLimit?: number;
+    parent?: unknown;
+    lockPermissions?: boolean;
+    permissionOverwrites?: unknown[];
+    rateLimitPerUser?: number;
+    defaultAutoArchiveDuration?: number | string;
+    rtcRegion?: string | null;
+    videoQualityMode?: string | number;
+    flags?: unknown;
+    availableTags?: unknown[];
+    defaultReactionEmoji?: unknown;
+    defaultThreadRateLimitPerUser?: number;
+    defaultSortOrder?: string | number | null;
+    [key: string]: unknown;
+}
+interface SetChannelPositionOptions {
+    relative?: boolean;
+    reason?: string;
+}
+interface ChannelPosition {
+    channel: GuildChannelResolvable;
+    position?: number;
+    parent?: unknown;
+    lockPermissions?: boolean;
+}
 /**
  * Manages API methods for GuildChannels and stores their cache.
  * @extends {CachedManager}
  */
-declare class GuildChannelManager extends CachedManager {
-    constructor(guild: any, iterable: any);
+declare class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildChannelResolvable, RawGuildChannelData, [Guild]> {
+    readonly guild: Guild;
+    constructor(guild: Guild, iterable?: Iterable<RawGuildChannelData>);
     /**
      * The number of channels in this managers cache excluding thread channels
      * that do not count towards a guild's maximum channels restriction.
@@ -18,7 +83,7 @@ declare class GuildChannelManager extends CachedManager {
      * @type {Collection<Snowflake, GuildChannel|ThreadChannel>}
      * @name GuildChannelManager#cache
      */
-    _add(channel: any): any;
+    _add(channel: GuildChannel | RawGuildChannelData, cache?: boolean): GuildChannel;
     /**
      * Data that can be resolved to give a Guild Channel object. This can be:
      * * A GuildChannel object
@@ -31,17 +96,13 @@ declare class GuildChannelManager extends CachedManager {
      * @param {GuildChannelResolvable} channel The GuildChannel resolvable to resolve
      * @returns {?(GuildChannel|ThreadChannel)}
      */
-    resolve(channel: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    resolve(channel: GuildChannelResolvable): GuildChannel | null;
     /**
      * Resolves a GuildChannelResolvable to a channel id.
      * @param {GuildChannelResolvable} channel The GuildChannel resolvable to resolve
      * @returns {?Snowflake}
      */
-    resolveId(channel: any): string;
+    resolveId(channel: GuildChannelResolvable): Snowflake | null;
     /**
      * Options used to create a new channel in a guild.
      * @typedef {CategoryCreateChannelOptions} GuildChannelCreateOptions
@@ -69,7 +130,7 @@ declare class GuildChannelManager extends CachedManager {
      *   ],
      * })
      */
-    create(name: any, { type, topic, nsfw, bitrate, userLimit, parent, permissionOverwrites, position, rateLimitPerUser, rtcRegion, videoQualityMode, availableTags, defaultReactionEmoji, defaultSortOrder, defaultForumLayout, defaultThreadRateLimitPerUser, reason, }?: {}): Promise<any>;
+    create(name: string, { type, topic, nsfw, bitrate, userLimit, parent, permissionOverwrites, position, rateLimitPerUser, rtcRegion, videoQualityMode, availableTags, defaultReactionEmoji, defaultSortOrder, defaultForumLayout, defaultThreadRateLimitPerUser, reason, }?: GuildChannelCreateOptions): Promise<any>;
     /**
      * Creates a webhook for the channel.
      * @param {GuildChannelResolvable} channel The channel to create the webhook for
@@ -85,7 +146,7 @@ declare class GuildChannelManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error)
      */
-    createWebhook(channel: any, name: any, { avatar, reason }?: {}): Promise<Webhook>;
+    createWebhook(channel: GuildChannelResolvable, name: string, { avatar, reason }?: ChannelWebhookCreateOptions): Promise<Webhook>;
     /**
      * Adds the target channel to a channel's followers.
      * @param {NewsChannel|Snowflake} channel The channel to follow
@@ -93,7 +154,7 @@ declare class GuildChannelManager extends CachedManager {
      * @param {string} [reason] Reason for creating the webhook
      * @returns {Promise<Snowflake>} Returns created target webhook id.
      */
-    addFollower(channel: any, targetChannel: any, reason: any): Promise<any>;
+    addFollower(channel: GuildChannelResolvable, targetChannel: GuildChannelResolvable, reason?: string): Promise<Snowflake>;
     /**
      * The data for a guild channel.
      * @typedef {Object} ChannelData
@@ -132,7 +193,7 @@ declare class GuildChannelManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    edit(channel: any, data: any, reason: any): Promise<any>;
+    edit(channel: GuildChannelResolvable, data: ChannelData, reason?: string): Promise<GuildChannel>;
     /**
      * Sets a new position for the guild channel.
      * @param {GuildChannelResolvable} channel The channel to set the position for
@@ -145,7 +206,7 @@ declare class GuildChannelManager extends CachedManager {
      *   .then(newChannel => console.log(`Channel's new position is ${newChannel.position}`))
      *   .catch(console.error);
      */
-    setPosition(channel: any, position: any, { relative, reason }?: {}): Promise<any>;
+    setPosition(channel: GuildChannelResolvable, position: number, { relative, reason }?: SetChannelPositionOptions): Promise<GuildChannel>;
     /**
      * Obtains one or more guild channels from Discord, or the channel cache if they're already available.
      * @param {Snowflake} [id] The channel's id
@@ -162,10 +223,10 @@ declare class GuildChannelManager extends CachedManager {
      *   .then(channel => console.log(`The channel name is: ${channel.name}`))
      *   .catch(console.error);
      */
-    fetch(id: any, { cache, force }?: {
+    fetch(id?: Snowflake, { cache, force }?: {
         cache?: boolean;
         force?: boolean;
-    }): Promise<any>;
+    }): Promise<GuildChannel | ThreadChannel | null | Collection<Snowflake, GuildChannel>>;
     /**
      * Fetches all webhooks for the channel.
      * @param {GuildChannelResolvable} channel The channel to fetch webhooks for
@@ -176,7 +237,7 @@ declare class GuildChannelManager extends CachedManager {
      *   .then(hooks => console.log(`This channel has ${hooks.size} hooks`))
      *   .catch(console.error);
      */
-    fetchWebhooks(channel: any): Promise<any>;
+    fetchWebhooks(channel: GuildChannelResolvable): Promise<Collection<Snowflake, Webhook>>;
     /**
      * Data that can be resolved to give a Category Channel object. This can be:
      * * A CategoryChannel object
@@ -201,7 +262,7 @@ declare class GuildChannelManager extends CachedManager {
      *   .then(guild => console.log(`Updated channel positions for ${guild}`))
      *   .catch(console.error);
      */
-    setPositions(channelPositions: any): Promise<any>;
+    setPositions(channelPositions: ChannelPosition[]): Promise<Guild>;
     /**
      * Deletes the channel.
      * @param {GuildChannelResolvable} channel The channel to delete
@@ -213,6 +274,6 @@ declare class GuildChannelManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    delete(channel: any, reason: any): Promise<void>;
+    delete(channel: GuildChannelResolvable, reason?: string): Promise<void>;
 }
 export default GuildChannelManager;

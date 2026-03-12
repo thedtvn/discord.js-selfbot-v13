@@ -4,8 +4,19 @@ import Base from './Base';
  * @extends {Base}
  */
 declare class GuildTemplate extends Base {
+    code: string;
+    name: string;
+    description: string | null;
+    usageCount: number;
+    creatorId: any;
+    creator: any;
+    createdAt: Date;
+    updatedAt: Date;
+    guildId: any;
+    serializedGuild: any;
+    unSynced: boolean | null;
     constructor(client: any, data: any);
-    _patch(data: any): this;
+    _patch(data: any): any;
     /**
      * Creates a guild based on this template.
      * <warn>This is only available to bots in fewer than 10 guilds.</warn>
@@ -13,7 +24,7 @@ declare class GuildTemplate extends Base {
      * @param {BufferResolvable|Base64Resolvable} [icon] The icon for the guild
      * @returns {Promise<Guild>}
      */
-    createGuild(name: any, icon: any): Promise<any>;
+    createGuild(name: string, icon?: any): Promise<any>;
     /**
      * Options used to edit a guild template.
      * @typedef {Object} EditGuildTemplateOptions
@@ -25,29 +36,32 @@ declare class GuildTemplate extends Base {
      * @param {EditGuildTemplateOptions} [options] Options for editing the template
      * @returns {Promise<GuildTemplate>}
      */
-    edit({ name, description }?: {}): Promise<this>;
+    edit({ name, description }?: {
+        name?: string;
+        description?: string;
+    }): Promise<any>;
     /**
      * Deletes this template.
      * @returns {Promise<GuildTemplate>}
      */
-    delete(): Promise<this>;
+    delete(): Promise<GuildTemplate>;
     /**
      * Syncs this template to the current state of the guild.
      * @returns {Promise<GuildTemplate>}
      */
-    sync(): Promise<this>;
+    sync(): Promise<any>;
     /**
      * The timestamp of when this template was created at
      * @type {number}
      * @readonly
      */
-    get createdTimestamp(): any;
+    get createdTimestamp(): number;
     /**
      * The timestamp of when this template was last synced to the guild
      * @type {number}
      * @readonly
      */
-    get updatedTimestamp(): any;
+    get updatedTimestamp(): number;
     /**
      * The guild that this template belongs to
      * @type {?Guild}
@@ -67,6 +81,6 @@ declare class GuildTemplate extends Base {
      * // Logs: Template: FKvmczH2HyUf
      * console.log(`Template: ${guildTemplate}!`);
      */
-    toString(): any;
+    toString(): string;
 }
 export default GuildTemplate;

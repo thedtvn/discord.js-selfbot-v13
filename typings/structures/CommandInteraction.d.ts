@@ -4,6 +4,7 @@ import BaseCommandInteraction from './BaseCommandInteraction';
  * @extends {BaseCommandInteraction}
  */
 declare class CommandInteraction extends BaseCommandInteraction {
+    options: any;
     constructor(client: any, data: any);
     /**
      * Returns a string representation of the command interaction.

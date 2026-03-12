@@ -1,6 +1,5 @@
-declare const Action: any;
-declare const AutoModerationActionExecution: any;
-declare const Events: any;
+import Action from './Action';
 declare class AutoModerationActionExecutionAction extends Action {
-    handle(data: any): {};
+    handle(data: any): any;
 }
+export default AutoModerationActionExecutionAction;

@@ -4,6 +4,7 @@ import BaseMessageComponent from './BaseMessageComponent';
  * @extends {BaseMessageComponent}
  */
 declare class MessageActionRow extends BaseMessageComponent {
+    components: any[];
     /**
      * Components that can be placed in an action row
      * * MessageButton
@@ -33,7 +34,7 @@ declare class MessageActionRow extends BaseMessageComponent {
      * @param {MessageActionRow|MessageActionRowOptions} [data={}] MessageActionRow to clone or raw data
      * @param {Client} [client] The client constructing this MessageActionRow, if provided
      */
-    constructor(data?: {}, client?: any);
+    constructor(data?: any, client?: any);
     /**
      * Adds components to the action row.
      * @param {...MessageActionRowComponentResolvable[]} components The components to add
@@ -53,13 +54,13 @@ declare class MessageActionRow extends BaseMessageComponent {
      * @param {...MessageActionRowComponentResolvable[]} [components] The replacing components
      * @returns {MessageActionRow}
      */
-    spliceComponents(index: any, deleteCount: any, ...components: any[]): this;
+    spliceComponents(index: number, deleteCount: number, ...components: any[]): this;
     /**
      * Transforms the action row to a plain object.
      * @returns {APIMessageComponent} The raw data of this action row
      */
     toJSON(): {
-        components: any;
+        components: any[];
         type: any;
     };
 }

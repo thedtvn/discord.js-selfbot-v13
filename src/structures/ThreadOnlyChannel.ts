@@ -1,8 +1,9 @@
 import GuildChannel from './GuildChannel';
-import TextBasedChannel from './interfaces/TextBasedChannel';
 import GuildForumThreadManager from '../managers/GuildForumThreadManager';
 import { SortOrderTypes } from '../util/Constants';
 import Util from '../util/Util';
+
+let TextBasedChannel: any;
 
 /**
  * @typedef {Object} GuildForumTagEmoji
@@ -242,6 +243,7 @@ class ThreadOnlyChannel extends GuildChannel {
   setRateLimitPerUser(..._args: any[]): any {}
 }
 
+TextBasedChannel ??= require('./interfaces/TextBasedChannel').default;
 TextBasedChannel.applyToClass(ThreadOnlyChannel, true, [
   'send',
   'lastMessage',

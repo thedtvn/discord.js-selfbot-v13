@@ -1,16 +1,54 @@
+import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
+import ThreadChannel from '../structures/ThreadChannel';
+type ThreadParentChannel = {
+    id: Snowflake;
+    guild?: Guild;
+    client: Client;
+};
+type RawThreadMemberData = {
+    id: Snowflake;
+};
+type RawMessageData = {
+    id: Snowflake;
+};
+type RawThreadData = {
+    id: Snowflake;
+    parentId?: Snowflake | null;
+};
+type RawThreadsResponse = {
+    threads: RawThreadData[];
+    members: RawThreadMemberData[];
+    first_messages?: RawMessageData[] | null;
+    has_more?: boolean;
+};
+interface FetchChannelThreadsOptions {
+    archived?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    limit?: number;
+    offset?: number;
+}
+interface FetchedThreads {
+    threads: Collection<Snowflake, ThreadChannel>;
+    hasMore: boolean;
+}
 /**
  * Manages API methods for {@link ThreadChannel} objects and stores their cache.
  * @extends {CachedManager}
  */
-declare class ThreadManager extends CachedManager {
-    constructor(channel: any, iterable: any);
+declare class ThreadManager extends CachedManager<Snowflake, ThreadChannel, Snowflake | ThreadChannel, RawThreadData> {
+    readonly channel: ThreadParentChannel;
+    constructor(channel: ThreadParentChannel, iterable?: Iterable<RawThreadData>);
     /**
      * The cache of this Manager
      * @type {Collection<Snowflake, ThreadChannel>}
      * @name ThreadManager#cache
      */
-    _add(thread: any): any;
+    _add(thread: ThreadChannel): ThreadChannel;
     /**
      * Data that can be resolved to a Thread Channel object. This can be:
      * * A ThreadChannel object
@@ -51,7 +89,12 @@ declare class ThreadManager extends CachedManager {
      *   .then(channel => console.log(channel.name))
      *   .catch(console.error);
      */
-    fetch(options: any, { cache, force }?: {}): any;
+    fetch(options?: Snowflake | FetchChannelThreadsOptions | {
+        archived?: FetchChannelThreadsOptions;
+    }, { cache, force }?: {
+        cache?: boolean;
+        force?: boolean;
+    }): Promise<ThreadChannel | FetchedThreads | null>;
     /**
      * Data that can be resolved to a Date object. This can be:
      * * A Date object
@@ -81,7 +124,7 @@ declare class ThreadManager extends CachedManager {
      * @param {boolean} [cache=true] Whether to cache the new thread objects if they aren't already
      * @returns {Promise<FetchedThreads>}
      */
-    fetchArchived(options?: {}, cache?: boolean): Promise<any>;
+    fetchArchived(options?: FetchChannelThreadsOptions, cache?: boolean): Promise<FetchedThreads>;
     /**
      * Discord.js self-bot specific options field for fetching active threads.
      * @typedef {Object} FetchChannelThreadsOptions
@@ -97,14 +140,11 @@ declare class ThreadManager extends CachedManager {
      * @param {FetchChannelThreadsOptions} [options] Options for self-bots where advanced users can specify further options
      * @returns {Promise<FetchedThreads>}
      */
-    fetchActive(cache?: boolean, options?: {}): Promise<any>;
-    static _mapThreads(rawThreads: any, client: any, { parent, guild, cache }: {
-        parent: any;
-        guild: any;
-        cache: any;
-    }): {
-        threads: any;
-        hasMore: any;
-    };
+    fetchActive(cache?: boolean, options?: FetchChannelThreadsOptions): Promise<FetchedThreads>;
+    static _mapThreads(rawThreads: RawThreadsResponse, client: Client, { parent, guild, cache }: {
+        parent?: ThreadParentChannel;
+        guild?: Guild;
+        cache?: boolean;
+    }): FetchedThreads;
 }
 export default ThreadManager;

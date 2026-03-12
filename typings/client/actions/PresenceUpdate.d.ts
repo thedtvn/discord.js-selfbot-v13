@@ -1,6 +1,5 @@
-declare const Action: any;
-declare const Events: any;
-declare const PartialTypes: any;
+import Action from './Action';
 declare class PresenceUpdateAction extends Action {
-    handle(data: any): void;
+    handle(data: any): any;
 }
+export default PresenceUpdateAction;

@@ -1,20 +1,34 @@
+import { Collection } from '@discordjs/collection';
+import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
+import type { APIRouteProxy } from '../rest/APIRouter';
+import ApplicationCommandPermissionsManager from './ApplicationCommandPermissionsManager';
 import CachedManager from './CachedManager';
+import ApplicationCommand from '../structures/ApplicationCommand';
 /**
  * Manages API methods for application commands and stores their cache.
  * @extends {CachedManager}
  */
 declare class ApplicationCommandManager extends CachedManager {
-    constructor(client: any, iterable: any);
+    readonly permissions: ApplicationCommandPermissionsManager;
+    guild?: {
+        id: Snowflake;
+    } | null;
+    constructor(client: Client, iterable?: Iterable<{
+        id: string;
+    } & Record<string, unknown>>);
     /**
      * The cache of this manager
      * @type {Collection<Snowflake, ApplicationCommand>}
      * @name ApplicationCommandManager#cache
      */
-    _add(data: any, cache: any, guildId: any): {
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    };
+    _add(data: {
+        id: Snowflake;
+    } & Record<string, unknown>, cache?: boolean, options?: {
+        id?: string;
+        extras?: unknown[];
+    }): ApplicationCommand;
+    private _addCommand;
     /**
      * The APIRouter path to the commands
      * @param {Snowflake} [options.id] The application command's id
@@ -23,7 +37,10 @@ declare class ApplicationCommandManager extends CachedManager {
      * @returns {Object}
      * @private
      */
-    commandPath({ id, guildId }?: {}): any;
+    commandPath({ id, guildId }?: {
+        id?: Snowflake;
+        guildId?: Snowflake;
+    }): APIRouteProxy;
     /**
      * Data that resolves to give an ApplicationCommand object. This can be:
      * * An ApplicationCommand object
@@ -63,10 +80,19 @@ declare class ApplicationCommandManager extends CachedManager {
      *   .then(commands => console.log(`Fetched ${commands.size} commands`))
      *   .catch(console.error);
      */
-    fetch(id: any, { guildId, cache, force, locale, withLocalizations }?: {
+    fetch(id?: Snowflake | {
+        guildId?: Snowflake;
         cache?: boolean;
         force?: boolean;
-    }): Promise<any>;
+        locale?: string;
+        withLocalizations?: boolean;
+    }, { guildId, cache, force, locale, withLocalizations }?: {
+        guildId?: Snowflake;
+        cache?: boolean;
+        force?: boolean;
+        locale?: string;
+        withLocalizations?: boolean;
+    }): Promise<ApplicationCommand | Collection<Snowflake, ApplicationCommand>>;
     /**
      * Creates an application command.
      * @param {ApplicationCommandDataResolvable} command The command
@@ -82,11 +108,7 @@ declare class ApplicationCommandManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    create(command: any, guildId: any): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    create(command: Record<string, unknown>, guildId?: Snowflake): Promise<ApplicationCommand>;
     /**
      * Sets all the commands for this application or guild.
      * @param {ApplicationCommandDataResolvable[]} commands The commands
@@ -109,7 +131,7 @@ declare class ApplicationCommandManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    set(commands: any, guildId: any): Promise<any>;
+    set(commands: Record<string, unknown>[], guildId?: Snowflake): Promise<Collection<Snowflake, ApplicationCommand>>;
     /**
      * Edits an application command.
      * @param {ApplicationCommandResolvable} command The command to edit
@@ -125,11 +147,7 @@ declare class ApplicationCommandManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    edit(command: any, data: any, guildId: any): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    edit(command: ApplicationCommand | Snowflake, data: Record<string, unknown>, guildId?: Snowflake): Promise<ApplicationCommand>;
     /**
      * Deletes an application command.
      * @param {ApplicationCommandResolvable} command The command to delete
@@ -142,18 +160,14 @@ declare class ApplicationCommandManager extends CachedManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    delete(command: any, guildId: any): Promise<{
-        id: string;
-        _patch(data: unknown): void;
-        _clone(): any;
-    }>;
+    delete(command: ApplicationCommand | Snowflake, guildId?: Snowflake): Promise<ApplicationCommand | null>;
     /**
      * Transforms an {@link ApplicationCommandData} object into something that can be used with the API.
      * @param {ApplicationCommandDataResolvable} command The command to transform
      * @returns {APIApplicationCommand}
      * @private
      */
-    static transformCommand(command: any): any;
+    static transformCommand(command: Record<string, unknown>): Record<string, unknown>;
 }
 export default ApplicationCommandManager;
 /**

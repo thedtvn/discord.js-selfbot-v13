@@ -1,25 +1,55 @@
 import Base from './Base';
+import UserFlags from '../util/UserFlags';
 /**
  * Represents a user on Discord.
  * @implements {TextBasedChannel}
  * @extends {Base}
  */
 declare class User extends Base {
+    id: string;
+    bot: boolean | null;
+    system: boolean | null;
+    flags: UserFlags | null;
+    username: string | null;
+    globalName: string | null;
+    discriminator: string | null;
+    avatar: string | null;
+    banner: string | null | undefined;
+    bannerColor: string | null | undefined;
+    accentColor: number | null | undefined;
+    avatarDecorationData: {
+        asset: string;
+        skuId: string;
+    } | null;
+    primaryGuild: {
+        identityGuildId: string | null;
+        identityEnabled: boolean | null;
+        tag: string | null;
+        badge: string | null;
+    } | null;
+    collectibles: {
+        nameplate: {
+            skuId: string;
+            asset: string;
+            label: string;
+            palette: unknown;
+        } | null;
+    } | null;
     constructor(client: any, data: any);
-    _patch(data: any): void;
+    _patch(data: any): any;
     /**
      * The primary clan the user is in
      * @type {?PrimaryGuild}
      * @deprecated Use `primaryGuild` instead
      */
-    get clan(): any;
+    get clan(): User['primaryGuild'];
     /**
      * The user avatar decoration's hash
      * @type {?string}
      * @deprecated Use `avatarDecorationData` instead
      * Removed in v4
      */
-    get avatarDecoration(): any;
+    get avatarDecoration(): string | null;
     /**
      * Whether this User is a partial
      * @type {boolean}
@@ -43,7 +73,11 @@ declare class User extends Base {
      * @param {ImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    avatarURL({ format, size, dynamic }?: {}): any;
+    avatarURL({ format, size, dynamic }?: {
+        format?: string;
+        size?: number;
+        dynamic?: boolean;
+    }): any;
     /**
      * A link to the user's avatar decoration.
      * @returns {?string}
@@ -72,7 +106,7 @@ declare class User extends Base {
      * @param {ImageURLOptions} [options={}] Options for the Image URL
      * @returns {string}
      */
-    displayAvatarURL(options: any): any;
+    displayAvatarURL(options: any): string;
     /**
      * The hexadecimal version of the user accent color, with a leading hash
      * <info>The user must be force fetched for this property to be present</info>
@@ -87,7 +121,11 @@ declare class User extends Base {
      * @param {ImageURLOptions} [options={}] Options for the Image URL
      * @returns {?string}
      */
-    bannerURL({ format, size, dynamic }?: {}): any;
+    bannerURL({ format, size, dynamic }?: {
+        format?: string;
+        size?: number;
+        dynamic?: boolean;
+    }): any;
     /**
      * The tag of this user
      * <info>This user's username, or their legacy tag (e.g. `hydrabolt#0001`)
@@ -95,13 +133,13 @@ declare class User extends Base {
      * @type {?string}
      * @readonly
      */
-    get tag(): any;
+    get tag(): string | null;
     /**
      * The global name of this user, or their username if they don't have one
      * @type {?string}
      * @readonly
      */
-    get displayName(): any;
+    get displayName(): string | null;
     /**
      * The DM between the client's user and this user
      * @type {?DMChannel}
@@ -113,7 +151,7 @@ declare class User extends Base {
      * @param {boolean} [force=false] Whether to skip the cache check and request the API
      * @returns {Promise<DMChannel>}
      */
-    createDM(force?: boolean): any;
+    createDM(force?: any): any;
     /**
      * Deletes a DM channel (if one exists) between the client and the user. Resolves with the channel if successful.
      * @returns {Promise<DMChannel>}
@@ -126,7 +164,7 @@ declare class User extends Base {
      * @param {User} user User to compare with
      * @returns {boolean}
      */
-    equals(user: any): boolean;
+    equals(user: User | null | undefined): boolean;
     /**
      * Compares the user with an API user object
      * @param {APIUser} user The API user object to compare
@@ -139,7 +177,7 @@ declare class User extends Base {
      * @param {boolean} [force=true] Whether to skip the cache check and request the API
      * @returns {Promise<User>}
      */
-    fetch(force?: boolean): any;
+    fetch(force?: any): any;
     /**
      * Returns a user profile object for a given user ID.
      * <info>This endpoint requires one of the following:
@@ -161,19 +199,19 @@ declare class User extends Base {
      * console.log(`Hello from ${user}!`);
      */
     toString(): string;
-    toJSON(...props: any[]): unknown;
+    toJSON(...props: any[]): any;
     /**
      * The function updates the note of a user and returns the updated user.
      * @param {string|null|undefined} [note=null] - The `note` parameter is the new value that you want to set for the note of the
      * user. It is an optional parameter and its default value is `null`.
      * @returns {Promise<User>} The `setNote` method is returning the `User` object.
      */
-    setNote(note?: any): Promise<this>;
+    setNote(note?: any): Promise<any>;
     /**
      * The function returns the note associated with a specific client ID from a cache.
      * @type {?string} The note that corresponds to the given id.
      */
-    get note(): any;
+    get note(): string | null | undefined;
     /**
      * The voice state of this member
      * @type {VoiceState}

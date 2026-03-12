@@ -4,6 +4,14 @@ import BaseMessageComponent from './BaseMessageComponent';
  * @extends {BaseMessageComponent}
  */
 declare class TextInputComponent extends BaseMessageComponent {
+    customId: string | null;
+    label: string | null;
+    maxLength: number | null;
+    minLength: number | null;
+    placeholder: string | null;
+    required: boolean;
+    style: string | null;
+    value: string | null;
     /**
      * @typedef {BaseMessageComponentOptions} TextInputComponentOptions
      * @property {string} [customId] A unique string to be sent in the interaction when submitted
@@ -18,28 +26,28 @@ declare class TextInputComponent extends BaseMessageComponent {
     /**
      * @param {TextInputComponent|TextInputComponentOptions} [data={}] TextInputComponent to clone or raw data
      */
-    constructor(data?: {});
+    constructor(data?: any);
     setup(data: any): void;
     /**
      * Sets the value of this text input component
      * @param {string} value Value of this text input component
      * @returns {TextInputComponent}
      */
-    setValue(value: any): this;
+    setValue(value: string): this;
     /**
      * Transforms the text input component into a plain object
      * @returns {APITextInput} The raw data of this text input component
      */
     toJSON(): {
-        custom_id: any;
-        label: any;
-        max_length: any;
-        min_length: any;
-        placeholder: any;
-        required: any;
+        custom_id: string | null;
+        label: string | null;
+        max_length: number | null;
+        min_length: number | null;
+        placeholder: string | null;
+        required: boolean;
         style: any;
         type: any;
-        value: any;
+        value: string | null;
     };
     /**
      * Data that can be resolved to a TextInputStyle. This can be

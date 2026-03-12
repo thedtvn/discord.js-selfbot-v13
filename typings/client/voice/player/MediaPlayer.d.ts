@@ -1,33 +1,26 @@
-declare const EventEmitter: any;
-declare const ReadableStream: any;
-declare const prism: any;
-declare const H264NalSplitter: any, H265NalSplitter: any;
-declare const IvfTransformer: any;
-declare const H264Dispatcher: any;
-declare const AudioDispatcher: any;
-declare const VP8Dispatcher: any;
-declare const FFMPEG_OUTPUT_PREFIX: string[];
-declare const FFMPEG_INPUT_PREFIX: string[];
-declare const FFMPEG_PCM_ARGUMENTS: string[];
-declare const FFMPEG_VP8_ARGUMENTS: string[];
-declare const FFMPEG_H264_ARGUMENTS: (options: any) => any[];
-declare const FFMPEG_H265_ARGUMENTS: (options: any) => any[];
+import { EventEmitter } from 'events';
+import { Readable as ReadableStream } from 'stream';
+import AudioDispatcher from '../dispatcher/AudioDispatcher';
 /**
  * Player for a Voice Connection.
  * @private
  * @extends {EventEmitter}
  */
 declare class MediaPlayer extends EventEmitter {
-    constructor(voiceConnection: any, isScreenSharing: any);
+    dispatcher: AudioDispatcher | null;
+    videoDispatcher: any;
+    voiceConnection: any;
+    isScreenSharing: boolean;
+    constructor(voiceConnection: any, isScreenSharing: boolean);
     destroy(): void;
     destroyDispatcher(): void;
     destroyVideoDispatcher(): void;
-    playUnknown(input: any, options: any, streams?: {}): AudioDispatcher;
-    playPCMStream(stream: any, options: any, streams?: {}): AudioDispatcher;
-    playOpusStream(stream: any, options: any, streams?: {}): AudioDispatcher;
-    playUnknownVideo(input: any, options?: {}): H264Dispatcher | VP8Dispatcher;
-    playIvfVideo(stream: any, options: any, streams: any): H264Dispatcher | VP8Dispatcher;
-    playAnnexBVideo(stream: any, options: any, streams: any, type: any): H264Dispatcher | VP8Dispatcher;
+    playUnknown(input: ReadableStream | string, options: any, streams?: any): AudioDispatcher;
+    playPCMStream(stream: any, options: any, streams?: any): AudioDispatcher;
+    playOpusStream(stream: any, options: any, streams?: any): AudioDispatcher;
+    playUnknownVideo(input: ReadableStream | string, options?: any): any;
+    playIvfVideo(stream: any, options: any, streams: any): any;
+    playAnnexBVideo(stream: any, options: any, streams: any, type: string): any;
     createDispatcher(options: any, streams: any): AudioDispatcher;
     /**
      * Create
@@ -36,5 +29,6 @@ declare class MediaPlayer extends EventEmitter {
      * @param {Object} streams any
      * @returns {VideoDispatcher}
      */
-    createVideoDispatcher(options: any, streams: any): H264Dispatcher | VP8Dispatcher;
+    createVideoDispatcher(options: any, streams: any): any;
 }
+export default MediaPlayer;

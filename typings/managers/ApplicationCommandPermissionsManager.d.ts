@@ -1,10 +1,53 @@
+import { Collection } from '@discordjs/collection';
+import type { APIRouteProxy } from '../rest/APIRouter';
 import BaseManager from './BaseManager';
+import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
+import type { Guild } from '../structures/Guild';
+interface ApplicationCommandPermissionData {
+    id: Snowflake;
+    type: string | number;
+    permission: boolean;
+}
+interface GuildApplicationCommandPermissionData {
+    id: Snowflake;
+    permissions: ApplicationCommandPermissionData[];
+}
+interface ApplicationCommandPermissionsManager_Manager {
+    client: Client;
+    guild?: Guild | null;
+    guildId?: Snowflake | null;
+    id?: Snowflake | null;
+    resolveId?: (cmd: unknown) => Snowflake | null;
+}
+interface BaseApplicationCommandPermissionsOptions {
+    guild?: unknown;
+    command?: unknown;
+}
+interface SetApplicationCommandPermissionsOptions extends BaseApplicationCommandPermissionsOptions {
+    permissions?: ApplicationCommandPermissionData[];
+    fullPermissions?: GuildApplicationCommandPermissionData[];
+}
+interface AddApplicationCommandPermissionsOptions extends BaseApplicationCommandPermissionsOptions {
+    permissions: ApplicationCommandPermissionData[];
+}
+interface RemoveApplicationCommandPermissionsOptions extends BaseApplicationCommandPermissionsOptions {
+    users?: unknown;
+    roles?: unknown;
+}
+interface HasApplicationCommandPermissionsOptions extends BaseApplicationCommandPermissionsOptions {
+    permissionId: unknown;
+}
 /**
  * Manages API methods for permissions of Application Commands.
  * @extends {BaseManager}
  */
 declare class ApplicationCommandPermissionsManager extends BaseManager {
-    constructor(manager: any);
+    manager: ApplicationCommandPermissionsManager_Manager;
+    guild: Guild | null;
+    guildId: Snowflake | null;
+    commandId: Snowflake | null;
+    constructor(manager: ApplicationCommandPermissionsManager_Manager);
     /**
      * The APIRouter path to the commands
      * @param {Snowflake} guildId The guild's id to use in the path,
@@ -12,7 +55,7 @@ declare class ApplicationCommandPermissionsManager extends BaseManager {
      * @returns {Object}
      * @private
      */
-    permissionsPath(guildId: any, commandId: any): any;
+    permissionsPath(guildId: Snowflake, commandId?: Snowflake): APIRouteProxy;
     /**
      * Data for setting the permissions of an application command.
      * @typedef {Object} ApplicationCommandPermissionData
@@ -52,7 +95,7 @@ declare class ApplicationCommandPermissionsManager extends BaseManager {
      *   .then(perms => console.log(`Fetched permissions for ${perms.size} commands`))
      *   .catch(console.error);
      */
-    fetch({ guild, command }?: {}): Promise<any>;
+    fetch({ guild, command }?: BaseApplicationCommandPermissionsOptions): Promise<ApplicationCommandPermissionData[] | Collection<Snowflake, ApplicationCommandPermissionData[]>>;
     /**
      * Data used for overwriting the permissions for all application commands in a guild.
      * @typedef {Object} GuildApplicationCommandPermissionData
@@ -99,7 +142,7 @@ declare class ApplicationCommandPermissionsManager extends BaseManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    set({ guild, command, permissions, fullPermissions }?: {}): Promise<any>;
+    set({ guild, command, permissions, fullPermissions }?: SetApplicationCommandPermissionsOptions): Promise<ApplicationCommandPermissionData[] | Collection<Snowflake, ApplicationCommandPermissionData[]>>;
     /**
      * Options used to add permissions to a command
      * <warn>The `command` parameter is not optional when the managers `commandId` is `null`</warn>
@@ -122,11 +165,7 @@ declare class ApplicationCommandPermissionsManager extends BaseManager {
      *   .then(console.log)
      *   .catch(console.error);
      */
-    add({ guild, command, permissions }: {
-        guild: any;
-        command: any;
-        permissions: any;
-    }): Promise<any>;
+    add({ guild, command, permissions }: AddApplicationCommandPermissionsOptions): Promise<ApplicationCommandPermissionData[]>;
     /**
      * Options used to remove permissions from a command
      * <warn>The `command` parameter is not optional when the managers `commandId` is `null`</warn>
@@ -153,12 +192,7 @@ declare class ApplicationCommandPermissionsManager extends BaseManager {
      *    .then(console.log)
      *    .catch(console.error);
      */
-    remove({ guild, command, users, roles }: {
-        guild: any;
-        command: any;
-        users: any;
-        roles: any;
-    }): Promise<any>;
+    remove({ guild, command, users, roles }: RemoveApplicationCommandPermissionsOptions): Promise<ApplicationCommandPermissionData[]>;
     /**
      * Options used to check the existence of permissions on a command
      * <warn>The `command` parameter is not optional when the managers `commandId` is `null`</warn>
@@ -176,14 +210,10 @@ declare class ApplicationCommandPermissionsManager extends BaseManager {
      *  .then(console.log)
      *  .catch(console.error);
      */
-    has({ guild, command, permissionId }: {
-        guild: any;
-        command: any;
-        permissionId: any;
-    }): Promise<boolean>;
-    _validateOptions(guild: any, command: any): {
-        guildId: any;
-        commandId: any;
+    has({ guild, command, permissionId }: HasApplicationCommandPermissionsOptions): Promise<boolean>;
+    _validateOptions(guild: unknown, command: unknown): {
+        guildId: Snowflake;
+        commandId: Snowflake | null;
     };
     /**
      * Transforms an {@link ApplicationCommandPermissionData} object into something that can be used with the API.
@@ -192,11 +222,7 @@ declare class ApplicationCommandPermissionsManager extends BaseManager {
      * @returns {APIApplicationCommandPermissions}
      * @private
      */
-    static transformPermissions(permissions: any, received: any): {
-        id: any;
-        permission: any;
-        type: any;
-    };
+    static transformPermissions(permissions: ApplicationCommandPermissionData, received?: boolean): ApplicationCommandPermissionData;
 }
 export default ApplicationCommandPermissionsManager;
 /**

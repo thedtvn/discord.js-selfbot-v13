@@ -4,6 +4,14 @@ import BaseMessageComponent from './BaseMessageComponent';
  * @extends {BaseMessageComponent}
  */
 declare class MessageSelectMenu extends BaseMessageComponent {
+    customId: string | null;
+    placeholder: string | null;
+    minValues: number | null;
+    maxValues: number | null;
+    options: any[];
+    disabled: boolean;
+    channelTypes: string[];
+    type: any;
     /**
      * @typedef {BaseMessageComponentOptions} MessageSelectMenuOptions
      * @property {string} [customId] A unique string to be sent in the interaction when clicked
@@ -33,20 +41,20 @@ declare class MessageSelectMenu extends BaseMessageComponent {
     /**
      * @param {MessageSelectMenu|MessageSelectMenuOptions} [data={}] MessageSelectMenu to clone or raw data
      */
-    constructor(data?: {});
+    constructor(data?: any);
     setup(data: any): void;
     /**
      * Transforms the select menu into a plain object
      * @returns {APIMessageSelectMenu} The raw data of this select menu
      */
     toJSON(): {
-        channel_types: any;
-        custom_id: any;
-        disabled: any;
-        placeholder: any;
-        min_values: any;
-        max_values: any;
-        options: any;
+        channel_types: any[];
+        custom_id: string | null;
+        disabled: boolean;
+        placeholder: string | null;
+        min_values: number | null;
+        max_values: number | undefined;
+        options: any[];
         type: any;
     };
     /**
