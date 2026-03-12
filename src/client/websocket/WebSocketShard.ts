@@ -284,8 +284,7 @@ class WebSocketShard extends EventEmitter {
       if (zlib) {
         this.inflate = new zlib.Inflate({
           chunkSize: 65535,
-          flush: zlib.Z_SYNC_FLUSH,
-          to: WebSocket.encoding === 'json' ? 'string' : '',
+          to: WebSocket.encoding === 'json' ? 'string' : undefined,
         });
         wsQuery.compress = 'zlib-stream';
       }
