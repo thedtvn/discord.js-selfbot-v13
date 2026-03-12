@@ -22,7 +22,7 @@ class AnonymousGuild extends BaseGuild {
     if (immediatePatch) this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('features' in data) this.features = data.features;
 
     if ('splash' in data) {

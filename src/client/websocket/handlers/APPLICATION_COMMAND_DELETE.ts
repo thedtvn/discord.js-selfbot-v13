@@ -2,7 +2,7 @@ import type { GatewayHandler } from './types';
 
 import { Events } from '../../../util/Constants';
 
-const handler: GatewayHandler = (client, { d: data }) => { const commandManager = data.guild_id ? client.guilds.cache.get(data.guild_id)?.commands : client.application.commands;
+const handler: GatewayHandler = (client, { d: data }) => { const commandManager = data.guild_id ? (client.guilds.cache.get(data.guild_id) as any)?.commands : client.application.commands;
 if (!commandManager) return;
 
 const isOwn = data.application_id === client.application.id;

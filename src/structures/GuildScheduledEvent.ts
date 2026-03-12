@@ -15,7 +15,7 @@ import SnowflakeUtil from '../util/SnowflakeUtil';
  * @extends {Base}
  */
 class GuildScheduledEvent extends Base {
-  public id: string;
+  declare public id: string;
   public guildId: string;
   public channelId: string | null;
   public creatorId: string | null;
@@ -51,7 +51,7 @@ class GuildScheduledEvent extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('channel_id' in data) {
       /**
        * The channel id in which the scheduled event will be hosted, or `null` if entity type is `EXTERNAL`
@@ -342,7 +342,7 @@ class GuildScheduledEvent extends Base {
    * @readonly
    */
   get url(): string {
-    return Endpoints.scheduledEvent(this.client.options.http.scheduledEvent, this.guildId, this.id);
+    return Endpoints.scheduledEvent((this.client.options.http as any).scheduledEvent, this.guildId, this.id);
   }
 
   /**
@@ -374,7 +374,7 @@ class GuildScheduledEvent extends Base {
       if (!channelId) throw new Error('GUILD_CHANNEL_RESOLVE');
     }
     const invite = await this.guild.invites.create(channelId, options);
-    return Endpoints.invite(this.client.options.http.invite, invite.code, this.id);
+    return Endpoints.invite((this.client.options.http as any).invite, invite.code, this.id);
   }
 
   /**

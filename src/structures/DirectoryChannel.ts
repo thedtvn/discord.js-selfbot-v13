@@ -9,7 +9,7 @@ import { Channel } from './Channel';
 class DirectoryChannel extends Channel {
   public name: string;
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
     /**
      * The channel's name

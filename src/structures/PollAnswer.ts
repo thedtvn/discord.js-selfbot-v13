@@ -10,7 +10,7 @@ import type { Snowflake } from 'discord-api-types/v10';
  */
 class PollAnswer extends Base {
   public declare readonly poll: Poll;
-  public id: number;
+  declare public id: number;
   public text: string | null;
   public declare readonly _emoji: any | null;
   public voteCount!: number;
@@ -49,7 +49,7 @@ class PollAnswer extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     // This `count` field comes from `poll.results.answer_counts`
     if ('count' in data) {
       /**

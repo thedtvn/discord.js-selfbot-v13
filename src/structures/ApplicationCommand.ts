@@ -11,7 +11,7 @@ import SnowflakeUtil from '../util/SnowflakeUtil';
  * @extends {Base}
  */
 class ApplicationCommand extends Base {
-  public id: string;
+  declare public id: string;
   public applicationId: string;
   public guild: any | null;
   public guildId: string | null;
@@ -72,7 +72,7 @@ class ApplicationCommand extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('name' in data) {
       /**
        * The name of this command
@@ -134,7 +134,7 @@ class ApplicationCommand extends Base {
        * The options of this command
        * @type {ApplicationCommandOption[]}
        */
-      this.options = data.options.map(o => this.constructor.transformOption(o, true));
+      this.options = data.options.map(o => (this.constructor as any).transformOption(o, true));
     } else {
       this.options ??= [];
     }
@@ -410,7 +410,7 @@ class ApplicationCommand extends Base {
       command.name !== this.name ||
       ('description' in command && command.description !== this.description) ||
       ('version' in command && command.version !== this.version) ||
-      ('autocomplete' in command && command.autocomplete !== this.autocomplete) ||
+      ('autocomplete' in command && command.autocomplete !== (this as any).autocomplete) ||
       (commandType && commandType !== this.type) ||
       defaultMemberPermissions !== (this.defaultMemberPermissions?.bitfield ?? null) ||
       (typeof dmPermission !== 'undefined' && dmPermission !== this.dmPermission) ||
@@ -423,7 +423,7 @@ class ApplicationCommand extends Base {
     }
 
     if (command.options) {
-      return this.constructor.optionsEqual(this.options, command.options, enforceOptionOrder);
+      return (this.constructor as any).optionsEqual(this.options, command.options, enforceOptionOrder);
     }
     return true;
   }
@@ -495,7 +495,7 @@ class ApplicationCommand extends Base {
         const newChoices = new Map(option.choices.map(choice => [choice.name, choice]));
         for (const choice of existing.choices) {
           const foundChoice = newChoices.get(choice.name);
-          if (!foundChoice || foundChoice.value !== choice.value) return false;
+          if (!foundChoice || (foundChoice as any).value !== choice.value) return false;
         }
       }
     }

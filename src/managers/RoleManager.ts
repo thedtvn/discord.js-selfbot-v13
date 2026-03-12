@@ -7,10 +7,9 @@ import { TypeError } from '../errors';
 import { Role } from '../structures/Role';
 import DataResolver from '../util/DataResolver';
 import Permissions from '../util/Permissions';
-import { resolveColor } from '../util/Util';
 import Util from '../util/Util';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 
 let cacheWarningEmitted = false;
 let deprecationEmittedForCreate = false;
@@ -118,9 +117,9 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
 
     // We cannot fetch a single role, as of this commit's date, Discord API throws with 405
     const data = await this.client.api.guilds(this.guild.id).roles.get();
-    const roles = new Collection();
+    const roles = new Collection<Snowflake, Role>();
     for (const role of data) roles.set(role.id, this._add(role, cache));
-    return id ? roles.get(id) ?? null : roles;
+    return id ? (roles.get(id) ?? null) : roles;
   }
 
   /**
@@ -241,17 +240,17 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
     let { permissions, icon } = options;
     const { name, color, hoist, position, mentionable, reason, unicodeEmoji } = options;
 
-    if (typeof permissions !== 'undefined') permissions = new Permissions(permissions);
+    if (typeof permissions !== 'undefined') permissions = new Permissions(permissions as bigint);
     if (icon) {
-      const guildEmojiURL = this.guild.emojis.resolve(icon)?.url;
-      icon = guildEmojiURL ? await DataResolver.resolveImage(guildEmojiURL) : await DataResolver.resolveImage(icon);
+      const guildEmojiURL = this.guild.emojis.resolve(icon as string)?.url;
+      icon = guildEmojiURL ? await DataResolver.resolveImage(guildEmojiURL) : await DataResolver.resolveImage(icon as string | Buffer);
       if (typeof icon !== 'string') icon = undefined;
     }
 
     let colors = options.colors && {
-      primary_color: resolveColor(options.colors.primaryColor),
-      secondary_color: options.colors.secondaryColor && resolveColor(options.colors.secondaryColor),
-      tertiary_color: options.colors.tertiaryColor && resolveColor(options.colors.tertiaryColor),
+      primary_color: Util.resolveColor(options.colors.primaryColor as string | number | [number, number, number]),
+      secondary_color: options.colors.secondaryColor && Util.resolveColor(options.colors.secondaryColor as string | number | [number, number, number]),
+      tertiary_color: options.colors.tertiaryColor && Util.resolveColor(options.colors.tertiaryColor as string | number | [number, number, number]),
     };
 
     if (color !== undefined) {
@@ -262,7 +261,7 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
       deprecationEmittedForCreate = true;
 
       colors = {
-        primary_color: resolveColor(color),
+        primary_color: Util.resolveColor(color as string | number | [number, number, number]),
         secondary_color: null,
         tertiary_color: null,
       };
@@ -308,15 +307,15 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
 
     let icon = data.icon;
     if (icon) {
-      const guildEmojiURL = this.guild.emojis.resolve(icon)?.url;
-      icon = guildEmojiURL ? await DataResolver.resolveImage(guildEmojiURL) : await DataResolver.resolveImage(icon);
+      const guildEmojiURL = this.guild.emojis.resolve(icon as string)?.url;
+      icon = guildEmojiURL ? await DataResolver.resolveImage(guildEmojiURL) : await DataResolver.resolveImage(icon as string | Buffer);
       if (typeof icon !== 'string') icon = undefined;
     }
 
     let colors = data.colors && {
-      primary_color: resolveColor(data.colors.primaryColor),
-      secondary_color: data.colors.secondaryColor && resolveColor(data.colors.secondaryColor),
-      tertiary_color: data.colors.tertiaryColor && resolveColor(data.colors.tertiaryColor),
+      primary_color: Util.resolveColor(data.colors.primaryColor as string | number | [number, number, number]),
+      secondary_color: data.colors.secondaryColor && Util.resolveColor(data.colors.secondaryColor as string | number | [number, number, number]),
+      tertiary_color: data.colors.tertiaryColor && Util.resolveColor(data.colors.tertiaryColor as string | number | [number, number, number]),
     };
 
     if (data.color !== undefined) {
@@ -327,7 +326,7 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
       deprecationEmittedForEdit = true;
 
       colors = {
-        primary_color: resolveColor(data.color),
+        primary_color: Util.resolveColor(data.color as string | number | [number, number, number]),
         secondary_color: null,
         tertiary_color: null,
       };
@@ -337,7 +336,7 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
       name: data.name,
       colors,
       hoist: data.hoist,
-      permissions: typeof data.permissions === 'undefined' ? undefined : new Permissions(data.permissions),
+      permissions: typeof data.permissions === 'undefined' ? undefined : new Permissions(data.permissions as bigint),
       mentionable: data.mentionable,
       icon,
       unicode_emoji: data.unicodeEmoji,
@@ -419,7 +418,7 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
     rolePositions = rolePositions.map(o => ({
       id: this.resolveId(o.role),
       position: o.position,
-    }));
+    })) as unknown as GuildRolePosition[];
 
     // Call the API to update role positions
     await this.client.api.guilds(this.guild.id).roles.patch({
@@ -460,7 +459,7 @@ class RoleManager extends CachedManager<Snowflake, Role, RoleResolvable, RawRole
    * @returns {?Role}
    */
   botRoleFor(user: unknown): Role | null {
-    const userId = this.client.users.resolveId(user);
+    const userId = this.client.users.resolveId(user as string);
     if (!userId) return null;
     return this.cache.find(role => role.tags?.botId === userId) ?? null;
   }

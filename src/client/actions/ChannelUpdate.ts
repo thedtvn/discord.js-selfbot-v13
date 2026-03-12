@@ -31,7 +31,7 @@ class ChannelUpdateAction extends Action {
         updated: channel,
       };
     } else {
-      client.channels._add(data);
+      client.channels._add(data, data.guild_id ? client.guilds.cache.get(data.guild_id) ?? null : null);
     }
 
     return {};

@@ -171,6 +171,10 @@ class AnnexBNalSplitter extends Transform {
     return pos > 0 && buf[pos - 1] === 0 ? { index: pos - 1, length: 4 } : { index: pos, length: 3 };
   }
 
+  removeEpbs(frame: Buffer, unitType?: number): Buffer {
+    return frame; // Override in subclass
+  }
+
   processFrame(frame: Buffer): void {
     if (frame.length === 0) return;
 

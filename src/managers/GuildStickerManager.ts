@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
 import { TypeError } from '../errors';
 import MessagePayload from '../structures/MessagePayload';
@@ -75,7 +75,7 @@ class GuildStickerManager extends CachedManager<Snowflake, Sticker, StickerResol
 
     const sticker = await this.client.api
       .guilds(this.guild.id)
-      .stickers.post({ data, files: [file], reason, dontUsePayloadJSON: true });
+      .stickers.post({ data, files: [file as { name: string; file: unknown }], reason, dontUsePayloadJSON: true });
     return this.client.actions.GuildStickerCreate.handle(this.guild, sticker).sticker;
   }
 

@@ -16,11 +16,8 @@ interface CachedManagerAddOptions<K extends string, Extras extends unknown[]> {
  */
 class CachedManager<
   K extends string = Snowflake,
-  Holds extends { id: K; _patch(data: unknown): void; _clone(): Holds } = {
-    id: K;
-    _patch(data: unknown): void;
-    _clone(): Holds;
-  },
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  Holds extends { id: K; _patch(data: unknown): void; _clone(): any } = any,
   Resolvable = K | Holds,
   RawData extends { id: K } = { id: K },
   Extras extends unknown[] = unknown[],
@@ -28,7 +25,7 @@ class CachedManager<
   public readonly _cache: Collection<K, Holds>;
 
   constructor(client: Client, holds: abstract new (...args: [Client, RawData, ...Extras]) => Holds, iterable?: Iterable<RawData>) {
-    super(client, holds);
+    super(client, holds as unknown as abstract new (...args: never[]) => Holds);
 
     /**
      * The private cache of items for this manager.
@@ -37,7 +34,7 @@ class CachedManager<
      * @readonly
      * @name CachedManager#_cache
      */
-    Object.defineProperty(this, '_cache', { value: this.client.options.makeCache(this.constructor, this.holds) });
+    Object.defineProperty(this, '_cache', { value: (this.client.options.makeCache as Function)(this.constructor, this.holds) });
 
     let cleanup = this._cache[_cleanupSymbol]?.();
     if (cleanup) {
@@ -80,7 +77,7 @@ class CachedManager<
       return clone;
     }
 
-    const entry = this.holds ? new this.holds(this.client, data, ...extras) : (data as unknown as Holds);
+    const entry = this.holds ? new (this.holds as unknown as new (client: Client, data: RawData, ...extras: Extras) => Holds)(this.client, data, ...extras) : (data as unknown as Holds);
     if (cache) this.cache.set(id ?? entry.id, entry);
     return entry;
   }

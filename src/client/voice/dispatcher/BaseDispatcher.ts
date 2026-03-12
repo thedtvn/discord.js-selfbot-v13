@@ -131,7 +131,7 @@ class BaseDispatcher extends Writable {
       }, 10_000).unref();
     }
     if (this.getTypeDispatcher() === 'video') {
-      this._codecCallback(chunk);
+      (this as any)._codecCallback(chunk);
     } else {
       this._playChunk(chunk);
     }
@@ -232,11 +232,11 @@ class BaseDispatcher extends Writable {
       this._writeCallback = null;
       done();
     };
-    const next = (this.count + 1) * this.FRAME_LENGTH - (performance.now() - this.startTime - this._pausedTime);
+    const next = (this.count + 1) * (this as any).FRAME_LENGTH - (performance.now() - this.startTime - this._pausedTime);
     setTimeout(() => {
       if ((!this.pausedSince || this._silence) && this._writeCallback) this._writeCallback();
     }, next).unref();
-    this.timestamp += this.TIMESTAMP_INC;
+    this.timestamp += (this as any).TIMESTAMP_INC;
     if (this.timestamp > MAX_UINT_32) this.timestamp = 0;
     this.count++;
     if (this.count > MAX_UINT_16) this.count = 0;
@@ -425,7 +425,7 @@ class BaseDispatcher extends Writable {
     }
     this.player.voiceConnection.sockets.udp.send(packet).catch(e => {
       if (this.getTypeDispatcher() === 'audio') {
-        this._setSpeaking(this._setSpeaking(0));
+        this._setSpeaking(0);
       } else if (this.getTypeDispatcher() === 'video') {
         this._setVideoStatus(false);
         this._setStreamStatus(true);

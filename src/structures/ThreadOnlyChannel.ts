@@ -2,7 +2,7 @@ import GuildChannel from './GuildChannel';
 import TextBasedChannel from './interfaces/TextBasedChannel';
 import GuildForumThreadManager from '../managers/GuildForumThreadManager';
 import { SortOrderTypes } from '../util/Constants';
-import { transformAPIGuildForumTag, transformAPIGuildDefaultReaction } from '../util/Util';
+import Util from '../util/Util';
 
 /**
  * @typedef {Object} GuildForumTagEmoji
@@ -63,14 +63,14 @@ class ThreadOnlyChannel extends GuildChannel {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
     if ('available_tags' in data) {
       /**
        * The set of tags that can be used in this channel.
        * @type {GuildForumTag[]}
        */
-      this.availableTags = data.available_tags.map(tag => transformAPIGuildForumTag(tag));
+      this.availableTags = data.available_tags.map(tag => Util.transformAPIGuildForumTag(tag));
     } else {
       this.availableTags ??= [];
     }
@@ -81,7 +81,7 @@ class ThreadOnlyChannel extends GuildChannel {
        * @type {?DefaultReactionEmoji}
        */
       this.defaultReactionEmoji =
-        data.default_reaction_emoji && transformAPIGuildDefaultReaction(data.default_reaction_emoji);
+        data.default_reaction_emoji && Util.transformAPIGuildDefaultReaction(data.default_reaction_emoji);
     } else {
       this.defaultReactionEmoji ??= null;
     }

@@ -16,7 +16,7 @@ let deprecationEmittedForDeleted = false;
  * @extends {Base}
  */
 class StageInstance extends Base {
-  public id: string;
+  declare public id: string;
   public guildId: string;
   public channelId: string;
   public topic: string;
@@ -36,7 +36,7 @@ class StageInstance extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('guild_id' in data) {
       /**
        * The id of the guild associated with the stage channel

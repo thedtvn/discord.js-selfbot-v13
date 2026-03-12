@@ -3,7 +3,7 @@ import type ThreadChannel from '../structures/ThreadChannel';
 import ThreadManager from './ThreadManager';
 import { TypeError } from '../errors';
 import MessagePayload from '../structures/MessagePayload';
-import { resolveAutoArchiveMaxLimit, getUploadURL, uploadFile } from '../util/Util';
+import Util from '../util/Util';
 
 interface GuildForumThreadCreateOptions {
   name?: string;
@@ -59,7 +59,7 @@ class GuildForumThreadManager extends ThreadManager {
    */
   async create({
     name,
-    autoArchiveDuration = this.channel.defaultAutoArchiveDuration,
+    autoArchiveDuration = (this.channel as unknown as Record<string, unknown>).defaultAutoArchiveDuration as number | undefined,
     message,
     reason,
     rateLimitPerUser,
@@ -80,9 +80,9 @@ class GuildForumThreadManager extends ThreadManager {
     const { data: body, files } = await messagePayload.resolveFiles();
 
     // New API
-    const attachments = await getUploadURL(this.client, this.channel.id, files);
+    const attachments = await Util.getUploadURL(this.client, this.channel.id, files);
     const requestPromises = attachments.map(async attachment => {
-      await uploadFile(files[attachment.id].file, attachment.upload_url);
+      await Util.uploadFile(files[attachment.id].file, attachment.upload_url);
       return {
         id: attachment.id,
         filename: files[attachment.id].name,
@@ -95,7 +95,7 @@ class GuildForumThreadManager extends ThreadManager {
     const attachmentsData = await Promise.all(requestPromises);
     attachmentsData.sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
-    if (autoArchiveDuration === 'MAX') autoArchiveDuration = resolveAutoArchiveMaxLimit(this.channel.guild);
+    if (autoArchiveDuration === 'MAX') autoArchiveDuration = Util.resolveAutoArchiveMaxLimit();
 
     const post_data = await this.client.api.channels(this.channel.id).threads.post({
       data: {

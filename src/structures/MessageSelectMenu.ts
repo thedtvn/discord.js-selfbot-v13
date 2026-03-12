@@ -14,7 +14,7 @@ class MessageSelectMenu extends BaseMessageComponent {
   public options: any[];
   public disabled: boolean;
   public channelTypes: string[];
-  public type: any;
+  declare public type: any;
 
   /**
    * @typedef {BaseMessageComponentOptions} MessageSelectMenuOptions
@@ -84,7 +84,7 @@ class MessageSelectMenu extends BaseMessageComponent {
      * Options for the STRING_SELECT menu
      * @type {MessageSelectOption[]}
      */
-    this.options = this.constructor.normalizeOptions(data.options ?? []);
+    this.options = (this.constructor as any).normalizeOptions(data.options ?? []);
 
     /**
      * Whether this select menu is currently disabled

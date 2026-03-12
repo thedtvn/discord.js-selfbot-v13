@@ -11,6 +11,7 @@ type RawPresenceData = { user: { id: Snowflake } };
  * Manages API methods for Presences and holds their cache.
  * @extends {CachedManager}
  */
+// @ts-expect-error Presence uses user.id instead of id
 class PresenceManager extends CachedManager<Snowflake, Presence, PresenceResolvable, RawPresenceData> {
   constructor(client: Client, iterable?: Iterable<RawPresenceData>) {
     super(client, Presence, iterable);
@@ -42,7 +43,7 @@ class PresenceManager extends CachedManager<Snowflake, Presence, PresenceResolva
   resolve(presence: PresenceResolvable): Presence | null {
     const presenceResolvable = super.resolve(presence);
     if (presenceResolvable) return presenceResolvable;
-    const userId = this.client.users.resolveId(presence);
+    const userId = this.client.users.resolveId(presence as string);
     return this.cache.get(userId) ?? null;
   }
 
@@ -54,7 +55,7 @@ class PresenceManager extends CachedManager<Snowflake, Presence, PresenceResolva
   resolveId(presence: PresenceResolvable): Snowflake | null {
     const presenceResolvable = super.resolveId(presence);
     if (presenceResolvable) return presenceResolvable;
-    const userId = this.client.users.resolveId(presence);
+    const userId = this.client.users.resolveId(presence as string);
     return this.cache.has(userId) ? userId : null;
   }
 

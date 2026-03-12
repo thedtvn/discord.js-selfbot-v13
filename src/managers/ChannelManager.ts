@@ -3,7 +3,7 @@
 import process from 'node:process';
 import type { Snowflake } from 'discord-api-types/v10';
 import type Client from '../client/Client';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
 import { Channel } from '../structures/Channel';
 import { Events, ThreadChannelTypes, RelationshipTypes } from '../util/Constants';
@@ -14,13 +14,14 @@ let cacheWarningEmitted = false;
  * A manager of channels belonging to a client
  * @extends {CachedManager}
  */
-class ChannelManager extends CachedManager {
+class ChannelManager extends CachedManager<Snowflake, Channel> {
   constructor(client: Client, iterable?: Iterable<Record<string, unknown>>) {
-    super(client, Channel, iterable);
+    super(client, Channel, iterable as unknown as Iterable<{ id: Snowflake }>);
+    const _cache = this._cache as unknown as Record<string, unknown>;
     const defaultCaching =
       this._cache.constructor.name === 'Collection' ||
-      ((this._cache.maxSize === undefined || this._cache.maxSize === Infinity) &&
-        (this._cache.sweepFilter === undefined || this._cache.sweepFilter.isDefault));
+      ((_cache.maxSize === undefined || _cache.maxSize === Infinity) &&
+        (_cache.sweepFilter === undefined || (_cache.sweepFilter as { isDefault?: boolean })?.isDefault));
     if (!cacheWarningEmitted && !defaultCaching) {
       cacheWarningEmitted = true;
       process.emitWarning(
@@ -36,6 +37,7 @@ class ChannelManager extends CachedManager {
    * @name ChannelManager#cache
    */
 
+  // @ts-expect-error - ChannelManager._add has a different signature than CachedManager._add (guild param, returns null)
   _add(
     data: { id: Snowflake; type: string | number } & Record<string, unknown>,
     guild: Guild | null,
@@ -44,9 +46,9 @@ class ChannelManager extends CachedManager {
     const existing = this.cache.get(data.id);
     if (existing) {
       if (cache) existing._patch(data);
-      guild?.channels?._add(existing);
+      (guild?.channels as unknown as { _add(ch: unknown): void })?._add(existing);
       if (ThreadChannelTypes.includes(existing.type)) {
-        existing.parent?.threads?._add(existing);
+        (existing as unknown as { parent?: { threads?: { _add(ch: Channel): void } } }).parent?.threads?._add(existing);
       }
       return existing;
     }
@@ -69,12 +71,13 @@ class ChannelManager extends CachedManager {
     for (const [code, invite] of channel?.guild?.invites.cache ?? []) {
       if (invite.channelId === id) channel.guild.invites.cache.delete(code);
     }
-    channel?.parent?.threads?.cache.delete(id);
+    (channel as unknown as { parent?: { threads?: { cache: Map<string, unknown> } } })?.parent?.threads?.cache.delete(id);
     this.cache.delete(id);
-    if (channel?.threads) {
-      for (const threadId of channel.threads.cache.keys()) {
+    const channelWithThreads = channel as unknown as { threads?: { cache: Map<string, unknown> }; guild?: { channels: { cache: Map<string, unknown> } } };
+    if (channelWithThreads?.threads) {
+      for (const threadId of channelWithThreads.threads.cache.keys()) {
         this.cache.delete(threadId);
-        channel.guild?.channels.cache.delete(threadId);
+        channelWithThreads.guild?.channels.cache.delete(threadId);
       }
     }
   }
@@ -145,7 +148,7 @@ class ChannelManager extends CachedManager {
   async createGroupDM(recipients: Array<{ id?: Snowflake } | Snowflake> = []): Promise<Channel | null> {
     if (!Array.isArray(recipients)) throw new Error(`Expected an array of recipients (got ${typeof recipients})`);
     recipients = recipients
-      .map(r => this.client.users.resolveId(r))
+      .map(r => this.client.users.resolveId(r as string))
       .filter(r => r && this.client.relationships.cache.get(r) == RelationshipTypes.FRIEND);
     if (recipients.length == 1 || recipients.length > 9) throw new Error('Invalid Users length (max=9)');
     const data = await this.client.api.users['@me'].channels.post({

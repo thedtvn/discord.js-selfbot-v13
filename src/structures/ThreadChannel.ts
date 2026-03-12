@@ -5,7 +5,7 @@ import MessageManager from '../managers/MessageManager';
 import ThreadMemberManager from '../managers/ThreadMemberManager';
 import ChannelFlags from '../util/ChannelFlags';
 import Permissions from '../util/Permissions';
-import { resolveAutoArchiveMaxLimit } from '../util/Util';
+import Util from '../util/Util';
 
 /**
  * Represents a thread channel on Discord.
@@ -13,16 +13,16 @@ import { resolveAutoArchiveMaxLimit } from '../util/Util';
  * @implements {TextBasedChannel}
  */
 class ThreadChannel extends Channel {
-  public guild: any;
+  declare public guild: any;
   public ownerId: string;
   public guildId: string;
-  public messages: MessageManager;
+  declare public messages: MessageManager;
   public members: ThreadMemberManager;
   public name: string;
   public parentId: string | null;
   public locked: boolean | null;
   public invitable: boolean | null;
-  public type: string;
+  declare public type: string;
   public archived: boolean | null;
   public autoArchiveDuration: number | null;
   public archiveTimestamp: number | null;
@@ -60,7 +60,7 @@ class ThreadChannel extends Channel {
      * A manager of the messages sent to this thread
      * @type {MessageManager}
      */
-    this.messages = new MessageManager(this);
+    this.messages = new MessageManager(this as any);
 
     /**
      * A manager of the members that are part of this thread
@@ -70,7 +70,7 @@ class ThreadChannel extends Channel {
     if (data) this._patch(data);
   }
 
-  _patch(data: any, partial: boolean = false): void {
+  _patch(data: any, partial: boolean = false): any {
     super._patch(data);
 
     if ('name' in data) {
@@ -310,7 +310,7 @@ class ThreadChannel extends Channel {
 
     // We cannot fetch a single thread member, as of this commit's date, Discord API responds with 405
     const members = await this.members.fetch(cache);
-    return members.get(this.ownerId) ?? null;
+    return (members as any).get(this.ownerId) ?? null;
   }
 
   /**
@@ -355,7 +355,7 @@ class ThreadChannel extends Channel {
    */
   async edit(data: any, reason?: string): Promise<ThreadChannel> {
     let autoArchiveDuration = data.autoArchiveDuration;
-    if (autoArchiveDuration === 'MAX') autoArchiveDuration = resolveAutoArchiveMaxLimit(this.guild);
+    if (autoArchiveDuration === 'MAX') autoArchiveDuration = Util.resolveAutoArchiveMaxLimit();
 
     const newData = await this.client.api.channels(this.id).patch({
       data: {
@@ -606,8 +606,8 @@ class ThreadChannel extends Channel {
 
   // These are here only for documentation purposes - they are implemented by TextBasedChannel
   /* eslint-disable no-empty-function */
-  get lastMessage() {}
-  get lastPinAt() {}
+  get lastMessage(): any { return null; }
+  get lastPinAt(): any { return null; }
   send(..._args: any[]): any {}
   sendTyping(..._args: any[]): any {}
   createMessageCollector(..._args: any[]): any {}

@@ -84,25 +84,25 @@ class Util extends null {
    * @param {...Object<string, boolean|string>} [props] Specific properties to include/exclude.
    * @returns {Object}
    */
-  static flatten(obj: Record<string, unknown>, ...props: Record<string, boolean | string>[]) {
+  static flatten(obj: any, ...props: Record<string, boolean | string>[]) {
     if (!isObject(obj)) return obj;
 
     const objProps = Object.keys(obj)
       .filter(k => !k.startsWith('_'))
       .map(k => ({ [k]: true }));
 
-    props = objProps.length ? Object.assign(...objProps, ...props) : Object.assign({}, ...props);
+    const merged: Record<string, string | boolean> = objProps.length ? Object.assign({}, ...objProps, ...props) : Object.assign({}, ...props);
 
-    const out = {};
+    const out: Record<string, unknown> = {};
 
-    for (let [prop, newProp] of Object.entries(props)) {
+    for (let [prop, newProp] of Object.entries(merged)) {
       if (!newProp) continue;
       newProp = newProp === true ? prop : newProp;
 
       const element = obj[prop];
       const elemIsObj = isObject(element);
-      const valueOf = elemIsObj && typeof element.valueOf === 'function' ? element.valueOf() : null;
-      const hasToJSON = elemIsObj && typeof element.toJSON === 'function';
+      const valueOf = elemIsObj && typeof (element as any).valueOf === 'function' ? (element as any).valueOf() : null;
+      const hasToJSON = elemIsObj && typeof (element as any).toJSON === 'function';
 
       // If it's a Collection, make the array of keys
       if (element instanceof Collection) out[newProp] = Array.from(element.keys());
@@ -113,9 +113,9 @@ class Util extends null {
       // If it's an object with a primitive `valueOf`, use that value
       else if (typeof valueOf !== 'object') out[newProp] = valueOf;
       // If it's an object with a toJSON function, use the return value of it
-      else if (hasToJSON) out[newProp] = element.toJSON();
+      else if (hasToJSON) out[newProp] = (element as any).toJSON();
       // If element is an object, use the flattened version of it
-      else if (typeof element === 'object') out[newProp] = Util.flatten(element);
+      else if (typeof element === 'object') out[newProp] = Util.flatten(element as Record<string, unknown>);
       // If it's a primitive
       else if (!elemIsObj) out[newProp] = element;
     }
@@ -485,13 +485,13 @@ class Util extends null {
    * @returns {Object}
    * @private
    */
-  static mergeDefault(def: Record<string, unknown>, given: Record<string, unknown>) {
+  static mergeDefault(def: any, given: any) {
     if (!given) return def;
     for (const key in def) {
       if (!has(given, key) || given[key] === undefined) {
         given[key] = def[key];
       } else if (given[key] === Object(given[key])) {
-        given[key] = Util.mergeDefault(def[key], given[key]);
+        given[key] = Util.mergeDefault(def[key] as Record<string, unknown>, given[key] as Record<string, unknown>);
       }
     }
 
@@ -562,7 +562,7 @@ class Util extends null {
    */
   static verifyString(
     data: string,
-    error = Error,
+    error: any = Error,
     errorMessage = `Expected a string, got ${data} instead.`,
     allowEmpty = true,
   ) {
@@ -593,10 +593,10 @@ class Util extends null {
       color = (color[0] << 16) + (color[1] << 8) + color[2];
     }
 
-    if (color < 0 || color > 0xffffff) throw new RangeError('COLOR_RANGE');
+    if ((color as number) < 0 || (color as number) > 0xffffff) throw new RangeError('COLOR_RANGE');
     else if (Number.isNaN(color)) throw new TypeError('COLOR_CONVERT');
 
-    return color;
+    return color as number;
   }
 
   /**
@@ -632,7 +632,7 @@ class Util extends null {
     route: { patch: (payload: { data: { id: string; position: number }[]; reason?: string }) => Promise<unknown> },
     reason?: string,
   ) {
-    let updatedItems = [...sorted.values()];
+    let updatedItems: any[] = [...sorted.values()];
     Util.moveElementInArray(updatedItems, item, position, relative);
     updatedItems = updatedItems.map((r, i) => ({ id: r.id, position: i }));
     await route.patch({ data: updatedItems, reason });
@@ -727,7 +727,7 @@ class Util extends null {
    * @returns {SweepFilter}
    */
   static archivedThreadSweepFilter(lifetime = 14400): (() => ((value: any, key: string) => boolean) | null) & { isDefault?: boolean } {
-    const filter = Sweepers.archivedThreadSweepFilter(lifetime);
+    const filter = Sweepers.archivedThreadSweepFilter(lifetime) as ((() => ((value: any, key: string) => boolean) | null) & { isDefault?: boolean });
     filter.isDefault = true;
     return filter;
   }
@@ -897,7 +897,7 @@ class Util extends null {
 
   static async getUploadURL(client: any, channelId: string, files: { name: string }[]): Promise<any[]> {
     if (!files.length) return [];
-    files = files.map((file, i) => ({
+    const mapped = files.map((file, i) => ({
       filename: file.name,
       // 25MB = 26_214_400bytes
       file_size: Math.floor((26_214_400 / 10) * Math.random()),
@@ -905,7 +905,7 @@ class Util extends null {
     }));
     const { attachments } = await client.api.channels[channelId].attachments.post({
       data: {
-        files,
+        files: mapped,
       },
     });
     return attachments;
@@ -915,7 +915,7 @@ class Util extends null {
     return new Promise((resolve, reject) => {
       fetch(url, {
         method: 'PUT',
-        body: data,
+        body: data as any,
         duplex: 'half', // Node.js v20
       })
         .then(res => {
@@ -948,7 +948,7 @@ class Util extends null {
    * @returns {boolean}
    */
   static verifyProxyAgent(object: unknown) {
-    return typeof object == 'object' && object.httpAgent instanceof Agent && object.httpsAgent instanceof Agent;
+    return typeof object == 'object' && object !== null && (object as any).httpAgent instanceof Agent && (object as any).httpsAgent instanceof Agent;
   }
 
   static checkUndiciProxyAgent(data: string | URL | { uri: string } | unknown) {
@@ -962,7 +962,7 @@ class Util extends null {
         uri: data.toString(),
       };
     }
-    if (typeof data === 'object' && typeof data.uri === 'string') return data;
+    if (typeof data === 'object' && data !== null && typeof (data as any).uri === 'string') return data;
     return false;
   }
 
@@ -1016,7 +1016,7 @@ class Util extends null {
       if (value === undefined || value === null || (Array.isArray(value) && value.length === 0)) {
         continue;
       } else if (!Array.isArray(value) && typeof value === 'object') {
-        const cleanedValue = Util.clearNullOrUndefinedObject(value);
+        const cleanedValue = Util.clearNullOrUndefinedObject(value as Record<string, unknown>);
         if (cleanedValue !== undefined) {
           data[key] = cleanedValue;
         }

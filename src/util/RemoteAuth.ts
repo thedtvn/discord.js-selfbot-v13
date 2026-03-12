@@ -300,8 +300,8 @@ class DiscordAuthWebsocket extends EventEmitter {
    * @returns {void}
    */
   destroy() {
-    if (!this.ws) return;
-    this.ws.close();
+    if (!(this as any).ws) return;
+    (this as any).ws.close();
     this.emit(Event.DEBUG, 'WebSocket closed.');
     /**
      * Emitted whenever a connection is closed.
@@ -335,7 +335,7 @@ class DiscordAuthWebsocket extends EventEmitter {
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'same-origin',
         'X-Debug-Options': 'bugReporterEnabled',
-        'X-Super-Properties': `${Buffer.from(JSON.stringify(defaultClientOptions.ws.properties), 'ascii').toString(
+        'X-Super-Properties': `${Buffer.from(JSON.stringify((defaultClientOptions as any).ws.properties), 'ascii').toString(
           'base64',
         )}`,
         'X-Discord-Locale': 'en-US',

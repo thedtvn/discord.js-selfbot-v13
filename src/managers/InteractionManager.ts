@@ -1,9 +1,11 @@
 import type { Snowflake } from 'discord-api-types/v10';
+import type Client from '../client/Client';
 import CachedManager from './CachedManager';
-import InteractionResponse from '../structures/InteractionResponse';
 
-type TextBasedChannelLike = { client: unknown; id: Snowflake; guild?: { id: Snowflake } };
-type RawInteractionResponseData = { id?: Snowflake } & Record<string, unknown>;
+type InteractionResponse = { id: Snowflake; _patch(data: unknown): void; _clone(): InteractionResponse };
+
+type TextBasedChannelLike = { client: Client; id: Snowflake; guild?: { id: Snowflake } };
+type RawInteractionResponseData = { id: Snowflake } & Record<string, unknown>;
 
 /**
  * Manages API methods for InteractionResponse and holds their cache.
@@ -13,7 +15,9 @@ class InteractionManager extends CachedManager<Snowflake, InteractionResponse, S
   public readonly channel: TextBasedChannelLike;
 
   constructor(channel: TextBasedChannelLike, iterable?: Iterable<RawInteractionResponseData>) {
-    super(channel.client, InteractionResponse, iterable);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const InteractionResponseClass = require('../structures/InteractionResponse');
+    super(channel.client as Client, InteractionResponseClass, iterable);
 
     /**
      * The channel that the messages belong to

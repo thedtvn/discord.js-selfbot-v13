@@ -19,7 +19,7 @@ class MessageDeleteBulkAction extends Action {
             id,
             guild_id: data.guild_id,
           },
-          channel,
+          channel as any,
           false,
         );
         if (message) {

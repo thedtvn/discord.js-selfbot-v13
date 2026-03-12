@@ -37,7 +37,7 @@ class InviteStageInstance extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('topic' in data) {
       /**
        * The topic of the stage instance

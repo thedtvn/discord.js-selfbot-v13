@@ -21,7 +21,7 @@ let deprecationEmittedForFetchAssets = false;
  * @abstract
  */
 class Application extends Base {
-  public id: Snowflake;
+  declare public id: Snowflake;
   public name: string | null;
   public description: string | null;
   public icon: string | null;
@@ -92,7 +92,7 @@ class Application extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The application's id
      * @type {Snowflake}
@@ -808,7 +808,7 @@ class Application extends Base {
       },
     });
     const user = this.client.users._add(app.bot);
-    user._partial = false;
+    (user as any)._partial = false;
     this._patch(app.application);
     return this;
   }
@@ -839,7 +839,7 @@ class Application extends Base {
    */
   coverURL({ format, size }: { format?: string; size?: number } = {}): string | null {
     if (!this.cover) return null;
-    return Endpoints.CDN(this.client.options.http.cdn).AppIcon(this.id, this.cover, { format, size });
+    return Endpoints.CDN((this.client.options.http as any).cdn).AppIcon(this.id, this.cover, { format, size });
   }
 
   /**

@@ -204,7 +204,7 @@ class ShardClientUtil {
     if (!message) return;
     if (message._fetchProp) {
       try {
-        const props = message._fetchProp.split('.');
+        const props = (message._fetchProp as string).split('.');
         let value = this.client;
         for (const prop of props) value = value[prop];
           this._respond('fetchProp', { _fetchProp: message._fetchProp, _result: value });
@@ -277,7 +277,7 @@ class ShardClientUtil {
    * @param {EventEmitter|process} emitter The emitter that emits the events.
    * @private
    */
-  incrementMaxListeners(emitter: EventEmitter): void {
+  incrementMaxListeners(emitter: any): void {
     const maxListeners = emitter.getMaxListeners();
     if (maxListeners !== 0) {
       emitter.setMaxListeners(maxListeners + 1);
@@ -289,7 +289,7 @@ class ShardClientUtil {
    * @param {EventEmitter|process} emitter The emitter that emits the events.
    * @private
    */
-  decrementMaxListeners(emitter: EventEmitter): void {
+  decrementMaxListeners(emitter: any): void {
     const maxListeners = emitter.getMaxListeners();
     if (maxListeners !== 0) {
       emitter.setMaxListeners(maxListeners - 1);

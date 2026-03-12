@@ -171,7 +171,7 @@ const Messages: Record<string, ErrorMessage> = {
   // Selfbot
   INVALID_USER_API: 'User accounts cannot use this endpoint',
   INVALID_APPLICATION_COMMAND: id => `Could not find a valid command for this bot: ${id}`,
-  INVALID_COMMAND_NAME: allCMD => `Could not parse subGroupCommand and subCommand due to too long: ${allCMD.join(' ')}`,
+  INVALID_COMMAND_NAME: (allCMD: any) => `Could not parse subGroupCommand and subCommand due to too long: ${allCMD.join(' ')}`,
   INVALID_SLASH_COMMAND_CHOICES: (parentOptions, value) =>
     `${value} is not a valid choice for this option (${parentOptions})`,
   SLASH_COMMAND_REQUIRED_OPTIONS_MISSING: (req, opt) => `Value required (${req}) missing (Options: ${opt})`,
@@ -204,7 +204,7 @@ const Messages: Record<string, ErrorMessage> = {
   UDP_CONNECTION_EXISTS: 'There is already an existing UDP connection.',
   UDP_WRONG_HANDSHAKE: 'Wrong handshake packet for UDP',
 
-  INVALID_VIDEO_CODEC: codecs => `Only these codecs are supported: ${codecs.join(', ')}`,
+  INVALID_VIDEO_CODEC: (codecs: any) => `Only these codecs are supported: ${codecs.join(', ')}`,
 
   STREAM_CONNECTION_READONLY: 'Cannot send data to a read-only stream',
   STREAM_CANNOT_JOIN: 'Cannot join a stream to itself',

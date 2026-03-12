@@ -53,23 +53,23 @@ class BitField<S extends string, N extends number | bigint = number> {
 
   public add(...bits: BitFieldResolvable<S, N>[]): this {
     const ctor = this.constructor as unknown as BitFieldConstructor<S, N>;
-    let total = ctor.defaultBit;
+    let total: any = ctor.defaultBit;
     for (const bit of bits) {
       total |= ctor.resolve(bit);
     }
-    if (Object.isFrozen(this)) return new ctor(this.bitfield | total) as this;
-    this.bitfield |= total;
+    if (Object.isFrozen(this)) return new ctor(((this.bitfield as any) | total) as any) as this;
+    this.bitfield = (((this.bitfield as any) | total) as any);
     return this;
   }
 
   public remove(...bits: BitFieldResolvable<S, N>[]): this {
     const ctor = this.constructor as unknown as BitFieldConstructor<S, N>;
-    let total = ctor.defaultBit;
+    let total: any = ctor.defaultBit;
     for (const bit of bits) {
       total |= ctor.resolve(bit);
     }
-    if (Object.isFrozen(this)) return new ctor(this.bitfield & ~total) as this;
-    this.bitfield &= ~total;
+    if (Object.isFrozen(this)) return new ctor(((this.bitfield as any) & ~total) as any) as this;
+    this.bitfield = (((this.bitfield as any) & ~total) as any);
     return this;
   }
 
@@ -102,12 +102,12 @@ class BitField<S extends string, N extends number | bigint = number> {
     bit: BitFieldResolvable<S, N> = this.defaultBit,
   ): N {
     const { defaultBit } = this;
-    if (typeof defaultBit === typeof bit && bit >= defaultBit) return bit as N;
+    if (typeof defaultBit === typeof bit && (bit as any) >= defaultBit) return bit as N;
     if (bit instanceof BitField) return bit.bitfield as N;
-    if (Array.isArray(bit)) return bit.map(p => this.resolve(p)).reduce((prev, p) => prev | p, defaultBit);
+    if (Array.isArray(bit)) return (bit as any[]).map(p => this.resolve(p)).reduce((prev: any, p: any) => prev | p, defaultBit);
     if (typeof bit === 'string') {
       if (!Number.isNaN(Number(bit))) return (typeof defaultBit === 'bigint' ? BigInt(bit) : Number(bit)) as N;
-      if (this.FLAGS[bit] !== undefined) return this.FLAGS[bit];
+      if (this.FLAGS[bit as unknown as S] !== undefined) return this.FLAGS[bit as unknown as S];
     }
     throw new RangeError('BITFIELD_INVALID', bit);
   }

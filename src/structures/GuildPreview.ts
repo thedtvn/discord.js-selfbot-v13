@@ -11,7 +11,7 @@ import SnowflakeUtil from '../util/SnowflakeUtil';
  * @extends {Base}
  */
 class GuildPreview extends Base {
-  public id: string;
+  declare public id: string;
   public name: string;
   public icon: string | null;
   public splash: string | null;
@@ -31,7 +31,7 @@ class GuildPreview extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The id of this guild
      * @type {string}
@@ -193,9 +193,9 @@ class GuildPreview extends Base {
   }
 
   toJSON(): any {
-    const json = super.toJSON();
-    json.iconURL = this.iconURL();
-    json.splashURL = this.splashURL();
+    const json = super.toJSON() as any;
+    json.iconURL = (this as any).iconURL();
+    json.splashURL = (this as any).splashURL();
     return json;
   }
 }

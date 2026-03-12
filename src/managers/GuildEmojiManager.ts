@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import BaseGuildEmojiManager from './BaseGuildEmojiManager';
 import { Error, TypeError } from '../errors';
 import DataResolver from '../util/DataResolver';
@@ -68,16 +68,16 @@ class GuildEmojiManager extends BaseGuildEmojiManager {
     attachment = await DataResolver.resolveImage(attachment);
     if (!attachment) throw new TypeError('REQ_RESOURCE_TYPE');
 
-    const data = { image: attachment, name };
+    const data: Record<string, unknown> = { image: attachment, name };
     if (roles) {
       if (!Array.isArray(roles) && !(roles instanceof Collection)) {
         throw new TypeError('INVALID_TYPE', 'options.roles', 'Array or Collection of Roles or Snowflakes', true);
       }
       data.roles = [];
       for (const role of roles.values()) {
-        const resolvedRole = this.guild.roles.resolveId(role);
+        const resolvedRole = this.guild.roles.resolveId(role as string);
         if (!resolvedRole) throw new TypeError('INVALID_ELEMENT', 'Array or Collection', 'options.roles', role);
-        data.roles.push(resolvedRole);
+        (data.roles as string[]).push(resolvedRole);
       }
     }
 
@@ -124,7 +124,7 @@ class GuildEmojiManager extends BaseGuildEmojiManager {
    * @returns {Promise<void>}
    */
   async delete(emoji: Snowflake | { id: Snowflake }, reason?: string): Promise<void> {
-    const id = this.resolveId(emoji);
+    const id = this.resolveId(emoji as string);
     if (!id) throw new TypeError('INVALID_TYPE', 'emoji', 'EmojiResolvable', true);
     await this.client.api.guilds(this.guild.id).emojis(id).delete({ reason });
   }
@@ -137,9 +137,9 @@ class GuildEmojiManager extends BaseGuildEmojiManager {
    * @returns {Promise<GuildEmoji>}
    */
   async edit(emoji: Snowflake | { id: Snowflake }, data: GuildEmojiEditData, reason?: string) {
-    const id = this.resolveId(emoji);
+    const id = this.resolveId(emoji as string);
     if (!id) throw new TypeError('INVALID_TYPE', 'emoji', 'EmojiResolvable', true);
-    const roles = data.roles?.map(r => this.guild.roles.resolveId(r));
+    const roles = data.roles?.map(r => this.guild.roles.resolveId(r as string));
     const newData = await this.client.api
       .guilds(this.guild.id)
       .emojis(id)
@@ -165,9 +165,10 @@ class GuildEmojiManager extends BaseGuildEmojiManager {
    * @returns {Promise<User>}
    */
   async fetchAuthor(emoji: Snowflake | { id: Snowflake }) {
-    emoji = this.resolve(emoji);
-    if (!emoji) throw new TypeError('INVALID_TYPE', 'emoji', 'EmojiResolvable', true);
-    if (emoji.managed) {
+    const resolved = this.resolve(emoji as string);
+    if (!resolved) throw new TypeError('INVALID_TYPE', 'emoji', 'EmojiResolvable', true);
+    const guildEmoji = resolved as unknown as { managed?: boolean; id: string; _patch(data: unknown): void; author: unknown };
+    if (guildEmoji.managed) {
       throw new Error('EMOJI_MANAGED');
     }
 
@@ -177,9 +178,9 @@ class GuildEmojiManager extends BaseGuildEmojiManager {
       throw new Error('MISSING_MANAGE_EMOJIS_AND_STICKERS_PERMISSION', this.guild);
     }
 
-    const data = await this.client.api.guilds(this.guild.id).emojis(emoji.id).get();
-    emoji._patch(data);
-    return emoji.author;
+    const data = await this.client.api.guilds(this.guild.id).emojis(guildEmoji.id).get();
+    guildEmoji._patch(data);
+    return guildEmoji.author;
   }
 }
 

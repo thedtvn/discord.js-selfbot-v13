@@ -439,7 +439,7 @@ class MessageEmbed {
    */
   setAuthor(options: any, deprecatedIconURL?: string, deprecatedURL?: string): this {
     if (options === null) {
-      this.author = {};
+      this.author = {} as MessageEmbedAuthor;
       return this;
     }
 

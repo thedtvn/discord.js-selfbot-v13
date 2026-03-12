@@ -12,6 +12,14 @@ import Modal from '../Modal';
  * @interface
  */
 class InteractionResponses {
+  public declare deferred: boolean;
+  public declare replied: boolean;
+  public declare ephemeral: boolean;
+  public declare client: any;
+  public declare id: any;
+  public declare token: string;
+  public declare webhook: any;
+
   /**
    * Options for deferring the reply to an {@link Interaction}.
    * @typedef {Object} InteractionDeferReplyOptions

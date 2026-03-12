@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { setTimeout, setInterval } from 'node:timers';
-import WebSocket from '../../../WebSocket';
+import { WebSocket, create, unpack } from '../../../WebSocket';
 import { Error } from '../../../errors';
 import { Opcodes, VoiceOpcodes } from '../../../util/Constants';
 
@@ -82,7 +82,7 @@ class VoiceWebSocket extends EventEmitter {
      * The actual WebSocket used to connect to the Voice WebSocket Server.
      * @type {WebSocket}
      */
-    this.ws = WebSocket.create(`wss://${this.connection.authentication.endpoint}/`, { v: 8 });
+    this.ws = create(`wss://${this.connection.authentication.endpoint}/`, { v: 8 });
     this.emit('debug', `[WS] connecting, ${this.attempts} attempts, ${this.ws.url}`);
     this.ws.onopen = this.onOpen.bind(this);
     this.ws.onmessage = this.onMessage.bind(this);
@@ -112,8 +112,8 @@ class VoiceWebSocket extends EventEmitter {
    * @returns {Promise<string>}
    */
   async sendPacket(packet: Record<string, any>): Promise<string> {
-    packet = JSON.stringify(packet);
-    return this.send(packet);
+    const packetString = JSON.stringify(packet);
+    return this.send(packetString);
   }
 
   /**
@@ -143,7 +143,7 @@ class VoiceWebSocket extends EventEmitter {
    */
   onMessage(event: any): void {
     try {
-      return this.onPacket(WebSocket.unpack(event.data, 'json'));
+      return this.onPacket(unpack(event.data, 'json'));
     } catch (error) {
       return this.onError(error);
     }
@@ -197,7 +197,7 @@ class VoiceWebSocket extends EventEmitter {
          */
         this.emit('sessionDescription', packet.d);
         break;
-      case VoiceOpcodes.CLIENT_CONNECT:
+      case VoiceOpcodes.CLIENT_DISCONNECT:
         this.connection.ssrcMap.set(+packet.d.audio_ssrc, {
           userId: packet.d.user_id,
           speaking: 0,

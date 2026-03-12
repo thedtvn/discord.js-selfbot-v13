@@ -610,6 +610,7 @@ class VoiceConnection extends EventEmitter {
 
   onStartSpeaking({ user_id, ssrc, speaking }: { user_id: string; ssrc: number; speaking: number }): void {
     this.ssrcMap.set(+ssrc, {
+      hasVideo: false,
       ...(this.ssrcMap.get(+ssrc) || {}),
       userId: user_id,
       speaking: speaking,
@@ -618,6 +619,7 @@ class VoiceConnection extends EventEmitter {
 
   onStartStreaming({ video_ssrc, user_id, audio_ssrc }: { video_ssrc: number; user_id: string; audio_ssrc: number }): void {
     this.ssrcMap.set(+audio_ssrc, {
+      speaking: 0,
       ...(this.ssrcMap.get(+audio_ssrc) || {}),
       userId: user_id,
       hasVideo: Boolean(video_ssrc), // Maybe ?
@@ -648,11 +650,11 @@ class VoiceConnection extends EventEmitter {
    * @private
    */
   onSpeaking({ user_id, speaking }: { user_id: string; speaking: number }): void {
-    speaking = new Speaking(speaking).freeze();
+    const speakingObj = new Speaking(speaking).freeze();
     const guild = this.channel.guild;
     const user = this.client.users.cache.get(user_id);
     const old = this._speaking.get(user_id) || new Speaking(0).freeze();
-    this._speaking.set(user_id, speaking);
+    this._speaking.set(user_id, speakingObj);
     /**
      * Emitted whenever a user changes speaking state.
      * @event VoiceConnection#speaking
@@ -660,13 +662,13 @@ class VoiceConnection extends EventEmitter {
      * @param {Readonly<Speaking>} speaking The speaking state of the user
      */
     if (this.status === VoiceStatus.CONNECTED) {
-      this.emit('speaking', user, speaking);
-      if (!speaking.has(Speaking.FLAGS.SPEAKING)) {
+      this.emit('speaking', user, speakingObj);
+      if (!speakingObj.has(Speaking.FLAGS.SPEAKING)) {
         this.receiver.packets._stoppedSpeaking(user_id);
       }
     }
 
-    if (guild && user && !speaking.equals(old)) {
+    if (guild && user && !speakingObj.equals(old)) {
       const member = guild.members.cache.get(user);
       if (member) {
         /**
@@ -675,7 +677,7 @@ class VoiceConnection extends EventEmitter {
          * @param {GuildMember} member The member that started/stopped speaking
          * @param {Readonly<Speaking>} speaking The speaking state of the member
          */
-        this.client.emit(Events.GUILD_MEMBER_SPEAKING, member, speaking);
+        this.client.emit('guildMemberSpeaking' as any, member, speakingObj);
       }
     }
   }
@@ -988,21 +990,9 @@ class StreamConnection extends VoiceConnection {
     throw new Error('STREAM_CANNOT_JOIN');
   }
 
-  get streamConnection(): this {
-    return this;
-  }
+  /* StreamConnection property handled in constructor */
 
-  set streamConnection(value: any) {
-    // Why ?
-  }
-
-  get streamWatchConnection(): Collection<string, StreamConnectionReadonly> {
-    return new Collection();
-  }
-
-  set streamWatchConnection(value: any) {
-    // Why ?
-  }
+  /* StreamWatchConnection property handled in constructor */
 
   disconnect(): void {
     if (this.#requestDisconnect) return;
@@ -1186,21 +1176,9 @@ class StreamConnectionReadonly extends VoiceConnection {
     return Promise.resolve(this);
   }
 
-  get streamConnection(): null {
-    return null;
-  }
+  /* StreamConnection property handled in constructor */
 
-  set streamConnection(value: any) {
-    // Why ?
-  }
-
-  get streamWatchConnection(): Collection<string, StreamConnectionReadonly> {
-    return new Collection();
-  }
-
-  set streamWatchConnection(value: any) {
-    // Why ?
-  }
+  /* StreamWatchConnection property handled in constructor */
 
   disconnect(): void {
     if (this.#requestDisconnect) return;

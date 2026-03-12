@@ -3,6 +3,7 @@ import process from 'node:process';
 import { setInterval, setTimeout } from 'node:timers';
 import { Collection } from '@discordjs/collection';
 import { authenticator } from 'otplib';
+import { HashAlgorithms } from '@otplib/core';
 import BaseClient, { type ClientOptions as BaseClientOptions } from './BaseClient';
 import ActionsManager from './actions/ActionsManager';
 import ClientVoiceManager from './voice/ClientVoiceManager';
@@ -71,6 +72,8 @@ interface ClientUserLike {
   phone?: string | null;
   email?: string | null;
   voice?: { selfMute?: boolean; selfDeaf?: boolean; selfVideo?: boolean };
+  _patch?(data: any): any;
+  [key: string]: any;
 }
 
 export interface ClientOptions extends BaseClientOptions {
@@ -130,6 +133,8 @@ class Client extends BaseClient {
 
   public readyAt: Date | null;
 
+  public application: any;
+
   public authenticator: typeof authenticator;
 
   public sweepMessageInterval?: NodeJS.Timeout;
@@ -179,14 +184,14 @@ class Client extends BaseClient {
      * A manager of the voice states of this client (Support DM / Group DM)
      * @type {VoiceStateManager}
      */
-    this.voiceStates = new VoiceStateManager({ client: this });
+    this.voiceStates = new VoiceStateManager({ client: this } as any);
 
     /**
      * Shard helpers for the client (only if the process was spawned from a {@link ShardingManager})
      * @type {?ShardClientUtil}
      */
     this.shard = process.env.SHARDING_MANAGER
-      ? ShardClientUtil.singleton(this, process.env.SHARDING_MANAGER_MODE)
+      ? ShardClientUtil.singleton(this as any, process.env.SHARDING_MANAGER_MODE as any)
       : null;
 
     /**
@@ -295,7 +300,7 @@ class Client extends BaseClient {
     this.authenticator.options = {
       step: 30,
       digits: 6,
-      algorithm: 'sha1',
+      algorithm: HashAlgorithms.SHA1,
     };
 
     if (this.options.messageSweepInterval > 0) {
@@ -338,7 +343,7 @@ class Client extends BaseClient {
    * @readonly
    */
   get uptime(): number | null {
-    return this.readyAt ? Date.now() - this.readyAt : null;
+    return this.readyAt ? Date.now() - this.readyAt.getTime() : null;
   }
 
   /**
@@ -528,9 +533,9 @@ class Client extends BaseClient {
    */
   async fetchVoiceRegions(): Promise<Collection<string, VoiceRegion>> {
     const apiRegions = await this.api.voice.regions.get();
-    const regions = new Collection();
+    const regions = new Collection<string, VoiceRegion>();
     for (const region of apiRegions) regions.set(region.id, new VoiceRegion(region));
-    return regions;
+    return regions as any;
   }
 
   /**
@@ -725,7 +730,7 @@ class Client extends BaseClient {
     // Guild
     if (i.guild?.id) {
       const guild = this.guilds.cache.get(i.guild?.id);
-      if (i.flags.has('GUEST')) {
+      if (i.flags.has('IS_GUEST_INVITE')) {
         this.emit(Events.DEBUG, `[Invite > Guild ${i.guild?.id}] Guest invite`);
         return guild;
       }
@@ -773,7 +778,7 @@ class Client extends BaseClient {
         }
         const getForm = await this.api
           .guilds(i.guild?.id)
-          ['member-verification'].get({ query: { with_guild: false, invite_code: this.code } })
+          ['member-verification'].get({ query: { with_guild: false, invite_code: i.code || (typeof invite === 'string' ? invite : undefined) } })
           .catch(() => {});
         if (getForm && getForm.form_fields[0]) {
           const form = Object.assign(getForm.form_fields[0], { response: true });
@@ -803,7 +808,7 @@ class Client extends BaseClient {
       nitro.match(/(discord\.gift\/|discord\.com\/gifts\/|discordapp\.com\/gifts\/)(\w+)/);
     if (!nitroCode) return false;
     const code = nitroCode[2];
-    channel = this.channels.resolveId(channel);
+    channel = this.channels.resolveId(channel as any);
     return this.api.entitlements['gift-codes'](code).redeem.post({
       auth: true,
       data: { channel_id: channel || null, payment_source_id: paymentSourceId || null },
@@ -922,7 +927,7 @@ class Client extends BaseClient {
    */
   authorizedApplications(): Promise<Collection<string, AuthorizedApplicationData>> {
     return this.api.oauth2.tokens.get().then(data => {
-      const results = new Collection();
+      const results = new Collection<string, AuthorizedApplicationData>();
       for (const o of data) {
         const application = new Application(this, o.application);
         const data = {

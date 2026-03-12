@@ -25,7 +25,7 @@ class CallState extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('region' in data) {
       /**
        * The region of the call
@@ -52,7 +52,7 @@ class CallState extends Base {
    * @returns {Promise<void>}
    */
   setRTCRegion(region: string): any {
-    return this.client.api.channels(this.channelId).call.patch({ data: { region } });
+    return (this.client.api.channels(this.channelId) as any).call.patch({ data: { region } });
   }
 
   /**

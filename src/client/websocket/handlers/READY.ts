@@ -12,11 +12,11 @@ const handler: GatewayHandler = (client, { d: data }, shard) => {
     client.user._patch(data.user);
   } else {
     client.user = new ClientUser(client, data.user);
-    client.users.cache.set(client.user.id, client.user);
+    client.users.cache.set(client.user.id, client.user as any);
   }
 
   for (const private_channel of data.private_channels) {
-    client.channels._add(private_channel);
+    client.channels._add(private_channel, null);
   }
 
   for (const guild of data.guilds) {
@@ -98,14 +98,14 @@ const handler: GatewayHandler = (client, { d: data }, shard) => {
 
   Promise.all(
     data.private_channels.map(async (c: { id: string }, index: number) => {
-      if (client.options.DMChannelVoiceStatusSync < 1) return;
+      if ((client.options as any).DMChannelVoiceStatusSync < 1) return;
       client.ws.broadcast({
         op: Opcodes.DM_UPDATE,
         d: {
           channel_id: c.id,
         },
       });
-      await client.sleep(client.options.DMChannelVoiceStatusSync * index);
+      await client.sleep((client.options as any).DMChannelVoiceStatusSync * index);
     }),
   ).then(() => shard.checkReady());
 };

@@ -9,7 +9,7 @@ import GuildMemberRoleManager from '../managers/GuildMemberRoleManager';
 import GuildMemberFlags from '../util/GuildMemberFlags';
 import Permissions from '../util/Permissions';
 import type Client from '../client/Client';
-import type Guild from './Guild';
+import type { Guild } from './Guild';
 import type User from './User';
 import type { Snowflake } from 'discord-api-types/v10';
 
@@ -93,7 +93,7 @@ class GuildMember extends Base {
     if (data) this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('user' in data) {
       /**
        * The user that this guild member instance represents
@@ -488,7 +488,7 @@ class GuildMember extends Base {
    * @param {string} [reason] Reason for kicking user
    * @returns {Promise<GuildMember>}
    */
-  kick(reason?: string): Promise<GuildMember> {
+  kick(reason?: string): any {
     return this.guild.members.kick(this, reason);
   }
 
@@ -502,7 +502,7 @@ class GuildMember extends Base {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  ban(options?: any): Promise<GuildMember> {
+  ban(options?: any): any {
     return this.guild.bans.create(this, options);
   }
 
@@ -548,7 +548,7 @@ class GuildMember extends Base {
    * @param {boolean} [force=true] Whether to skip the cache check and request the API
    * @returns {Promise<GuildMember>}
    */
-  fetch(force: boolean = true): Promise<GuildMember> {
+  fetch(force: boolean = true): any {
     return this.guild.members.fetch({ user: this.id, cache: true, force });
   }
 
@@ -597,11 +597,11 @@ class GuildMember extends Base {
       displayName: true,
       roles: true,
     });
-    json.avatarURL = this.avatarURL();
-    json.bannerURL = this.bannerURL();
-    json.displayAvatarURL = this.displayAvatarURL();
-    json.displayBannerURL = this.displayBannerURL();
-    json.avatarDecorationURL = this.avatarDecorationURL();
+    json.avatarURL = (this as any).avatarURL();
+    json.bannerURL = (this as any).bannerURL();
+    json.displayAvatarURL = (this as any).displayAvatarURL();
+    json.displayBannerURL = (this as any).displayBannerURL();
+    json.avatarDecorationURL = (this as any).avatarDecorationURL();
     return json;
   }
 

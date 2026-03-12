@@ -8,7 +8,7 @@ import ThreadMemberFlags from '../util/ThreadMemberFlags';
 class ThreadMember extends Base {
   public thread: any;
   public joinedTimestamp: number | null;
-  public id: string;
+  declare public id: string;
   public flags: any;
   public member: any;
 
@@ -36,7 +36,7 @@ class ThreadMember extends Base {
     this._patch(data, extra);
   }
 
-  _patch(data: any, extra: any = {}): void {
+  _patch(data: any, extra: any = {}): any {
     if ('join_timestamp' in data) this.joinedTimestamp = new Date(data.join_timestamp).getTime();
 
     if ('flags' in data) {

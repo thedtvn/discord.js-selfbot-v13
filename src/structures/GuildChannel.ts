@@ -21,7 +21,7 @@ import Util from '../util/Util';
  * @abstract
  */
 class GuildChannel extends Channel {
-  public guild: any;
+  declare public guild: any;
   public guildId: string;
   public name: string;
   public rawPosition: number;
@@ -53,7 +53,7 @@ class GuildChannel extends Channel {
     if (data && immediatePatch) this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if ('name' in data) {
@@ -94,7 +94,7 @@ class GuildChannel extends Channel {
 
   _clone(): this {
     const clone = super._clone();
-    clone.permissionOverwrites = new PermissionOverwriteManager(clone, this.permissionOverwrites.cache.values());
+    clone.permissionOverwrites = new PermissionOverwriteManager(clone, this.permissionOverwrites.cache.values() as any);
     return clone;
   }
 
@@ -378,13 +378,13 @@ class GuildChannel extends Channel {
   clone(options: any = {}): any {
     return this.guild.channels.create(options.name ?? this.name, {
       permissionOverwrites: this.permissionOverwrites.cache,
-      topic: this.topic,
+      topic: (this as any).topic,
       type: this.type,
-      nsfw: this.nsfw,
+      nsfw: (this as any).nsfw,
       parent: this.parent,
-      bitrate: this.bitrate,
-      userLimit: this.userLimit,
-      rateLimitPerUser: this.rateLimitPerUser,
+      bitrate: (this as any).bitrate,
+      userLimit: (this as any).userLimit,
+      rateLimitPerUser: (this as any).rateLimitPerUser,
       position: this.rawPosition,
       reason: null,
       ...options,
@@ -402,7 +402,7 @@ class GuildChannel extends Channel {
       channel &&
       this.id === channel.id &&
       this.type === channel.type &&
-      this.topic === channel.topic &&
+      (this as any).topic === channel.topic &&
       this.position === channel.position &&
       this.name === channel.name;
 

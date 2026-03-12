@@ -9,7 +9,7 @@ import SnowflakeUtil from '../util/SnowflakeUtil';
  */
 class Interaction extends Base {
   public type: any;
-  public id: any;
+  declare public id: any;
   public token: any;
   public applicationId: any;
   public channelId: any;
@@ -22,6 +22,8 @@ class Interaction extends Base {
   public locale: any;
   public guildLocale: any;
   public targetId: any;
+  public targetType: any;
+  public componentType: any;
 
   constructor(client: any, data: any) {
     super(client);

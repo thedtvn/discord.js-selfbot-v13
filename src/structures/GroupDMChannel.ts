@@ -14,7 +14,7 @@ import DataResolver from '../util/DataResolver';
  * @implements {TextBasedChannel}
  */
 class GroupDMChannel extends Channel {
-  public messages: MessageManager;
+  declare public messages: MessageManager;
   public _recipients: any[];
   public ownerId: string | null;
   public lastMessageId: string | null;
@@ -31,10 +31,10 @@ class GroupDMChannel extends Channel {
      * A manager of the messages belonging to this channel
      * @type {MessageManager}
      */
-    this.messages = new MessageManager(this);
+    this.messages = new MessageManager(this as any);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if ('recipients' in data && Array.isArray(data.recipients)) {
@@ -172,7 +172,7 @@ class GroupDMChannel extends Channel {
   }
 
   toJSON(): unknown {
-    const json = super.toJSON({
+    const json: any = super.toJSON({
       createdTimestamp: true,
     });
     json.iconURL = this.iconURL();
@@ -200,7 +200,7 @@ class GroupDMChannel extends Channel {
    *   .catch(console.error);
    */
   async edit(data: any): Promise<any> {
-    const _data = {};
+    const _data: any = {};
     if ('name' in data) _data.name = data.name?.trim() ?? null;
     if (typeof data.icon !== 'undefined') {
       _data.icon = await DataResolver.resolveImage(data.icon);
@@ -315,7 +315,7 @@ class GroupDMChannel extends Channel {
     } else {
       recipients = recipients.map(r => this.client.users.resolveId(r)).filter(r => r && this.recipients.get(r));
     }
-    return this.client.api.channels(this.id).call.ring.post({
+    return (this.client.api as any).channels(this.id).call.ring.post({
       data: {
         recipients,
       },
@@ -382,8 +382,8 @@ class GroupDMChannel extends Channel {
 
   // These are here only for documentation purposes - they are implemented by TextBasedChannel
   /* eslint-disable no-empty-function */
-  get lastMessage() {}
-  get lastPinAt() {}
+  get lastMessage(): any { return null; }
+  get lastPinAt(): any { return null; }
   send() {}
   sendTyping() {}
   createMessageCollector() {}

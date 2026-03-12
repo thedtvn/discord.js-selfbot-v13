@@ -2,7 +2,7 @@
 
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
 import AutoModerationRule from '../structures/AutoModerationRule';
 import {
@@ -195,13 +195,13 @@ class AutoModerationRuleManager extends CachedManager<Snowflake, AutoModerationR
           type: typeof action.type === 'number' ? action.type : AutoModerationActionTypes[action.type],
           metadata: {
             duration_seconds: action.metadata?.durationSeconds,
-            channel_id: action.metadata?.channel && this.guild.channels.resolveId(action.metadata.channel),
+            channel_id: action.metadata?.channel && this.guild.channels.resolveId(action.metadata.channel as string),
             custom_message: action.metadata?.customMessage,
           },
         })),
         enabled,
-        exempt_roles: exemptRoles?.map(exemptRole => this.guild.roles.resolveId(exemptRole)),
-        exempt_channels: exemptChannels?.map(exemptChannel => this.guild.channels.resolveId(exemptChannel)),
+        exempt_roles: exemptRoles && [...exemptRoles.values()].map(exemptRole => this.guild.roles.resolveId(exemptRole as string)),
+        exempt_channels: exemptChannels && [...exemptChannels.values()].map(exemptChannel => this.guild.channels.resolveId(exemptChannel as string)),
       },
       reason,
     });
@@ -258,13 +258,13 @@ class AutoModerationRuleManager extends CachedManager<Snowflake, AutoModerationR
             type: typeof action.type === 'number' ? action.type : AutoModerationActionTypes[action.type],
             metadata: {
               duration_seconds: action.metadata?.durationSeconds,
-              channel_id: action.metadata?.channel && this.guild.channels.resolveId(action.metadata.channel),
+              channel_id: action.metadata?.channel && this.guild.channels.resolveId(action.metadata.channel as string),
               custom_message: action.metadata?.customMessage,
             },
           })),
           enabled,
-          exempt_roles: exemptRoles?.map(exemptRole => this.guild.roles.resolveId(exemptRole)),
-          exempt_channels: exemptChannels?.map(exemptChannel => this.guild.channels.resolveId(exemptChannel)),
+          exempt_roles: exemptRoles && [...exemptRoles.values()].map(exemptRole => this.guild.roles.resolveId(exemptRole as string)),
+          exempt_channels: exemptChannels && [...exemptChannels.values()].map(exemptChannel => this.guild.channels.resolveId(exemptChannel as string)),
         },
         reason,
       });
@@ -315,7 +315,7 @@ class AutoModerationRuleManager extends CachedManager<Snowflake, AutoModerationR
   fetch(options?: AutoModerationRuleResolvable | FetchAutoModerationRuleOptions | FetchAutoModerationRulesOptions): Promise<AutoModerationRule | Collection<Snowflake, AutoModerationRule>> {
     if (!options) return this._fetchMany();
     const { autoModerationRule, cache, force } = options as FetchAutoModerationRuleOptions;
-    const resolvedAutoModerationRule = this.resolveId(autoModerationRule ?? options);
+    const resolvedAutoModerationRule = this.resolveId((autoModerationRule ?? options) as AutoModerationRuleResolvable);
     if (resolvedAutoModerationRule) {
       return this._fetchSingle({ autoModerationRule: resolvedAutoModerationRule, cache, force });
     }

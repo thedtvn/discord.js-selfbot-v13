@@ -22,11 +22,6 @@ class ReactionCollector extends Collector {
   public message: any;
   public users: Collection<string, any>;
   public total: number;
-  public empty: () => void;
-  public _handleChannelDeletion: (channel: any) => void;
-  public _handleThreadDeletion: (thread: any) => void;
-  public _handleGuildDeletion: (guild: any) => void;
-  public _handleMessageDeletion: (message: any) => void;
 
   /**
    * @param {Message} message The message upon which to collect reactions

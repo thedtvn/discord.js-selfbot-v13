@@ -53,7 +53,7 @@ class WebSocketManager extends EventEmitter {
     super();
     this.client = client;
     this.gateway = null;
-    this.totalShards = this.client.options.shards.length;
+    this.totalShards = (this.client.options.shards as any[]).length;
     this.shards = new Collection();
     this.shardQueue = new Set();
     this.packetQueue = [];
@@ -99,9 +99,9 @@ class WebSocketManager extends EventEmitter {
       shards = this.client.options.shards = Array.from({ length: recommendedShards }, (_, i) => i);
     }
 
-    this.totalShards = shards.length;
-    this.debug(`Spawning shards: ${shards.join(', ')}`);
-    this.shardQueue = new Set(shards.map((id: number) => new WebSocketShard(this, id)));
+    this.totalShards = (shards as any[]).length;
+    this.debug(`Spawning shards: ${(shards as any[]).join(', ')}`);
+    this.shardQueue = new Set((shards as any[]).map((id: number) => new WebSocketShard(this, id)));
 
     return this.createShards();
   }
@@ -231,7 +231,7 @@ class WebSocketManager extends EventEmitter {
     }
 
     if (packet && PacketHandlers[packet.t as string]) {
-      PacketHandlers[packet.t as string](this.client, packet, shard as WebSocketShard);
+      PacketHandlers[packet.t as string](this.client, packet as any, shard as WebSocketShard);
     } else if (packet) {
       this.client.emit(Events.UNHANDLED_PACKET, packet, shard);
     }

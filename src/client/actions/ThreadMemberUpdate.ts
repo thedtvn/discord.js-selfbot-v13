@@ -5,7 +5,7 @@ class ThreadMemberUpdateAction extends Action {
   handle(data: any): any {
     const client = this.client;
     // Discord sends the thread id as id in this object
-    const thread = client.channels.cache.get(data.id);
+    const thread = client.channels.cache.get(data.id) as any;
     if (thread) {
       const member = thread.members.cache.get(data.user_id);
       if (!member) {

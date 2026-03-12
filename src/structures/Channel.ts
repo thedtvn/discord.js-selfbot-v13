@@ -33,8 +33,10 @@ let deprecationEmittedForDeleted = false;
  */
 class Channel extends Base {
   public type: string;
-  public id: string;
+  declare public id: string;
   public flags: any;
+  public messages?: any;
+  public guild?: any;
 
   constructor(client: any, data: any, immediatePatch: boolean = true) {
     super(client);
@@ -49,7 +51,7 @@ class Channel extends Base {
     if (data && immediatePatch) this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The channel's id
      * @type {Snowflake}

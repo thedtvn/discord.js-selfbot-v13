@@ -122,7 +122,11 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
    *   .catch(console.error);
    */
   fetch(message?: Snowflake | ChannelLogsQueryOptions, { cache = true, force = false } = {}): Promise<Message | Collection<Snowflake, Message>> {
-    return typeof message === 'string' ? this._fetchId(message, cache, force) : this._fetchMany(message, cache);
+    if (typeof message === 'string') {
+      const result = this._fetchId(message, cache, force);
+      return result instanceof Promise ? result : Promise.resolve(result);
+    }
+    return this._fetchMany(message, cache);
   }
 
   /**
@@ -141,7 +145,7 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
     const data = await this.client.api.channels[this.channel.id].messages.pins.get({
       query: { limit: 50 },
     });
-    const messages = new Collection();
+    const messages = new Collection<Snowflake, Message>();
     for (const message of data?.items || []) messages.set(message.id, this._add(message, cache));
     return messages;
   }
@@ -189,7 +193,7 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
       .resolveFiles();
 
     // New API
-    const attachments = await Util.getUploadURL(this.client, this.channel.id, files);
+    const attachments = await Util.getUploadURL(this.client, this.channel.id, files as { name: string }[]);
     const requestPromises = attachments.map(async attachment => {
       await Util.uploadFile(files[attachment.id].file, attachment.upload_url);
       return {
@@ -267,12 +271,12 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
     message = this.resolveId(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
-    emoji = Util.resolvePartialEmoji(emoji);
-    if (!emoji) throw new TypeError('EMOJI_TYPE', 'emoji', 'EmojiIdentifierResolvable');
+    const resolvedEmoji = Util.resolvePartialEmoji(emoji) as { id?: string; animated?: boolean; name: string } | null;
+    if (!resolvedEmoji) throw new TypeError('EMOJI_TYPE', 'emoji', 'EmojiIdentifierResolvable');
 
-    const emojiId = emoji.id
-      ? `${emoji.animated ? 'a:' : ''}${emoji.name}:${emoji.id}`
-      : encodeURIComponent(emoji.name);
+    const emojiId = resolvedEmoji.id
+      ? `${resolvedEmoji.animated ? 'a:' : ''}${resolvedEmoji.name}:${resolvedEmoji.id}`
+      : encodeURIComponent(resolvedEmoji.name);
 
     // eslint-disable-next-line newline-per-chained-call
     await this.client.api
@@ -379,9 +383,9 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
         .map(c => this.client.channels.resolveId(c))
         .filter(id => {
           if (this.channel.guildId) {
-            const c = this.channel.guild.channels.cache.get(id);
+            const c = this.channel.guild.channels.cache.get(id) as Record<string, unknown> | undefined;
             if (!c || !c.messages) return false;
-            const perm = c.permissionsFor(this.client.user);
+            const perm = (c as { permissionsFor: (...args: unknown[]) => { has: (perm: string) => boolean } }).permissionsFor(this.client.user);
             if (!perm.has('READ_MESSAGE_HISTORY') || !perm.has('VIEW_CHANNEL')) return false;
             return true;
           } else {
@@ -391,7 +395,7 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
     }
     if (limit && limit > 25) throw new RangeError('MESSAGE_SEARCH_LIMIT');
     let stringQuery = [];
-    const result = new Collection();
+    const result = new Collection<Snowflake, Message>();
     let data;
     if (authors.length > 0) stringQuery.push(authors.map(id => `author_id=${id}`).join('&'));
     if (content && content.length) stringQuery.push(`content=${encodeURIComponent(content)}`);
@@ -439,8 +443,8 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
   }
 
   async _fetchMany(options: ChannelLogsQueryOptions = {}, cache?: boolean): Promise<Collection<Snowflake, Message>> {
-    const data = await this.client.api.channels[this.channel.id].messages.get({ query: options });
-    const messages = new Collection();
+    const data = await this.client.api.channels[this.channel.id].messages.get({ query: options as Record<string, string | number | boolean> });
+    const messages = new Collection<Snowflake, Message>();
     for (const message of data) messages.set(message.id, this._add(message, cache));
     return messages;
   }
@@ -468,7 +472,7 @@ class MessageManager extends CachedManager<Snowflake, Message, MessageResolvable
    * @returns {Promise<Collection<Snowflake, User>>}
    */
   async fetchPollAnswerVoters({ messageId, answerId, after, limit }: FetchPollAnswerVotersOptions): Promise<Collection<Snowflake, unknown>> {
-    const voters = await this.client.channels(this.channel.id).polls(messageId).answers(answerId).get({
+    const voters = await this.client.api.channels(this.channel.id).polls(messageId).answers(answerId).get({
       query: { limit, after },
     });
 

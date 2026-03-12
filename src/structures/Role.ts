@@ -6,8 +6,8 @@ import Permissions from '../util/Permissions';
 import RoleFlags from '../util/RoleFlags';
 import SnowflakeUtil from '../util/SnowflakeUtil';
 import type Client from '../client/Client';
-import type Guild from './Guild';
-import type GuildMember from './GuildMember';
+import type { Guild } from './Guild';
+import type { GuildMember } from './GuildMember';
 import type { Snowflake } from 'discord-api-types/v10';
 
 let deprecationEmittedForComparePositions = false;
@@ -28,7 +28,7 @@ class Role extends Base {
   public guild: Guild;
   public icon: string | null;
   public unicodeEmoji: string | null;
-  public id: string;
+  declare public id: string;
   public name: string;
   public color: number;
   public colors: { primaryColor: number; secondaryColor: number | null; tertiaryColor: number | null };
@@ -73,7 +73,7 @@ class Role extends Base {
     if (data) this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The role's id (unique to the guild it is part of)
      * @type {Snowflake}
@@ -280,7 +280,7 @@ class Role extends Base {
    */
   get editable(): boolean {
     if (this.managed) return false;
-    const clientMember = this.guild.members.resolve(this.client.user);
+    const clientMember = this.guild.members.resolve(this.client.user as any);
     if (!clientMember.permissions.has(Permissions.FLAGS.MANAGE_ROLES)) return false;
     return clientMember.roles.highest.comparePositionTo(this) > 0;
   }
@@ -353,7 +353,7 @@ class Role extends Base {
    * @param {boolean} [checkAdmin=true] Whether having `ADMINISTRATOR` will return all permissions
    * @returns {Readonly<Permissions>}
    */
-  permissionsIn(channel: unknown, checkAdmin: boolean = true): Readonly<Permissions> {
+  permissionsIn(channel: any, checkAdmin: boolean = true): Readonly<Permissions> {
     channel = this.guild.channels.resolve(channel);
     if (!channel) throw new Error('GUILD_CHANNEL_RESOLVE');
     return channel.rolePermissions(this, checkAdmin);
@@ -581,7 +581,7 @@ class Role extends Base {
 
   toJSON(): unknown {
     return {
-      ...super.toJSON({ createdTimestamp: true }),
+      ...(super.toJSON({ createdTimestamp: true }) as any),
       permissions: this.permissions.toJSON(),
     };
   }

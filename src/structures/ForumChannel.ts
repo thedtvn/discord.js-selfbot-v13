@@ -10,7 +10,7 @@ import { ForumLayoutTypes } from '../util/Constants';
 class ForumChannel extends ThreadOnlyChannel {
   public defaultForumLayout: string;
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
     /**
      * The default layout type used to display posts

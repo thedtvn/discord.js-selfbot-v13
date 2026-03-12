@@ -6,7 +6,7 @@ class PresenceUpdateAction extends Action {
   handle(data: any): any {
     let user = this.client.users.cache.get(data.user.id);
     if (!user && data.user?.username) user = this.client.users._add(data.user);
-    if (!user && ('username' in data.user || this.client.options.partials.includes(PartialTypes.USER))) {
+    if (!user && ('username' in data.user || (this.client.options.partials as any[]).includes(PartialTypes.USER))) {
       user = this.client.users._add(data.user);
     }
     if (!user) return;
@@ -21,6 +21,7 @@ class PresenceUpdateAction extends Action {
       let member = guild.members.cache.get(user.id);
       if (!member && data.status !== 'offline') {
         member = guild.members._add({
+          id: user.id,
           user,
           deaf: false,
           mute: false,

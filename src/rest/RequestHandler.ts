@@ -128,7 +128,7 @@ class RequestHandler {
     const shouldThrow =
       typeof options.rejectOnRateLimit === 'function'
         ? await options.rejectOnRateLimit(rateLimitData)
-        : options.rejectOnRateLimit.some(route => rateLimitData.route.startsWith(route.toLowerCase()));
+        : (options.rejectOnRateLimit as any[]).some(route => rateLimitData.route.startsWith(route.toLowerCase()));
 
     if (shouldThrow) {
       throw new RateLimitError(rateLimitData);
@@ -144,10 +144,10 @@ class RequestHandler {
 
       if (isGlobal) {
         limit = this.manager.globalLimit;
-        timeout = (this.manager.globalReset ?? Date.now()) + this.manager.client.options.restTimeOffset - Date.now();
+        timeout = (this.manager.globalReset ?? Date.now()) + (this.manager.client.options.restTimeOffset as number) - Date.now();
       } else {
         limit = this.limit;
-        timeout = this.reset + this.manager.client.options.restTimeOffset - Date.now();
+        timeout = this.reset + (this.manager.client.options.restTimeOffset as number) - Date.now();
       }
 
       if (this.manager.client.listenerCount(RATE_LIMIT)) {
@@ -249,8 +249,8 @@ class RequestHandler {
 
       const emitInvalid =
         this.manager.client.listenerCount(INVALID_REQUEST_WARNING) &&
-        this.manager.client.options.invalidRequestWarningInterval > 0 &&
-        invalidCount % this.manager.client.options.invalidRequestWarningInterval === 0;
+        (this.manager.client.options.invalidRequestWarningInterval as number) > 0 &&
+        invalidCount % (this.manager.client.options.invalidRequestWarningInterval as number) === 0;
       if (emitInvalid) {
         this.manager.client.emit(INVALID_REQUEST_WARNING, {
           count: invalidCount,
@@ -270,10 +270,10 @@ class RequestHandler {
         let timeout: number;
         if (isGlobal) {
           rateLimitLimit = this.manager.globalLimit;
-          timeout = (this.manager.globalReset ?? Date.now()) + this.manager.client.options.restTimeOffset - Date.now();
+          timeout = (this.manager.globalReset ?? Date.now()) + (this.manager.client.options.restTimeOffset as number) - Date.now();
         } else {
           rateLimitLimit = this.limit;
-          timeout = this.reset + this.manager.client.options.restTimeOffset - Date.now();
+          timeout = this.reset + (this.manager.client.options.restTimeOffset as number) - Date.now();
         }
 
         this.manager.client.emit(
@@ -303,12 +303,12 @@ class RequestHandler {
         if (
           data?.captcha_service &&
           typeof this.manager.client.options.captchaSolver === 'function' &&
-          request.retries < this.manager.client.options.captchaRetryLimit &&
+          request.retries < (this.manager.client.options.captchaRetryLimit as number) &&
           captchaMessage.some(s => data.captcha_key[0]?.includes(s))
         ) {
           this.manager.client.emit(
             DEBUG,
-            `[Request Handler] Hit a captcha while executing a request (${data.captcha_key.join(', ')})
+            `[Request Handler] Hit a captcha while executing a request (${(data.captcha_key as any[]).join(', ')})
     Method  : ${request.method}
     Path    : ${request.path}
     Route   : ${request.route}
@@ -326,7 +326,7 @@ class RequestHandler {
     rqToken : ${data.captcha_rqtoken}`,
           );
           request.retries++;
-          return this.execute(request, captcha, data.captcha_rqtoken);
+          return this.execute(request, captcha as string, data.captcha_rqtoken as string);
         }
 
         if ((data as RateLimitResponseData)?.code && (data as RateLimitResponseData).code == 60003 && request.options.auth !== false && request.retries < 1) {
@@ -335,7 +335,7 @@ class RequestHandler {
             twoFactorData.mfa?.methods.find(o => o.type === 'totp') &&
             typeof this.manager.client.options.TOTPKey === 'string'
           ) {
-            const otp = this.manager.client.authenticator.generate(this.manager.client.options.TOTPKey);
+            const otp = (this.manager.client as any).authenticator.generate(this.manager.client.options.TOTPKey);
             this.manager.client.emit(
               DEBUG,
               `[Request Handler] ${twoFactorData.message}

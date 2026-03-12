@@ -33,7 +33,7 @@ class UserNoteManager extends BaseManager {
 
   async updateNote(id: Snowflake, note: string | null = null): Promise<this> {
     await this.client.api.users['@me'].notes(id).put({ data: { note } });
-    if (!note) this.cache.delete(id, note);
+    if (!note) this.cache.delete(id);
     else this.cache.set(id, note);
     return this;
   }

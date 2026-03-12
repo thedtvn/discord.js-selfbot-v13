@@ -13,7 +13,7 @@ import { OverwriteTypes, PartialTypes, AutoModerationRuleTriggerTypes } from '..
 import SnowflakeUtil from '../util/SnowflakeUtil';
 import Util from '../util/Util';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from './Guild';
+import type { Guild } from './Guild';
 
 /**
  * The target type of an entry. Here are the available types:
@@ -236,7 +236,7 @@ class GuildAuditLogs {
     this.applicationCommands = new Collection();
     if (data.application_commands) {
       for (const command of data.application_commands) {
-        this.applicationCommands.set(command.id, new ApplicationCommand(guild.client, command, guild));
+        this.applicationCommands.set(command.id, new ApplicationCommand(guild.client, command, guild as any, guild.id));
       }
     }
     /**
@@ -471,7 +471,7 @@ class GuildAuditLogsEntry {
      * @type {?User}
      */
     this.executor = data.user_id
-      ? guild.client.options.partials.includes(PartialTypes.USER)
+      ? (guild.client.options.partials as any[]).includes(PartialTypes.USER as any)
         ? guild.client.users._add({ id: data.user_id })
         : guild.client.users.cache.get(data.user_id) ?? null
       : null;
@@ -604,7 +604,7 @@ class GuildAuditLogsEntry {
       this.target.id = data.target_id;
       // MEMBER_DISCONNECT and similar types do not provide a target_id.
     } else if (targetType === Targets.USER && data.target_id) {
-      this.target = guild.client.options.partials.includes(PartialTypes.USER)
+      this.target = (guild.client.options.partials as any[]).includes(PartialTypes.USER as any)
         ? guild.client.users._add({ id: data.target_id })
         : guild.client.users.cache.get(data.target_id) ?? null;
     } else if (targetType === Targets.GUILD) {
@@ -626,7 +626,7 @@ class GuildAuditLogsEntry {
           ),
         );
     } else if (targetType === Targets.INVITE) {
-      let change = this.changes.find(c => c.key === 'code');
+      let change: any = this.changes.find(c => c.key === 'code');
       change = change.new ?? change.old;
 
       this.target =
@@ -634,7 +634,7 @@ class GuildAuditLogsEntry {
         new Invite(
           guild.client,
           this.changes.reduce(
-            (o, c) => {
+            (o: any, c) => {
               o[c.key] = c.new ?? c.old;
               return o;
             },

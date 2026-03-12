@@ -8,7 +8,7 @@ import { PrivacyLevels, GuildScheduledEventEntityTypes, GuildScheduledEventStatu
 import DataResolver from '../util/DataResolver';
 import Util from '../util/Util';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 
 type GuildScheduledEventResolvable = GuildScheduledEvent | Snowflake;
 type RawGuildScheduledEventData = { id: Snowflake } & Record<string, unknown>;
@@ -186,7 +186,7 @@ class GuildScheduledEventManager extends CachedManager<
       channel_id = typeof channel === 'undefined' ? channel : null;
       entity_metadata = { location: entityMetadata?.location };
     } else {
-      channel_id = this.guild.channels.resolveId(channel);
+      channel_id = this.guild.channels.resolveId(channel as string);
       if (!channel_id) throw new Error('GUILD_VOICE_CHANNEL_RESOLVE');
       entity_metadata = typeof entityMetadata === 'undefined' ? entityMetadata : null;
     }
@@ -196,13 +196,13 @@ class GuildScheduledEventManager extends CachedManager<
         channel_id,
         name,
         privacy_level: privacyLevel,
-        scheduled_start_time: new Date(scheduledStartTime).toISOString(),
-        scheduled_end_time: scheduledEndTime ? new Date(scheduledEndTime).toISOString() : scheduledEndTime,
+        scheduled_start_time: new Date(scheduledStartTime as string | number | Date).toISOString(),
+        scheduled_end_time: scheduledEndTime ? new Date(scheduledEndTime as string | number | Date).toISOString() : scheduledEndTime,
         description,
-        image: image && (await DataResolver.resolveImage(image)),
+        image: image && (await DataResolver.resolveImage(image as string | Buffer)),
         entity_type: entityType,
         entity_metadata,
-        recurrence_rule: recurrenceRule && Util.transformGuildScheduledEventRecurrenceRule(recurrenceRule),
+        recurrence_rule: recurrenceRule && Util.transformGuildScheduledEventRecurrenceRule(recurrenceRule as { startAt: string | number | Date; frequency: number; interval: number; byWeekday: number[]; byNWeekday: { n: number; day: number }[]; byMonth: number[]; byMonthDay: number[] }),
       },
       reason,
     });
@@ -234,27 +234,29 @@ class GuildScheduledEventManager extends CachedManager<
   async fetch(
     options?: GuildScheduledEventResolvable | FetchGuildScheduledEventOptions | FetchGuildScheduledEventsOptions,
   ): Promise<GuildScheduledEvent | Collection<Snowflake, GuildScheduledEvent>> {
-    const id = this.resolveId(options?.guildScheduledEvent ?? options);
+    const id = this.resolveId(
+      (options as FetchGuildScheduledEventOptions)?.guildScheduledEvent ?? (options as GuildScheduledEventResolvable),
+    );
 
     if (id) {
-      if (!options?.force) {
+      if (!(options as FetchGuildScheduledEventOptions)?.force) {
         const existing = this.cache.get(id);
         if (existing) return existing;
       }
 
       const data = await this.client.api
         .guilds(this.guild.id, 'scheduled-events', id)
-        .get({ query: { with_user_count: options?.withUserCount ?? true } });
-      return this._add(data, options?.cache);
+        .get({ query: { with_user_count: (options as FetchGuildScheduledEventOptions)?.withUserCount ?? true } });
+      return this._add(data, (options as FetchGuildScheduledEventOptions)?.cache);
     }
 
     const data = await this.client.api
       .guilds(this.guild.id, 'scheduled-events')
-      .get({ query: { with_user_count: options?.withUserCount ?? true } });
+      .get({ query: { with_user_count: (options as FetchGuildScheduledEventsOptions)?.withUserCount ?? true } });
 
     return data.reduce(
       (coll, rawGuildScheduledEventData) =>
-        coll.set(rawGuildScheduledEventData.id, this._add(rawGuildScheduledEventData, options?.cache)),
+        coll.set(rawGuildScheduledEventData.id, this._add(rawGuildScheduledEventData, (options as FetchGuildScheduledEventsOptions)?.cache)),
       new Collection(),
     );
   }
@@ -321,17 +323,17 @@ class GuildScheduledEventManager extends CachedManager<
 
     const data = await this.client.api.guilds(this.guild.id, 'scheduled-events', guildScheduledEventId).patch({
       data: {
-        channel_id: typeof channel === 'undefined' ? channel : this.guild.channels.resolveId(channel),
+        channel_id: typeof channel === 'undefined' ? channel : this.guild.channels.resolveId(channel as string),
         name,
         privacy_level: privacyLevel,
-        scheduled_start_time: scheduledStartTime ? new Date(scheduledStartTime).toISOString() : undefined,
-        scheduled_end_time: scheduledEndTime ? new Date(scheduledEndTime).toISOString() : scheduledEndTime,
+        scheduled_start_time: scheduledStartTime ? new Date(scheduledStartTime as string | number | Date).toISOString() : undefined,
+        scheduled_end_time: scheduledEndTime ? new Date(scheduledEndTime as string | number | Date).toISOString() : scheduledEndTime,
         description,
         entity_type: entityType,
         status,
-        image: image && (await DataResolver.resolveImage(image)),
+        image: image && (await DataResolver.resolveImage(image as string | Buffer)),
         entity_metadata,
-        recurrence_rule: recurrenceRule && Util.transformGuildScheduledEventRecurrenceRule(recurrenceRule),
+        recurrence_rule: recurrenceRule && Util.transformGuildScheduledEventRecurrenceRule(recurrenceRule as { startAt: string | number | Date; frequency: number; interval: number; byWeekday: number[]; byNWeekday: { n: number; day: number }[]; byMonth: number[]; byMonthDay: number[] }),
       },
       reason,
     });

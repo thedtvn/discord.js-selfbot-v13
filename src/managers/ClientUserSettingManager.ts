@@ -45,6 +45,25 @@ interface CustomStatusOption {
 class ClientUserSettingManager extends BaseManager {
   #rawSetting: RawUserSettingsData = {};
   public addFriendFrom: { all: boolean | null; mutual_friends: boolean | null; mutual_guilds: boolean | null };
+  public locale: string | undefined;
+  public activityDisplay: boolean | undefined;
+  public allowDMsFromGuild: boolean | undefined;
+  public displayImage: boolean | undefined;
+  public linkedImageDisplay: boolean | undefined;
+  public autoplayGIF: boolean | undefined;
+  public previewLink: boolean | undefined;
+  public animatedEmoji: boolean | undefined;
+  public allowTTS: boolean | undefined;
+  public compactMode: boolean | undefined;
+  public convertEmoticons: boolean | undefined;
+  public DMScanLevel: number | undefined;
+  public theme: 'dark' | 'light' | undefined;
+  public developerMode: boolean | undefined;
+  public afkTimeout: number | undefined;
+  public stickerAnimationMode: number | undefined;
+  public showEmojiReactions: boolean | undefined;
+  public customStatus: RawUserSettingsData['custom_status'] | undefined;
+  public disableDMfromServer: Collection<Snowflake, unknown>;
 
   constructor(client: Client) {
     super(client);
@@ -58,6 +77,7 @@ class ClientUserSettingManager extends BaseManager {
       mutual_friends: null,
       mutual_guilds: null,
     };
+    this.disableDMfromServer = new Collection();
   }
   /**
    * Patch data file
@@ -213,7 +233,7 @@ class ClientUserSettingManager extends BaseManager {
       this.client.presence.status = data.status;
       if (!('custom_status' in data)) {
         this.client.emit('debug', '[SETTING > ClientUser] Sync status');
-        this.client.user.setStatus(data.status);
+        (this.client.user as unknown as { setStatus(status: string): void }).setStatus(data.status);
       }
     }
     if ('custom_status' in data) {
@@ -234,7 +254,7 @@ class ClientUserSettingManager extends BaseManager {
         activities.push(custom);
       }
       this.client.emit('debug', '[SETTING > ClientUser] Sync activities & status');
-      this.client.user.setPresence({ activities });
+      (this.client.user as unknown as { setPresence(data: { activities: unknown[] }): void }).setPresence({ activities });
     }
     if ('friend_source_flags' in data) {
       // Todo
@@ -244,7 +264,7 @@ class ClientUserSettingManager extends BaseManager {
        * Disable Direct Message from servers
        * @type {Collection<Snowflake, Guild>}
        */
-      this.disableDMfromGuilds = new Collection(
+      this.disableDMfromServer = new Collection(
         data.restricted_guilds.map(guildId => [guildId, this.client.guilds.cache.get(guildId)]),
       );
     }
@@ -313,25 +333,26 @@ class ClientUserSettingManager extends BaseManager {
       return this.edit({ custom_status: null });
     } else if (options instanceof CustomStatus) {
       options = options.toJSON();
-      let data = {
+      let data: Record<string, unknown> = {
         emoji_name: null,
         expires_at: null,
         text: null,
       };
-      if (typeof options.state === 'string') {
-        data.text = options.state;
+      if (typeof (options as Record<string, unknown>).state === 'string') {
+        data.text = (options as Record<string, unknown>).state;
       }
-      if (options.emoji) {
-        if (options.emoji?.id) {
-          data.emoji_name = options.emoji?.name;
-          data.emoji_id = options.emoji?.id;
+      if ((options as Record<string, unknown>).emoji) {
+        const emoji = (options as Record<string, unknown>).emoji as Record<string, unknown> | undefined;
+        if (emoji?.id) {
+          data.emoji_name = emoji?.name;
+          data.emoji_id = emoji?.id;
         } else {
-          data.emoji_name = typeof options.emoji?.name === 'string' ? options.emoji?.name : null;
+          data.emoji_name = typeof emoji?.name === 'string' ? emoji?.name : null;
         }
       }
       return this.edit({ custom_status: data });
     } else {
-      let data = {
+      let data: Record<string, unknown> = {
         emoji_name: null,
         expires_at: null,
         text: null,
@@ -343,7 +364,7 @@ class ClientUserSettingManager extends BaseManager {
         data.text = options.text;
       }
       if (options.emoji) {
-        const emoji = this.client.emojis.resolve(options.emoji);
+        const emoji = this.client.emojis.resolve(options.emoji as string);
         if (emoji) {
           data.emoji_name = emoji.name;
           data.emoji_id = emoji.id;

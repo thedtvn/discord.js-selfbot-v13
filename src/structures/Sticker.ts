@@ -19,7 +19,7 @@ let deprecationEmittedForDeleted: boolean = false;
  * @extends {Base}
  */
 class Sticker extends Base {
-  public id!: Snowflake;
+  declare public id: Snowflake;
   public description!: string | null;
   public type!: string | null;
   public format!: string;
@@ -37,7 +37,7 @@ class Sticker extends Base {
     this._patch(sticker);
   }
 
-  _patch(sticker: any): void {
+  _patch(sticker: any): any {
     /**
      * The sticker's id
      * @type {Snowflake}

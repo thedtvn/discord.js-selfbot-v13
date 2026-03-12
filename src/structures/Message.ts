@@ -39,7 +39,7 @@ let deprecationEmittedForDeleted = false;
 class Message extends Base {
   public channelId: string;
   public guildId: string | null;
-  public id: string;
+  declare public id: string;
   public position: number | null;
   public createdTimestamp: number;
   public type: string | null;
@@ -85,7 +85,7 @@ class Message extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The message's id
      * @type {Snowflake}
@@ -428,7 +428,7 @@ class Message extends Base {
 
         return coll.set(
           this.reference.messageId,
-          channel ? channel.messages._add(snapshotData) : new this.constructor(this.client, snapshotData),
+          channel ? channel.messages._add(snapshotData) : new (this.constructor as any)(this.client, snapshotData),
         );
       }, new Collection());
     } else {
@@ -914,7 +914,7 @@ class Message extends Base {
   forward(channel: any): any {
     const resolvedChannel = this.client.channels.resolve(channel);
     if (!resolvedChannel) throw new Error('INVALID_TYPE', 'channel', 'TextBasedChannelResolvable');
-    return resolvedChannel.send({
+    return (resolvedChannel as any).send({
       forward: {
         message: this.id,
         channel: this.channelId,

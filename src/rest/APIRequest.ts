@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer';
 import { setTimeout } from 'node:timers';
 import { FormData, buildConnector, Client as UndiciClient, ProxyAgent } from 'undici';
 import { ciphers } from '../util/Constants';
-import * as Util from '../util/Util';
+import Util from '../util/Util';
 import type RESTManager from './RESTManager';
 
 export interface APIRequestFile {
@@ -49,23 +49,23 @@ class APIRequest {
     this.options = options;
     this.retries = 0;
 
-    this.fullUserAgent = this.client.options.http.headers['User-Agent'];
+    this.fullUserAgent = (this.client.options as any).http.headers['User-Agent'];
 
-    this.client.options.ws.properties.browser_user_agent = this.fullUserAgent;
+    (this.client.options as any).ws.properties.browser_user_agent = this.fullUserAgent;
 
     let queryString = '';
     if (options.query) {
       const query = Object.entries(options.query)
         .filter(([, value]) => value !== null && typeof value !== 'undefined')
         .flatMap(([key, value]) => (Array.isArray(value) ? value.map(v => [key, String(v)]) : [[key, String(value)]]));
-      queryString = new URLSearchParams(query).toString();
+      queryString = new URLSearchParams(query as [string, string][]).toString();
     }
     this.path = `${path}${queryString && `?${queryString}`}`;
   }
 
-  make(captchaKey?: string, captchaRqToken?: string): Promise<Response> {
+  make(captchaKey?: string, captchaRqToken?: string): Promise<any> {
     if (!agent) {
-      const proxyConfig = Util.checkUndiciProxyAgent(this.client.options.http.agent);
+      const proxyConfig = Util.checkUndiciProxyAgent((this.client.options as any).http.agent);
       if (!proxyConfig) {
         agent = new UndiciClient('https://discord.com', {
           connect: buildConnector({ ciphers: ciphers.join(':') }),
@@ -74,14 +74,14 @@ class APIRequest {
         agent = new ProxyAgent({
           ...proxyConfig,
           ciphers: ciphers.join(':'),
-        });
+        } as any);
       }
     }
 
     const API =
       this.options.versioned === false
-        ? this.client.options.http.api
-        : `${this.client.options.http.api}/v${this.client.options.http.version}`;
+        ? (this.client.options as any).http.api
+        : `${(this.client.options as any).http.api}/v${(this.client.options as any).http.version}`;
     const url = API + this.path;
 
     let headers: Record<string, string | undefined> = {
@@ -97,10 +97,10 @@ class APIRequest {
       'sec-fetch-site': 'same-origin',
       'x-discord-locale': 'en-US',
       'x-discord-timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
-      'x-super-properties': Buffer.from(JSON.stringify(this.client.options.ws.properties), 'ascii').toString('base64'),
+      'x-super-properties': Buffer.from(JSON.stringify((this.client.options as any).ws.properties), 'ascii').toString('base64'),
       origin: 'https://discord.com',
       'x-debug-options': 'bugReporterEnabled',
-      ...this.client.options.http.headers,
+      ...(this.client.options as any).http.headers,
       'User-Agent': this.fullUserAgent,
     };
 
@@ -114,7 +114,7 @@ class APIRequest {
 
     if (this.options.webhook === true) {
       headers = {
-        'User-Agent': this.client.options.http.headers['User-Agent'],
+        'User-Agent': (this.client.options as any).http.headers['User-Agent'],
       };
     }
 
@@ -164,7 +164,7 @@ class APIRequest {
     }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.client.options.restRequestTimeout).unref();
+    const timeout = setTimeout(() => controller.abort(), (this.client.options as any).restRequestTimeout).unref();
 
     return this.rest
       .fetch(url, {

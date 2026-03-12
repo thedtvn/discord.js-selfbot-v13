@@ -1,5 +1,5 @@
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import BaseManager from './BaseManager';
 
 interface RawMuteConfigData {
@@ -29,6 +29,18 @@ interface RawGuildSettingsData {
 class GuildSettingManager extends BaseManager {
   #rawSetting: RawGuildSettingsData = {};
   public guildId: Snowflake;
+  public suppressEveryone?: boolean;
+  public suppressRoles?: boolean;
+  public muteScheduledEvents?: boolean;
+  public messageNotifications?: number;
+  public flags?: number;
+  public mobilePush?: boolean;
+  public muted?: boolean;
+  public muteConfig: { endTime: Date; selectedTimeWindow: number } | null;
+  public hideMutedChannels?: boolean;
+  public channelOverrides?: unknown[];
+  public notifyHighlights?: number;
+  public version?: number;
 
   constructor(guild: Guild) {
     super(guild.client);
@@ -168,7 +180,7 @@ class GuildSettingManager extends BaseManager {
    * @returns {Promise<GuildSettingManager>}
    */
   async edit(data: RawGuildSettingsData): Promise<this> {
-    const data_ = await this.client.api.users('@me').settings.patch(data);
+    const data_ = await this.client.api.users('@me').settings.patch({ data: data as unknown as Record<string, unknown> });
     this._patch(data_);
     return this;
   }

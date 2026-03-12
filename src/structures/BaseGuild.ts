@@ -9,7 +9,7 @@ import SnowflakeUtil from '../util/SnowflakeUtil';
  * @abstract
  */
 class BaseGuild extends Base {
-  public id: string;
+  declare public id: string;
   public name: string;
   public icon: string | null;
   public features: string[];

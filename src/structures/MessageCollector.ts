@@ -17,9 +17,6 @@ import { Events } from '../util/Constants';
 class MessageCollector extends Collector {
   public channel: any;
   public received: number;
-  public _handleChannelDeletion: (channel: any) => void;
-  public _handleThreadDeletion: (thread: any) => void;
-  public _handleGuildDeletion: (guild: any) => void;
 
   /**
    * @param {TextBasedChannels} channel The channel

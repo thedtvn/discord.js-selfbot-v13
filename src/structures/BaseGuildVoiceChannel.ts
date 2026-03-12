@@ -13,7 +13,7 @@ import Permissions from '../util/Permissions';
  * @implements {TextBasedChannel}
  */
 class BaseGuildVoiceChannel extends GuildChannel {
-  public messages: MessageManager;
+  declare public messages: MessageManager;
   public nsfw: boolean;
   public bitrate: number;
   public rtcRegion: string | null;
@@ -29,7 +29,7 @@ class BaseGuildVoiceChannel extends GuildChannel {
      * A manager of the messages sent to this channel
      * @type {MessageManager}
      */
-    this.messages = new MessageManager(this);
+    this.messages = new MessageManager(this as any);
 
     /**
      * If the guild considers this channel NSFW
@@ -40,7 +40,7 @@ class BaseGuildVoiceChannel extends GuildChannel {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if ('bitrate' in data) {
@@ -235,7 +235,7 @@ class BaseGuildVoiceChannel extends GuildChannel {
 
   // These are here only for documentation purposes - they are implemented by TextBasedChannel
   /* eslint-disable no-empty-function */
-  get lastMessage() {}
+  get lastMessage(): any { return null; }
   send() {}
   sendTyping() {}
   createMessageCollector() {}

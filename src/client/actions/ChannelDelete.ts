@@ -5,6 +5,7 @@ import { deletedMessages } from '../../structures/Message';
 import { Events } from '../../util/Constants';
 
 class ChannelDeleteAction extends Action {
+  public deleted: Map<string, any>;
   constructor(client: any) {
     super(client);
     this.deleted = new Map();

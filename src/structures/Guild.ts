@@ -71,9 +71,9 @@ class Guild extends AnonymousGuild {
   public available: boolean;
   public shardId: number;
 
-  public id: Snowflake;
-  public name: string;
-  public icon: string | null;
+  public declare id: Snowflake;
+  public declare name: string;
+  public declare icon: string | null;
   public discoverySplash: string | null;
   public memberCount: number;
   public large: boolean;
@@ -105,8 +105,8 @@ class Guild extends AnonymousGuild {
   public stickers: GuildStickerManager;
   public ownerId: Snowflake;
   public incidentsData: any;
-  public features: string[];
-  public vanityURLCode: string | null;
+  public declare features: string[];
+  public declare vanityURLCode: string | null;
 
   constructor(client: Client, data: any) {
     super(client, data, false);
@@ -235,7 +235,7 @@ class Guild extends AnonymousGuild {
     return this.client.ws.shards.get(this.shardId);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
     this.id = data.id;
     if ('name' in data) this.name = data.name;
@@ -838,7 +838,7 @@ class Guild extends AnonymousGuild {
    */
   async fetchWebhooks(): Promise<Collection<string, any>> {
     const apiHooks = await this.client.api.guilds(this.id).webhooks.get();
-    const hooks = new Collection();
+    const hooks = new Collection<string, any>();
     for (const hook of apiHooks) hooks.set(hook.id, new Webhook(this.client, hook));
     return hooks;
   }
@@ -977,7 +977,7 @@ class Guild extends AnonymousGuild {
    *   .catch(console.error);
    */
   async edit(data: any, reason?: string): Promise<Guild> {
-    const _data = {};
+    const _data: Record<string, any> = {};
     if (data.name) _data.name = data.name;
     if (typeof data.verificationLevel !== 'undefined') {
       _data.verification_level =
@@ -1527,7 +1527,7 @@ class Guild extends AnonymousGuild {
       nameAcronym: true,
       presences: false,
       voiceStates: false,
-    });
+    }) as Record<string, any>;
     json.iconURL = this.iconURL();
     json.splashURL = this.splashURL();
     json.discoverySplashURL = this.discoverySplashURL();
@@ -1597,7 +1597,7 @@ class Guild extends AnonymousGuild {
         .guilds(this.id)
         ['top-emojis'].get()
         .then(data => {
-          const emojis = new Collection();
+          const emojis = new Collection<number, any>();
           for (const emoji of data.items) {
             emojis.set(emoji.emoji_rank, this.emojis.cache.get(emoji.emoji_id));
           }

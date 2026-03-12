@@ -49,6 +49,7 @@ class AutocompleteInteraction extends Interaction {
     this.options = new CommandInteractionOptionResolver(
       this.client,
       data.data.options?.map(option => this.transformOption(option, data.data.resolved)) ?? [],
+      data.data.resolved,
     );
   }
 
@@ -67,8 +68,8 @@ class AutocompleteInteraction extends Interaction {
    * @returns {CommandInteractionOption}
    * @private
    */
-  transformOption(option: any): { name: any; type: any } {
-    const result = {
+  transformOption(option: any, _resolved?: any): any {
+    const result: any = {
       name: option.name,
       type: ApplicationCommandOptionTypes[option.type],
     };

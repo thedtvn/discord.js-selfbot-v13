@@ -3,7 +3,7 @@ import { setTimeout, setInterval, clearTimeout } from 'node:timers';
 import * as WebSocket from '../../WebSocket';
 import { Status, Events, ShardEvents, Opcodes, WSEvents, WSCodes } from '../../util/Constants';
 import Intents from '../../util/Intents';
-import * as Util from '../../util/Util';
+import Util from '../../util/Util';
 import * as zlib from 'zlib-sync';
 import type WebSocketManager from './WebSocketManager';
 
@@ -15,6 +15,36 @@ const CONNECTION_STATE = Object.keys(WebSocket.WebSocket);
  * @extends {EventEmitter}
  */
 class WebSocketShard extends EventEmitter {
+  public manager: WebSocketManager;
+  public id: number;
+  public resumeURL: string | null;
+  public status: number;
+  public sequence: number;
+  public closeSequence: number;
+  public sessionId: string | null;
+  public ping: number;
+  public lastPingTimestamp: number;
+  public lastHeartbeatAcked: boolean;
+  public closeEmitted: boolean;
+
+  declare public ratelimit: {
+    queue: any[];
+    total: number;
+    remaining: number;
+    time: number;
+    timer: NodeJS.Timeout | null;
+  };
+  declare public connection: any | null;
+  declare public inflate: any | null;
+  declare public helloTimeout: NodeJS.Timeout | null;
+  declare public wsCloseTimeout: NodeJS.Timeout | null;
+  declare public eventsAttached: boolean;
+  declare public expectedGuilds: Set<string> | null;
+  declare public readyTimeout: NodeJS.Timeout | null;
+  declare public connectedAt: number;
+
+  public heartbeatInterval: NodeJS.Timeout | null = null;
+
   constructor(manager: WebSocketManager, id: number) {
     super();
 
@@ -201,7 +231,7 @@ class WebSocketShard extends EventEmitter {
 
     const gateway = this.resumeURL ?? this.manager.gateway;
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const cleanup = () => {
         this.removeListener(ShardEvents.CLOSE, onClose);
         this.removeListener(ShardEvents.READY, onReady);
@@ -249,7 +279,7 @@ class WebSocketShard extends EventEmitter {
         this.destroy({ emit: false });
       }
 
-      const wsQuery = { v: client.options.ws.version };
+      const wsQuery: Record<string, string | number> = { v: client.options.ws.version as number };
 
       if (zlib) {
         this.inflate = new zlib.Inflate({
@@ -523,7 +553,7 @@ class WebSocketShard extends EventEmitter {
       this.emit(ShardEvents.ALL_READY);
       return;
     }
-    const hasGuildsIntent = new Intents(this.manager.client.options.intents).has(Intents.FLAGS.GUILDS);
+    const hasGuildsIntent = new Intents(this.manager.client.options.intents as any).has(Intents.FLAGS.GUILDS);
     // Step 2. Create a timeout that will mark the shard as ready if there are still unavailable guilds
     // * The timeout is 15 seconds by default
     // * This can be optionally changed in the client options via the `waitGuildTimeout` option
@@ -546,7 +576,7 @@ class WebSocketShard extends EventEmitter {
 
         this.emit(ShardEvents.ALL_READY, this.expectedGuilds);
       },
-      hasGuildsIntent ? waitGuildTimeout : 0,
+      hasGuildsIntent ? (waitGuildTimeout as number) : 0,
     ).unref();
   }
 
@@ -555,7 +585,7 @@ class WebSocketShard extends EventEmitter {
    * @param {number} [time] If set to -1, it will clear the hello timeout
    * @private
    */
-  setHelloTimeout(time) {
+  setHelloTimeout(time?: number) {
     if (time === -1) {
       if (this.helloTimeout) {
         this.debug('Clearing the HELLO timeout.');
@@ -709,8 +739,8 @@ class WebSocketShard extends EventEmitter {
       token: client.token,
     };
 
-    delete d.version;
-    delete d.agent;
+    delete (d as any).version;
+    delete (d as any).agent;
 
     this.debug(`[IDENTIFY] Shard ${this.id}`);
     this.send({ op: Opcodes.IDENTIFY, d }, true);

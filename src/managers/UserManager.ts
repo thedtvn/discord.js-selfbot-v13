@@ -43,7 +43,7 @@ class UserManager extends CachedManager<Snowflake, User, UserResolvable, RawUser
    * @private
    */
   dmChannel(userId: Snowflake): DMChannelLike | null {
-    return this.client.channels.cache.find(c => c.type === 'DM' && c.recipient.id === userId) ?? null;
+    return (this.client.channels.cache.find(c => (c as unknown as Record<string, unknown>).type === 'DM' && ((c as unknown as Record<string, { id: Snowflake }>).recipient)?.id === userId) as unknown as DMChannelLike) ?? null;
   }
 
   /**
@@ -67,7 +67,7 @@ class UserManager extends CachedManager<Snowflake, User, UserResolvable, RawUser
       DiscordContext: {},
     });
 
-    const dm_channel = await this.client.channels._add(data, null, { cache });
+    const dm_channel = await this.client.channels._add(data, null, { cache }) as unknown as DMChannelLike;
     dm_channel.sync();
     return dm_channel;
   }

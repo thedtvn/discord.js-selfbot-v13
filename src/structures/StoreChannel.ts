@@ -20,7 +20,7 @@ class StoreChannel extends GuildChannel {
     this.nsfw = Boolean(data.nsfw);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if ('nsfw' in data) {

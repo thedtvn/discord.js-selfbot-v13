@@ -93,7 +93,7 @@ class Permissions extends BitField<PermissionsString, bigint> {
    * @returns {string[]}
    */
   public missing(bits: PermissionResolvable, checkAdmin = true): PermissionsString[] {
-    return checkAdmin && this.has(this.constructor.FLAGS.ADMINISTRATOR) ? [] : super.missing(bits);
+    return checkAdmin && this.has((this.constructor as any).FLAGS.ADMINISTRATOR) ? [] : super.missing(bits);
   }
 
   /**
@@ -103,7 +103,7 @@ class Permissions extends BitField<PermissionsString, bigint> {
    * @returns {boolean}
    */
   public any(permission: PermissionResolvable, checkAdmin = true): boolean {
-    return (checkAdmin && super.has(this.constructor.FLAGS.ADMINISTRATOR)) || super.any(permission);
+    return (checkAdmin && super.has((this.constructor as any).FLAGS.ADMINISTRATOR)) || super.any(permission);
   }
 
   /**
@@ -113,7 +113,7 @@ class Permissions extends BitField<PermissionsString, bigint> {
    * @returns {boolean}
    */
   public has(permission: PermissionResolvable, checkAdmin = true): boolean {
-    return (checkAdmin && super.has(this.constructor.FLAGS.ADMINISTRATOR)) || super.has(permission);
+    return (checkAdmin && super.has((this.constructor as any).FLAGS.ADMINISTRATOR)) || super.has(permission);
   }
 
   /**
@@ -121,7 +121,7 @@ class Permissions extends BitField<PermissionsString, bigint> {
    * @returns {string[]}
    */
   public toArray(): PermissionsString[] {
-    return super.toArray(false);
+    return super.toArray() as PermissionsString[];
   }
 }
 

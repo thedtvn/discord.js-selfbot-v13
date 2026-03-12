@@ -11,7 +11,7 @@ import MessageManager from '../managers/MessageManager';
  * @implements {TextBasedChannel}
  */
 class BaseGuildTextChannel extends GuildChannel {
-  public messages: MessageManager;
+  declare public messages: MessageManager;
   public threads: GuildTextThreadManager;
   public nsfw: boolean;
   public topic: string | null;
@@ -27,7 +27,7 @@ class BaseGuildTextChannel extends GuildChannel {
      * A manager of the messages sent to this channel
      * @type {MessageManager}
      */
-    this.messages = new MessageManager(this);
+    this.messages = new MessageManager(this as any);
 
     /**
      * A manager of the threads belonging to this channel
@@ -44,7 +44,7 @@ class BaseGuildTextChannel extends GuildChannel {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if ('topic' in data) {
@@ -183,15 +183,15 @@ class BaseGuildTextChannel extends GuildChannel {
 
   // These are here only for documentation purposes - they are implemented by TextBasedChannel
   /* eslint-disable no-empty-function */
-  get lastMessage() {}
-  get lastPinAt() {}
+  get lastMessage(): any { return null; }
+  get lastPinAt(): any { return null; }
   send() {}
   sendTyping() {}
   createMessageCollector() {}
   awaitMessages() {}
   fetchWebhooks() {}
   createWebhook() {}
-  setRateLimitPerUser() {}
+  setRateLimitPerUser(..._args: any[]): any {}
   setNSFW() {}
 }
 

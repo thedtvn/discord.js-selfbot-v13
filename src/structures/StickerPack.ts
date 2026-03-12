@@ -10,7 +10,7 @@ import type { Snowflake } from 'discord-api-types/v10';
  * @extends {Base}
  */
 class StickerPack extends Base {
-  public id: Snowflake;
+  declare public id: Snowflake;
   public stickers: Collection<Snowflake, Sticker>;
   public name: string;
   public skuId: Snowflake;

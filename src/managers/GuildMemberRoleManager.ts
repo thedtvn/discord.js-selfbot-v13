@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import type { GuildMember } from '../structures/GuildMember';
 import DataManager from './DataManager';
 import { TypeError } from '../errors';
@@ -129,10 +129,10 @@ class GuildMemberRoleManager extends DataManager<Snowflake, Role, RoleResolvable
         throw new TypeError('INVALID_TYPE', 'roles', 'Role, Snowflake or Array or Collection of Roles or Snowflakes');
       }
 
-      await this.client.api.guilds[this.guild.id].members[this.member.id].roles[roleOrRoles].put({ reason });
+      await this.client.api.guilds[this.guild.id].members[this.member.id].roles[roleOrRoles as string].put({ reason });
 
       const clone = this.member._clone();
-      clone._roles = [...this.cache.keys(), roleOrRoles];
+      clone._roles = [...this.cache.keys(), roleOrRoles as string];
       return clone;
     }
   }
@@ -162,7 +162,7 @@ class GuildMemberRoleManager extends DataManager<Snowflake, Role, RoleResolvable
         throw new TypeError('INVALID_TYPE', 'roles', 'Role, Snowflake or Array or Collection of Roles or Snowflakes');
       }
 
-      await this.client.api.guilds[this.guild.id].members[this.member.id].roles[roleOrRoles].delete({ reason });
+      await this.client.api.guilds[this.guild.id].members[this.member.id].roles[roleOrRoles as string].delete({ reason });
 
       const clone = this.member._clone();
       const newRoles = this.cache.filter(role => role.id !== roleOrRoles);
@@ -192,7 +192,7 @@ class GuildMemberRoleManager extends DataManager<Snowflake, Role, RoleResolvable
   }
 
   clone(): GuildMemberRoleManager {
-    const clone = new this.constructor(this.member);
+    const clone = new (this.constructor as typeof GuildMemberRoleManager)(this.member);
     clone.member._roles = [...this.cache.keys()];
     return clone;
   }

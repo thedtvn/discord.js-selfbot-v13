@@ -4,6 +4,7 @@ import { Collection } from '@discordjs/collection';
 import { Channel } from './Channel';
 import TextBasedChannel from './interfaces/TextBasedChannel';
 import MessageManager from '../managers/MessageManager';
+import { Error } from '../errors';
 import { Opcodes, Status } from '../util/Constants';
 
 /**
@@ -12,7 +13,7 @@ import { Opcodes, Status } from '../util/Constants';
  * @implements {TextBasedChannel}
  */
 class DMChannel extends Channel {
-  public messages: MessageManager;
+  declare public messages: MessageManager;
   public recipient: any;
   public lastMessageId: string | null;
   public lastPinTimestamp: number | null;
@@ -29,10 +30,10 @@ class DMChannel extends Channel {
      * A manager of the messages belonging to this channel
      * @type {MessageManager}
      */
-    this.messages = new MessageManager(this);
+    this.messages = new MessageManager(this as any);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if (data.recipients) {
@@ -94,7 +95,7 @@ class DMChannel extends Channel {
       },
     });
     this.messageRequest = false;
-    return this.client.channels._add(c);
+    return this.client.channels._add(c, null);
   }
 
   /**
@@ -157,7 +158,7 @@ class DMChannel extends Channel {
    * @returns {Promise<void>}
    */
   ring(): any {
-    return this.client.api.channels(this.id).call.ring.post({
+    return (this.client.api as any).channels(this.id).call.ring.post({
       data: {
         recipients: null,
       },
@@ -211,8 +212,8 @@ class DMChannel extends Channel {
 
   // These are here only for documentation purposes - they are implemented by TextBasedChannel
   /* eslint-disable no-empty-function */
-  get lastMessage() {}
-  get lastPinAt() {}
+  get lastMessage(): any { return null; }
+  get lastPinAt(): any { return null; }
   send() {}
   sendTyping() {}
   createMessageCollector() {}

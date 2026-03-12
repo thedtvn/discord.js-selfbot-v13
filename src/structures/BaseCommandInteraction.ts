@@ -93,12 +93,13 @@ class BaseCommandInteraction extends Interaction {
    * @returns {CommandInteractionResolvedData}
    * @private
    */
-  transformResolved({ members, users, channels, roles, messages, attachments }: { members: any; users: any; channels: any; roles: any; messages: any; attachments: any }): {} {
-    const result = {};
+  transformResolved(resolved: any): Record<string, any> {
+    const { members, users, channels, roles, messages, attachments } = resolved;
+    const result: Record<string, any> = {};
 
     if (members) {
       result.members = new Collection();
-      for (const [id, member] of Object.entries(members)) {
+      for (const [id, member] of Object.entries<any>(members)) {
         const user = users[id];
         result.members.set(id, this.guild?.members._add({ user, ...member }) ?? member);
       }
@@ -106,35 +107,35 @@ class BaseCommandInteraction extends Interaction {
 
     if (users) {
       result.users = new Collection();
-      for (const user of Object.values(users)) {
+      for (const user of Object.values<any>(users)) {
         result.users.set(user.id, this.client.users._add(user));
       }
     }
 
     if (roles) {
       result.roles = new Collection();
-      for (const role of Object.values(roles)) {
+      for (const role of Object.values<any>(roles)) {
         result.roles.set(role.id, this.guild?.roles._add(role) ?? role);
       }
     }
 
     if (channels) {
       result.channels = new Collection();
-      for (const channel of Object.values(channels)) {
+      for (const channel of Object.values<any>(channels)) {
         result.channels.set(channel.id, this.client.channels._add(channel, this.guild) ?? channel);
       }
     }
 
     if (messages) {
       result.messages = new Collection();
-      for (const message of Object.values(messages)) {
+      for (const message of Object.values<any>(messages)) {
         result.messages.set(message.id, this.channel?.messages?._add(message) ?? message);
       }
     }
 
     if (attachments) {
       result.attachments = new Collection();
-      for (const attachment of Object.values(attachments)) {
+      for (const attachment of Object.values<any>(attachments)) {
         const patched = new MessageAttachment(attachment.url, attachment.filename, attachment);
         result.attachments.set(attachment.id, patched);
       }
@@ -166,8 +167,8 @@ class BaseCommandInteraction extends Interaction {
    * @returns {CommandInteractionOption}
    * @private
    */
-  transformOption(option: any, resolved: any): { name: any; type: any } {
-    const result = {
+  transformOption(option: any, resolved: any): Record<string, any> {
+    const result: Record<string, any> = {
       name: option.name,
       type: ApplicationCommandOptionTypes[option.type],
     };

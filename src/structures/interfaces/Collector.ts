@@ -29,6 +29,7 @@ import Util from '../../util/Util';
  * @abstract
  */
 class Collector extends EventEmitter {
+  public declare readonly client: any;
   public filter: (...args: any[]) => boolean | Promise<boolean>;
   public options: any;
   public collected: Collection<any, any>;
@@ -253,7 +254,7 @@ class Collector extends EventEmitter {
           yield queue.shift();
         } else {
           // eslint-disable-next-line no-await-in-loop
-          await new Promise(resolve => {
+          await new Promise<void>(resolve => {
             const tick = () => {
               this.removeListener('collect', tick);
               this.removeListener('end', tick);
@@ -270,7 +271,7 @@ class Collector extends EventEmitter {
   }
 
   toJSON(): any {
-    return Util.flatten(this);
+    return Util.flatten(this as unknown as Record<string, unknown>);
   }
 
   /* eslint-disable no-empty-function */
@@ -280,7 +281,7 @@ class Collector extends EventEmitter {
    * @readonly
    * @abstract
    */
-  get endReason(): string | null {}
+  get endReason(): string | null { return null; }
 
   /**
    * Handles incoming events from the `handleCollect` function. Returns null if the event should not

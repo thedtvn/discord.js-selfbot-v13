@@ -10,7 +10,6 @@ import type { Snowflake } from 'discord-api-types/v10';
  */
 class Base {
   public declare readonly client: Client;
-  public declare id?: Snowflake;
 
   constructor(client: Client) {
     /**
@@ -36,12 +35,12 @@ class Base {
     return clone;
   }
 
-  toJSON(...props: unknown[]): unknown {
+  toJSON(...props: any[]): any {
     return Util.flatten(this, ...props);
   }
 
-  valueOf(): Snowflake | undefined {
-    return this.id;
+  valueOf(): string | undefined {
+    return (this as any).id;
   }
 }
 

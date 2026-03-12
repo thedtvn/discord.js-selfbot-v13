@@ -33,7 +33,7 @@ class MessageReactionAdd extends Action {
     if (!message) return false;
 
     // Verify reaction
-    const includePartial = this.client.options.partials.includes(PartialTypes.REACTION);
+    const includePartial = (this.client.options.partials as any[]).includes(PartialTypes.REACTION);
     if (message.partial && !includePartial) return false;
     const reaction = message.reactions._add({
       emoji: data.emoji,

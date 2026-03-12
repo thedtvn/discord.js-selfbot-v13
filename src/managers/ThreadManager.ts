@@ -1,7 +1,7 @@
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
 import type Client from '../client/Client';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
 import ThreadChannel from '../structures/ThreadChannel';
 
@@ -105,10 +105,10 @@ class ThreadManager extends CachedManager<Snowflake, ThreadChannel, Snowflake | 
    */
   fetch(options?: Snowflake | FetchChannelThreadsOptions | { archived?: FetchChannelThreadsOptions }, { cache, force }: { cache?: boolean; force?: boolean } = {}): Promise<ThreadChannel | FetchedThreads | null> {
     if (!options) return this.fetchActive(cache);
-    const channel = this.client.channels.resolveId(options);
-    if (channel) return this.client.channels.fetch(channel, { cache, force });
-    if (options.archived) {
-      return this.fetchArchived(options.archived, cache);
+    const channel = this.client.channels.resolveId(options as string);
+    if (channel) return this.client.channels.fetch(channel, { cache, force }) as Promise<ThreadChannel | null>;
+    if ((options as { archived?: FetchChannelThreadsOptions }).archived) {
+      return this.fetchArchived((options as { archived: FetchChannelThreadsOptions }).archived, cache);
     }
     return this.fetchActive(cache);
   }
@@ -176,7 +176,7 @@ class ThreadManager extends CachedManager<Snowflake, ThreadChannel, Snowflake | 
       },
     });
 
-    return this.constructor._mapThreads(raw, this.client, { parent: this.channel, cache });
+    return (this.constructor as typeof ThreadManager)._mapThreads(raw, this.client, { parent: this.channel, cache });
   }
 
   static _mapThreads(
@@ -185,16 +185,23 @@ class ThreadManager extends CachedManager<Snowflake, ThreadChannel, Snowflake | 
     { parent, guild, cache }: { parent?: ThreadParentChannel; guild?: Guild; cache?: boolean },
   ): FetchedThreads {
     const threads = rawThreads.threads.reduce((coll, raw) => {
-      const thread = client.channels._add(raw, guild ?? parent?.guild, { cache });
-      if (parent && thread.parentId !== parent.id) return coll;
+      const thread = client.channels._add(
+        raw as unknown as { id: Snowflake; type: string | number } & Record<string, unknown>,
+        (guild ?? parent?.guild) as unknown as Guild,
+        { cache },
+      ) as unknown as ThreadChannel;
+      if (parent && (thread as unknown as { parentId?: string }).parentId !== parent.id) return coll;
       return coll.set(thread.id, thread);
-    }, new Collection());
-    // Discord sends the thread id as id in this object
-    for (const rawMember of rawThreads.members) client.channels.cache.get(rawMember.id)?.members._add(rawMember);
-    // Patch firstMessage
-    // According to https://github.com/aiko-chan-ai/discord.js-selfbot-v13/issues/1502, rawThreads.first_messages could be null.
+    }, new Collection<Snowflake, ThreadChannel>());
+
+    for (const rawMember of rawThreads.members) {
+      const ch = client.channels.cache.get(rawMember.id) as unknown as { members?: { _add(data: unknown): void } } | undefined;
+      ch?.members?._add(rawMember);
+    }
+
     for (const rawMessage of rawThreads?.first_messages || []) {
-      client.channels.cache.get(rawMessage.id)?.messages._add(rawMessage);
+      const ch = client.channels.cache.get(rawMessage.id) as unknown as { messages?: { _add(data: unknown): void } } | undefined;
+      ch?.messages?._add(rawMessage);
     }
     return {
       threads,

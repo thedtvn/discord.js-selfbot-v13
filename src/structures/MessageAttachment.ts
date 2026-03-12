@@ -86,7 +86,7 @@ class MessageAttachment {
     return this;
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The attachment's id
      * @type {Snowflake}

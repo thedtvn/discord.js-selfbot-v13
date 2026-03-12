@@ -10,8 +10,8 @@ import { ApplicationCommandOptionTypes, ApplicationCommandTypes } from '../util/
  */
 class ContextMenuInteraction extends BaseCommandInteraction {
   public options: any;
-  public targetId: any;
-  public targetType: any;
+  declare public targetId: any;
+  declare public targetType: any;
 
   constructor(client: any, data: any) {
     super(client, data);

@@ -7,7 +7,7 @@ import WidgetMember from './WidgetMember';
  * @extends {Base}
  */
 class Widget extends Base {
-  public id: string;
+  declare public id: string;
   public name: string;
   public instantInvite: string | null;
   public channels: Collection<string, { id: string; name: string; position: number }>;
@@ -27,7 +27,7 @@ class Widget extends Base {
    * @property {number} position Position of the channel
    */
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The id of the guild.
      * @type {Snowflake}

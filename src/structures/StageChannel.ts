@@ -7,7 +7,7 @@ import BaseGuildVoiceChannel from './BaseGuildVoiceChannel';
 class StageChannel extends BaseGuildVoiceChannel {
   public topic: string | null;
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if ('topic' in data) {

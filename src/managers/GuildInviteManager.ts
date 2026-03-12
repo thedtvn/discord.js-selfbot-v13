@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
 import { Error } from '../errors';
 import Invite from '../structures/Invite';
@@ -31,6 +31,7 @@ interface CreateInviteOptions {
  * Manages API methods for GuildInvites and stores their cache.
  * @extends {CachedManager}
  */
+// @ts-expect-error - Invite uses `code` instead of `id` and lacks `_clone()`
 class GuildInviteManager extends CachedManager<string, Invite, InviteResolvable, RawInviteData> {
   public readonly guild: Guild;
 
@@ -202,7 +203,7 @@ class GuildInviteManager extends CachedManager<string, Invite, InviteResolvable,
     channel: Snowflake | { id: Snowflake },
     { temporary = false, maxAge = 86400, maxUses = 0, unique, targetUser, targetApplication, targetType, reason }: CreateInviteOptions = {},
   ): Promise<Invite> {
-    const id = this.guild.channels.resolveId(channel);
+    const id = this.guild.channels.resolveId(channel as string);
     if (!id) throw new Error('GUILD_CHANNEL_RESOLVE');
 
     const invite = await this.client.api.channels(id).invites.post({
@@ -211,8 +212,8 @@ class GuildInviteManager extends CachedManager<string, Invite, InviteResolvable,
         max_age: maxAge,
         max_uses: maxUses,
         unique,
-        target_user_id: this.client.users.resolveId(targetUser),
-        target_application_id: targetApplication?.id ?? targetApplication?.applicationId ?? targetApplication,
+        target_user_id: targetUser ? this.client.users.resolveId(targetUser as string) : undefined,
+        target_application_id: typeof targetApplication === 'string' ? targetApplication : (targetApplication as Record<string, unknown>)?.id ?? (targetApplication as Record<string, unknown>)?.applicationId ?? targetApplication,
         target_type: targetType,
       },
       reason,

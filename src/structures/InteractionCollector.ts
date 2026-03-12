@@ -31,13 +31,9 @@ class InteractionCollector extends Collector {
   public guildId: string | null;
   public interactionType: string | null;
   public componentType: string | null;
+  public type: string | null;
   public users: Collection<string, any>;
   public total: number;
-  public empty: () => void;
-  public _handleMessageDeletion: (message: any) => void;
-  public _handleChannelDeletion: (channel: any) => void;
-  public _handleThreadDeletion: (thread: any) => void;
-  public _handleGuildDeletion: (guild: any) => void;
 
   /**
    * @param {Client} client The client on which to collect interactions

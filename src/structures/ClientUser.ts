@@ -32,7 +32,7 @@ class ClientUser extends User {
     this.setSamsungActivity(this.#packageName, 'UPDATE');
   }, 1000 * 60 * 10).unref();
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     super._patch(data);
 
     if ('verified' in data) {
@@ -376,7 +376,7 @@ class ClientUser extends User {
    */
   async getAllFriendInvites(): Promise<Collection<string, Invite>> {
     const data = await this.client.api.users['@me'].invites.get();
-    const collection = new Collection();
+    const collection = new Collection<string, any>();
     for (const invite of data) {
       collection.set(invite.code, new Invite(this.client, invite));
     }

@@ -273,7 +273,7 @@ class Options extends null {
    *   }
    * });
    */
-  static cacheWithLimits(settings: Record<string, number | Record<string, unknown>> = {}) {
+  static cacheWithLimits(settings: any = {}) {
 
     return (manager: { name: string }) => {
       const setting = settings[manager.name];
@@ -303,7 +303,7 @@ class Options extends null {
       if (noSweeping && noLimit) {
         return new Collection();
       }
-      return new LimitedCollection(resolvedSetting);
+      return new LimitedCollection(resolvedSetting as any);
     };
   }
 

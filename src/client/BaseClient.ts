@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events';
 import process from 'node:process';
 import RESTManager from '../rest/RESTManager';
+import type { APIRouteProxy } from '../rest/APIRouter';
 import Options from '../util/Options';
 import Util from '../util/Util';
 
@@ -44,7 +45,7 @@ class BaseClient extends EventEmitter {
    * @readonly
    * @private
    */
-  get api(): unknown {
+  get api(): APIRouteProxy {
     return this.rest.api;
   }
 
@@ -78,8 +79,8 @@ class BaseClient extends EventEmitter {
     }
   }
 
-  toJSON(...props: unknown[]): Record<string, unknown> {
-    return Util.flatten(this, { domain: false }, ...props);
+  toJSON(...props: Record<string, boolean | string>[]): Record<string, unknown> {
+    return Util.flatten(this as any, { domain: false }, ...props);
   }
 }
 

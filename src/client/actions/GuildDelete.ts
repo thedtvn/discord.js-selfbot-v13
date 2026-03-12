@@ -4,6 +4,7 @@ import { deletedGuilds } from '../../structures/Guild';
 import { Events } from '../../util/Constants';
 
 class GuildDeleteAction extends Action {
+  public deleted: Map<string, any>;
   constructor(client: any) {
     super(client);
     this.deleted = new Map();
@@ -56,7 +57,7 @@ class GuildDeleteAction extends Action {
   }
 
   scheduleForDeletion(id: any): any {
-    setTimeout(() => this.deleted.delete(id), this.client.options.restWsBridgeTimeout).unref();
+    setTimeout(() => this.deleted.delete(id), this.client.options.restWsBridgeTimeout as number).unref();
   }
 }
 

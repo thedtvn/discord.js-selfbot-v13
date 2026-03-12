@@ -5,7 +5,7 @@ class ChannelCreateAction extends Action {
   handle(data: any): any {
     const client = this.client;
     const existing = client.channels.cache.has(data.id);
-    const channel = client.channels._add(data);
+    const channel = client.channels._add(data, data.guild_id ? client.guilds.cache.get(data.guild_id) ?? null : null);
     if (!existing && channel) {
       /**
        * Emitted whenever a guild channel is created.

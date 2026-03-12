@@ -5,14 +5,14 @@ import Application from './interfaces/Application';
  * @extends {Application}
  */
 class IntegrationApplication extends Application {
-  public bot: any;
-  public termsOfServiceURL: any;
-  public privacyPolicyURL: any;
-  public rpcOrigins: any;
+  declare public bot: any;
+  declare public termsOfServiceURL: any;
+  declare public privacyPolicyURL: any;
+  declare public rpcOrigins: any;
   public summary: any;
-  public hook: any;
-  public cover: any;
-  public verifyKey: any;
+  declare public hook: any;
+  declare public cover: any;
+  declare public verifyKey: any;
 
   _patch(data: any): any {
     super._patch(data);

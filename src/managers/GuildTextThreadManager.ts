@@ -3,7 +3,7 @@ import type ThreadChannel from '../structures/ThreadChannel';
 import ThreadManager from './ThreadManager';
 import { TypeError } from '../errors';
 import { ChannelTypes } from '../util/Constants';
-import { resolveAutoArchiveMaxLimit } from '../util/Util';
+import Util from '../util/Util';
 
 interface GuildTextThreadCreateOptions {
   name?: string;
@@ -67,7 +67,7 @@ class GuildTextThreadManager extends ThreadManager {
    */
   async create({
     name,
-    autoArchiveDuration = this.channel.defaultAutoArchiveDuration,
+    autoArchiveDuration = (this.channel as unknown as Record<string, unknown>).defaultAutoArchiveDuration as number | undefined,
     startMessage,
     type,
     invitable,
@@ -79,16 +79,16 @@ class GuildTextThreadManager extends ThreadManager {
       throw new TypeError('INVALID_TYPE', 'type', 'ThreadChannelType or Number');
     }
     let resolvedType =
-      this.channel.type === 'GUILD_NEWS' ? ChannelTypes.GUILD_NEWS_THREAD : ChannelTypes.GUILD_PUBLIC_THREAD;
+      (this.channel as unknown as Record<string, unknown>).type === 'GUILD_NEWS' ? ChannelTypes.GUILD_NEWS_THREAD : ChannelTypes.GUILD_PUBLIC_THREAD;
     if (startMessage) {
-      const startMessageId = this.channel.messages.resolveId(startMessage);
+      const startMessageId = ((this.channel as unknown as Record<string, { resolveId(v: unknown): string | null }>).messages).resolveId(startMessage);
       if (!startMessageId) throw new TypeError('INVALID_TYPE', 'startMessage', 'MessageResolvable');
       path = path.messages(startMessageId);
-    } else if (this.channel.type !== 'GUILD_NEWS') {
+    } else if ((this.channel as unknown as Record<string, unknown>).type !== 'GUILD_NEWS') {
       resolvedType = typeof type === 'string' ? ChannelTypes[type] : type ?? resolvedType;
     }
 
-    if (autoArchiveDuration === 'MAX') autoArchiveDuration = resolveAutoArchiveMaxLimit(this.channel.guild);
+    if (autoArchiveDuration === 'MAX') autoArchiveDuration = Util.resolveAutoArchiveMaxLimit();
 
     const data = await path.threads.post({
       data: {

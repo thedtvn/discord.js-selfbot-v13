@@ -3,7 +3,7 @@ import type Client from '../client/Client';
 import CachedManager from './CachedManager';
 import GuildEmoji from '../structures/GuildEmoji';
 import ReactionEmoji from '../structures/ReactionEmoji';
-import { parseEmoji } from '../util/Util';
+import Util from '../util/Util';
 
 type EmojiResolvable = Snowflake | GuildEmoji | ReactionEmoji;
 type EmojiIdentifierResolvable = string | EmojiResolvable;
@@ -70,7 +70,7 @@ class BaseGuildEmojiManager extends CachedManager<Snowflake, GuildEmoji, EmojiRe
     if (emojiResolvable) return emojiResolvable.identifier;
     if (emoji instanceof ReactionEmoji) return emoji.identifier;
     if (typeof emoji === 'string') {
-      const res = parseEmoji(emoji);
+      const res = Util.parseEmoji(emoji);
       if (res?.name.length) {
         emoji = `${res.animated ? 'a:' : ''}${res.name}${res.id ? `:${res.id}` : ''}`;
       }

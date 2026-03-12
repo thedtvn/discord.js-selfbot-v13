@@ -188,7 +188,7 @@ class ShardingManager extends EventEmitter {
      */
     this.shards = new Collection();
 
-    process.env.SHARDING_MANAGER = true;
+    process.env.SHARDING_MANAGER = 'true';
     process.env.SHARDING_MANAGER_MODE = this.mode;
     process.env.DISCORD_TOKEN = this.token;
   }
@@ -323,14 +323,14 @@ class ShardingManager extends EventEmitter {
     if (this.shards.size === 0) throw new Error('SHARDING_NO_SHARDS');
 
     if (typeof shard === 'number') {
-      if (this.shards.has(shard)) return this.shards.get(shard)![method](...args);
+      if (this.shards.has(shard)) return (this.shards.get(shard)! as any)[method](...args);
       throw new Error('SHARDING_SHARD_NOT_FOUND', shard);
     }
 
     if (this.shards.size !== this.shardList.length) throw new Error('SHARDING_IN_PROCESS');
 
     const promises: Promise<unknown>[] = [];
-    for (const sh of this.shards.values()) promises.push(sh[method](...args));
+    for (const sh of this.shards.values()) promises.push((sh as any)[method](...args));
     return Promise.all(promises);
   }
 

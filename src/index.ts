@@ -16,7 +16,7 @@ export { default as AttachmentFlags } from './util/AttachmentFlags';
 export { default as BaseManager } from './managers/BaseManager';
 export { default as BitField } from './util/BitField';
 export { Collection } from '@discordjs/collection';
-export { default as Constants } from './util/Constants';
+export * as Constants from './util/Constants';
 export { default as DataResolver } from './util/DataResolver';
 export { default as DiscordAPIError } from './rest/DiscordAPIError';
 export { default as Formatters } from './util/Formatters';
@@ -97,7 +97,6 @@ export { Emoji } from './structures/Emoji';
 export { default as ForumChannel } from './structures/ForumChannel';
 export { Guild } from './structures/Guild';
 export { default as GuildAuditLogs } from './structures/GuildAuditLogs';
-export { Entry as GuildAuditLogsEntry } from './structures/GuildAuditLogs';
 export { default as GuildBan } from './structures/GuildBan';
 export { default as GuildChannel } from './structures/GuildChannel';
 export { default as GuildEmoji } from './structures/GuildEmoji';
@@ -156,7 +155,7 @@ export { default as WidgetMember } from './structures/WidgetMember';
 export { default as WelcomeChannel } from './structures/WelcomeChannel';
 export { default as WelcomeScreen } from './structures/WelcomeScreen';
 
-export { default as WebSocket } from './WebSocket';
+export * as WebSocket from './WebSocket';
 
 export { CustomStatus } from './structures/Presence';
 export { RichPresence } from './structures/Presence';

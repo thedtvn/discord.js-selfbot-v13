@@ -7,7 +7,7 @@ import { Error, TypeError } from '../errors';
  */
 class VoiceState extends Base {
   public guild: any;
-  public id: any;
+  declare public id: any;
   public serverDeaf: any;
   public serverMute: any;
   public selfDeaf: any;

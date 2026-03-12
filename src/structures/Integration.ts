@@ -23,7 +23,7 @@ import IntegrationApplication from './IntegrationApplication';
  */
 class Integration extends Base {
   public guild: any;
-  public id: string;
+  declare public id: string;
   public name: string;
   public type: string;
   public enabled: boolean;
@@ -149,7 +149,7 @@ class Integration extends Base {
     return roles.filter(role => role.tags?.integrationId === this.id);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('expire_behavior' in data) {
       /**
        * The behavior of expiring subscribers

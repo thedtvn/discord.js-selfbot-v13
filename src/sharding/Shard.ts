@@ -242,7 +242,7 @@ class Shard extends EventEmitter {
   send(message: unknown): Promise<Shard> {
     return new Promise((resolve, reject) => {
       if (this.process) {
-        this.process.send(message, err => {
+        this.process.send(message as any, err => {
           if (err) reject(err);
           else resolve(this);
         });

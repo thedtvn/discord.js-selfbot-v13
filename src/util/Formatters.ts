@@ -21,7 +21,26 @@ import {
 /**
  * Contains various Discord-specific functions for formatting messages.
  */
-class Formatters extends null {}
+class Formatters extends null {
+  static blockQuote: typeof blockQuote;
+  static bold: typeof bold;
+  static channelMention: typeof channelMention;
+  static chatInputApplicationCommandMention: (commandName: string, subcommandGroupOrSubOrId: string, subcommandNameOrId?: string, commandId?: string) => string;
+  static codeBlock: typeof codeBlock;
+  static formatEmoji: typeof formatEmoji;
+  static hideLinkEmbed: typeof hideLinkEmbed;
+  static hyperlink: typeof hyperlink;
+  static inlineCode: typeof inlineCode;
+  static italic: typeof italic;
+  static quote: typeof quote;
+  static roleMention: typeof roleMention;
+  static spoiler: typeof spoiler;
+  static strikethrough: typeof strikethrough;
+  static time: typeof time;
+  static TimestampStyles: typeof TimestampStyles;
+  static underscore: typeof underscore;
+  static userMention: typeof userMention;
+}
 
 /**
  * Formats the content into a block quote. This needs to be at the start of the line for Discord to format it.

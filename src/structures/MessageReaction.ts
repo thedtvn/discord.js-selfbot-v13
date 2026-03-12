@@ -62,7 +62,7 @@ class MessageReaction {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if (data.burst_colors) {
       /**
        * Hexadecimal colors used for this super reaction

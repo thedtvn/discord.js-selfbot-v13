@@ -44,7 +44,7 @@ class Invite extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The guild the invite is for including welcome screen data if present
      * @type {?(Guild|InviteGuild)}
@@ -329,7 +329,7 @@ class Invite extends Base {
    * @readonly
    */
   get url(): string {
-    return Endpoints.invite(this.client.options.http.invite, this.code);
+    return Endpoints.invite((this.client.options.http as any).invite, this.code);
   }
 
   /**

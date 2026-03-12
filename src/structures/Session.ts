@@ -19,7 +19,7 @@ interface SessionClientInfo {
  * @extends {Base}
  */
 class Session extends Base {
-  public id!: string;
+  declare public id: string;
   public approxLastUsedTime!: string;
   public clientInfo!: SessionClientInfo;
 
@@ -28,7 +28,7 @@ class Session extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('id_hash' in data) {
       /**
        * The session hash id
@@ -74,12 +74,12 @@ class Session extends Base {
    * Logout the client (remote).
    * @returns {Promise<void>}
    */
-  logout(): Promise<void> {
+  logout(): any {
     return this.client.api.auth.sessions.logout({
       data: {
         session_id_hashes: [this.id],
       },
-    });
+    } as any);
   }
 
   toJSON(): unknown {

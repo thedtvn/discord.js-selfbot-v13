@@ -56,7 +56,7 @@ class ReactionUserManager extends CachedManager<Snowflake, User, UserResolvable,
     const data = await this.client.api.channels[message.channelId].messages[message.id].reactions[
       this.reaction.emoji.identifier
     ].get({ query: { limit, after, type: typeof type == 'number' ? type : ReactionTypes[type] } });
-    const users = new Collection();
+    const users = new Collection<Snowflake, User>();
     for (const rawUser of data) {
       const user = this.client.users._add(rawUser);
       this.cache.set(user.id, user);
@@ -71,7 +71,7 @@ class ReactionUserManager extends CachedManager<Snowflake, User, UserResolvable,
    * @returns {Promise<MessageReaction>}
    */
   async remove(user: UserResolvable = this.client.user as UserResolvable): Promise<MessageReaction> {
-    const userId = this.client.users.resolveId(user);
+    const userId = this.client.users.resolveId(user as string);
     if (!userId) throw new Error('REACTION_RESOLVE_USER');
     const message = this.reaction.message;
     await this.client.api.channels[message.channelId].messages[message.id].reactions[this.reaction.emoji.identifier][

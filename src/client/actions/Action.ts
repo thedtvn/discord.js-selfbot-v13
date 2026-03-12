@@ -3,24 +3,30 @@ import type Client from '../Client';
 
 interface CacheLike<T> {
   cache: Map<string, T>;
-  _add: (data: unknown, cache?: boolean) => T;
+  _add: (...args: any[]) => T;
 }
 
 interface ChannelLike {
   id: string;
-  guild?: { id: string };
-  messages: CacheLike<unknown>;
+  guild?: { id: string; stageInstances?: any };
+  messages: CacheLike<any>;
+  isText: () => boolean;
+  lastMessageId?: string;
+  type?: string;
 }
 
 interface MessageLike {
   partial?: boolean;
-  reactions: CacheLike<unknown>;
+  reactions: CacheLike<any>;
+  author?: { id: string };
+  poll?: any;
+  _update?: (data: any) => any;
 }
 
 interface GuildLike {
   id: string;
-  members: CacheLike<unknown>;
-  scheduledEvents: CacheLike<unknown>;
+  members: CacheLike<any>;
+  scheduledEvents: CacheLike<any>;
 }
 
 /*
@@ -42,13 +48,13 @@ class GenericAction {
     this.client = client;
   }
 
-  handle(data: any): any {
-    return data;
+  handle(...args: any[]): any {
+    return args[0];
   }
 
   getPayload<T>(data: unknown, manager: CacheLike<T>, id: string, partialType: string, cache?: boolean): T | undefined {
     const existing = manager.cache.get(id);
-    if (!existing && this.client.options.partials.includes(partialType)) {
+    if (!existing && (this.client.options.partials as string[]).includes(partialType)) {
       return manager._add(data, cache);
     }
     return existing;
@@ -67,15 +73,15 @@ class GenericAction {
     if (id !== undefined) payloadData.id = id;
 
     return (
-      data[this.client.actions.injectedChannel] ??
-      this.getPayload({ ...data, ...payloadData }, this.client.channels, id, PartialTypes.CHANNEL)
+      data[this.client.actions.injectedChannel as any] ??
+      this.getPayload({ ...data, ...payloadData }, this.client.channels as any, id, PartialTypes.CHANNEL)
     );
   }
 
-  getMessage(data: Record<string, any>, channel: ChannelLike, cache?: boolean): unknown {
+  getMessage(data: Record<string, any>, channel: ChannelLike, cache?: boolean): any {
     const id = data.message_id ?? data.id;
     return (
-      data[this.client.actions.injectedMessage] ??
+      data[this.client.actions.injectedMessage as any] ??
       this.getPayload(
         {
           id,
@@ -90,7 +96,7 @@ class GenericAction {
     );
   }
 
-  getReaction(data: Record<string, any>, message: MessageLike, user?: { id: string }): unknown {
+  getReaction(data: Record<string, any>, message: MessageLike, user?: { id: string }): any {
     const id = data.emoji.id ?? decodeURIComponent(data.emoji.name);
     return this.getPayload(
       {
@@ -104,16 +110,16 @@ class GenericAction {
     );
   }
 
-  getMember(data: Record<string, any>, guild: GuildLike): unknown {
+  getMember(data: Record<string, any>, guild: GuildLike): any {
     return this.getPayload(data, guild.members, data.user.id, PartialTypes.GUILD_MEMBER);
   }
 
-  getUser(data: Record<string, any>): unknown {
+  getUser(data: Record<string, any>): any {
     const id = data.user_id;
-    return data[this.client.actions.injectedUser] ?? this.getPayload({ id }, this.client.users, id, PartialTypes.USER);
+    return data[this.client.actions.injectedUser as any] ?? this.getPayload({ id }, this.client.users, id, PartialTypes.USER);
   }
 
-  getUserFromMember(data: Record<string, any>): unknown {
+  getUserFromMember(data: Record<string, any>): any {
     if (data.guild_id && data.member?.user) {
       const guild = this.client.guilds.cache.get(data.guild_id);
       if (guild) {
@@ -125,7 +131,7 @@ class GenericAction {
     return this.getUser(data);
   }
 
-  getScheduledEvent(data: Record<string, any>, guild: GuildLike): unknown {
+  getScheduledEvent(data: Record<string, any>, guild: GuildLike): any {
     const id = data.guild_scheduled_event_id ?? data.id;
     return this.getPayload(
       { id, guild_id: data.guild_id ?? guild.id },

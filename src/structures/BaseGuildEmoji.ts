@@ -29,7 +29,7 @@ class BaseGuildEmoji extends Emoji {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('name' in data) this.name = data.name;
 
     if ('require_colons' in data) {

@@ -25,6 +25,10 @@ const validateName = (stringName: string): string =>
  * @interface
  */
 class TextBasedChannel {
+  public declare client: any;
+  public declare id: any;
+  public declare guild: any;
+  public declare edit: any;
   public messages: any;
   public lastMessageId: string | null;
   public lastPinTimestamp: number | null;
@@ -34,7 +38,7 @@ class TextBasedChannel {
      * A manager of the messages sent to this channel
      * @type {MessageManager}
      */
-    this.messages = new MessageManager(this);
+    this.messages = new MessageManager(this as any);
 
     /**
      * The channel's last message id, if one was sent
@@ -589,7 +593,7 @@ async function parseOption(
   subGroup: any,
   subCommand: any,
 ): Promise<{ optionFormat: any[]; attachments: any[] }> {
-  const data = {
+  const data: Record<string, any> = {
     type: optionCommand.type,
     name: optionCommand.name,
   };
@@ -739,7 +743,7 @@ function createPostData(
   postData: any[],
   attachments: any[] = [],
 ): any {
-  const data = {
+  const data: Record<string, any> = {
     type: isAutocomplete ? InteractionTypes.APPLICATION_COMMAND_AUTOCOMPLETE : InteractionTypes.APPLICATION_COMMAND,
     application_id: applicationId,
     guild_id: guildId,
@@ -752,7 +756,7 @@ function createPostData(
       type: commandType,
       options: postData,
       attachments: attachments,
-    },
+    } as Record<string, any>,
     nonce,
   };
   if (isGuildCommand) {

@@ -61,7 +61,7 @@ class VideoDispatcher extends BaseDispatcher {
     this.fps = value;
   }
 
-  _codecCallback(): never {
+  _codecCallback(chunk: Buffer): void {
     throw new Error('The _codecCallback method must be implemented');
   }
 }

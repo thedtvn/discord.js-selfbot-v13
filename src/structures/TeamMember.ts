@@ -26,7 +26,7 @@ class TeamMember extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('permissions' in data) {
       /**
        * The permissions this Team Member has with regard to the team

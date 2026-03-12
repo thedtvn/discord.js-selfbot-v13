@@ -33,10 +33,10 @@ class InteractionWebhook {
    * @param {string|MessagePayload|InteractionReplyOptions} options The content for the reply
    * @returns {Promise<Message|APIMessage>}
    */
-  send(..._args: any[]): Promise<any> {}
-  fetchMessage(..._args: any[]): Promise<any> {}
-  editMessage(..._args: any[]): Promise<any> {}
-  deleteMessage(..._args: any[]): Promise<void> {}
+  send(..._args: any[]): any {}
+  fetchMessage(..._args: any[]): any {}
+  editMessage(..._args: any[]): any {}
+  deleteMessage(..._args: any[]): any {}
   get url(): string { return ''; }
 }
 

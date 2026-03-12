@@ -1,5 +1,5 @@
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import CachedManager from './CachedManager';
 import { TypeError, Error } from '../errors';
 import { StageInstance } from '../structures/StageInstance';
@@ -76,7 +76,7 @@ class StageInstanceManager extends CachedManager<Snowflake, StageInstance, Stage
    *  .catch(console.error);
    */
   async create(channel: StageChannelResolvable, options: StageInstanceCreateOptions): Promise<StageInstance> {
-    const channelId = this.guild.channels.resolveId(channel);
+    const channelId = this.guild.channels.resolveId(channel as string);
     if (!channelId) throw new Error('STAGE_CHANNEL_RESOLVE');
     if (typeof options !== 'object') throw new TypeError('INVALID_TYPE', 'options', 'object', true);
     let { guildScheduledEvent, topic, privacyLevel, sendStartNotification } = options;
@@ -109,7 +109,7 @@ class StageInstanceManager extends CachedManager<Snowflake, StageInstance, Stage
    *  .catch(console.error);
    */
   async fetch(channel: StageChannelResolvable, { cache = true, force = false }: { cache?: boolean; force?: boolean } = {}): Promise<StageInstance> {
-    const channelId = this.guild.channels.resolveId(channel);
+    const channelId = this.guild.channels.resolveId(channel as string);
     if (!channelId) throw new Error('STAGE_CHANNEL_RESOLVE');
 
     if (!force) {
@@ -141,7 +141,7 @@ class StageInstanceManager extends CachedManager<Snowflake, StageInstance, Stage
    */
   async edit(channel: StageChannelResolvable, options: StageInstanceEditOptions): Promise<StageInstance> {
     if (typeof options !== 'object') throw new TypeError('INVALID_TYPE', 'options', 'object', true);
-    const channelId = this.guild.channels.resolveId(channel);
+    const channelId = this.guild.channels.resolveId(channel as string);
     if (!channelId) throw new Error('STAGE_CHANNEL_RESOLVE');
 
     let { topic, privacyLevel } = options;
@@ -170,7 +170,7 @@ class StageInstanceManager extends CachedManager<Snowflake, StageInstance, Stage
    * @returns {Promise<void>}
    */
   async delete(channel: StageChannelResolvable): Promise<void> {
-    const channelId = this.guild.channels.resolveId(channel);
+    const channelId = this.guild.channels.resolveId(channel as string);
     if (!channelId) throw new Error('STAGE_CHANNEL_RESOLVE');
 
     await this.client.api('stage-instances', channelId).delete();

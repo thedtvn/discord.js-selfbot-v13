@@ -7,7 +7,7 @@ import Base from './Base';
  * @extends {Base}
  */
 class GuildBoost extends Base {
-  public id: any;
+  declare public id: any;
   public subscriptionId: any;
   public premiumGuildSubscriptionId: any;
   public guildId: any;
@@ -20,7 +20,7 @@ class GuildBoost extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('id' in data) {
       /**
        * The id of the guild boost

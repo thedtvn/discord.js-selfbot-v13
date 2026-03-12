@@ -115,7 +115,7 @@ class VoiceConnectionUDPClient extends EventEmitter {
       if (!this.voiceConnection.sockets.ws) return;
 
       const packet = parseLocalPacket(message);
-      if (packet.error) {
+      if ('error' in packet) {
         this.emit('debug', `[UDP] ERROR: ${packet.error}`);
         this.emit('error', packet.error);
         return;

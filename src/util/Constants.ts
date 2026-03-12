@@ -59,7 +59,7 @@ const AllowedImageFormats = ['webp', 'png', 'jpg', 'jpeg', 'gif'];
 
 const AllowedImageSizes = [16, 32, 56, 64, 96, 128, 256, 300, 512, 600, 1024, 2048, 4096];
 
-function makeImageUrl(root, { format = 'webp', size } = {}) {
+function makeImageUrl(root: string, { format = 'webp', size }: { format?: string; size?: number } = {}) {
   if (!['undefined', 'number'].includes(typeof size)) throw new TypeError('INVALID_TYPE', 'size', 'number');
   if (format && !AllowedImageFormats.includes(format)) throw new Error('IMAGE_FORMAT', format);
   if (size && !AllowedImageSizes.includes(size)) throw new RangeError('IMAGE_SIZE', size);
@@ -133,7 +133,7 @@ export const Endpoints = {
         makeImageUrl(`${root}/guild-events/${scheduledEventId}/${coverHash}`, { size, format }),
     };
   },
-  invite: (root, code, eventId) => (eventId ? `${root}/${code}?event=${eventId}` : `${root}/${code}`),
+  invite: (root: string, code: string, eventId?: string) => (eventId ? `${root}/${code}?event=${eventId}` : `${root}/${code}`),
   scheduledEvent: (root, guildId, eventId) => `${root}/${guildId}/${eventId}`,
   botGateway: '/gateway',
 };
@@ -470,6 +470,7 @@ export const Events = {
   CHANNEL_RECIPIENT_ADD: 'channelRecipientAdd',
   CHANNEL_RECIPIENT_REMOVE: 'channelRecipientRemove',
   INTERACTION_MODAL_CREATE: 'interactionModalCreate',
+  INTERACTION_CREATE: 'interactionCreate',
   CALL_CREATE: 'callCreate',
   CALL_UPDATE: 'callUpdate',
   CALL_DELETE: 'callDelete',
@@ -1830,8 +1831,8 @@ function keyMirror(arr) {
   return tmp;
 }
 
-function createEnum(keys) {
-  const obj = {};
+function createEnum(keys): Record<string, any> {
+  const obj: Record<string, any> = {};
   for (const [index, key] of keys.entries()) {
     if (key === null) continue;
     obj[key] = index;

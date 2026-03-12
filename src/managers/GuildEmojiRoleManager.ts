@@ -1,6 +1,6 @@
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 import type GuildEmoji from '../structures/GuildEmoji';
 import DataManager from './DataManager';
 import { TypeError } from '../errors';
@@ -98,11 +98,11 @@ class GuildEmojiRoleManager extends DataManager<Snowflake, Role, RoleResolvable>
    *    .catch(console.error);
    */
   set(roles: Collection<Snowflake, Role> | RoleResolvable[]): Promise<GuildEmoji> {
-    return this.emoji.edit({ roles });
+    return this.emoji.edit({ roles: (roles instanceof Collection ? [...roles.values()] : roles) as RoleResolvable[] });
   }
 
   clone(): GuildEmojiRoleManager {
-    const clone = new this.constructor(this.emoji);
+    const clone = new (this.constructor as typeof GuildEmojiRoleManager)(this.emoji);
     clone._patch([...this.cache.keys()]);
     return clone;
   }

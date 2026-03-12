@@ -23,7 +23,7 @@ class GuildBan extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('user' in data) {
       /**
        * The user this ban applies to

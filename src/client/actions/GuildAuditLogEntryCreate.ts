@@ -11,7 +11,7 @@ class GuildAuditLogEntryCreateAction extends Action {
     let auditLogEntry;
 
     if (guild) {
-      auditLogEntry = new GuildAuditLogsEntry(guild, data);
+      auditLogEntry = new GuildAuditLogsEntry(guild, data, undefined as any);
 
       /**
        * Emitted whenever a guild audit log entry is created.

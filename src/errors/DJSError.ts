@@ -23,13 +23,13 @@ export interface DiscordjsErrorConstructor<T extends Error = Error> {
  * @returns {DiscordjsError}
  */
 export function makeDiscordjsError<T extends Error>(Base: ErrorClass<T>): DiscordjsErrorConstructor<T> {
-  return class DiscordjsError extends Base {
+  return class DiscordjsError extends (Base as any) {
     private [kCode]: string;
 
     public constructor(key: string, ...args: unknown[]) {
       super(message(key, args));
       this[kCode] = key;
-      if (Error.captureStackTrace) Error.captureStackTrace(this, DiscordjsError);
+      if ((Error as any).captureStackTrace) (Error as any).captureStackTrace(this, DiscordjsError);
     }
 
     public get name(): string {

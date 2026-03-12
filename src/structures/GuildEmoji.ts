@@ -5,9 +5,9 @@ import { Error } from '../errors';
 import GuildEmojiRoleManager from '../managers/GuildEmojiRoleManager';
 import Permissions from '../util/Permissions';
 import type Client from '../client/Client';
-import type Guild from './Guild';
+import type { Guild } from './Guild';
 import type User from './User';
-import type Role from './Role';
+import type { Role } from './Role';
 import type { APIEmoji, Snowflake } from 'discord-api-types/v10';
 
 /**
@@ -50,7 +50,7 @@ class GuildEmoji extends BaseGuildEmoji {
     return clone;
   }
 
-  _patch(data: APIEmoji & { roles?: Snowflake[]; user?: unknown }): void {
+  _patch(data: APIEmoji & { roles?: Snowflake[]; user?: unknown }): any {
     super._patch(data);
 
     if (data.user) this.author = this.client.users._add(data.user);
@@ -103,7 +103,7 @@ class GuildEmoji extends BaseGuildEmoji {
    *   .catch(console.error);
    */
   async edit(data: { name?: string; roles?: Array<Role | Snowflake> }, reason?: string): Promise<this> {
-    const roles = data.roles?.map(r => r.id ?? r);
+    const roles = data.roles?.map((r: any) => r.id ?? r);
     const newData = await this.client.api
       .guilds(this.guild.id)
       .emojis(this.id)

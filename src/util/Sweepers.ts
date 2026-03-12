@@ -48,13 +48,13 @@ class Sweepers {
       if (!('filter' in clonedOptions)) {
         switch (key) {
           case 'invites':
-            clonedOptions.filter = this.constructor.expiredInviteSweepFilter(clonedOptions.lifetime);
+            clonedOptions.filter = (this.constructor as typeof Sweepers).expiredInviteSweepFilter(clonedOptions.lifetime);
             break;
           case 'messages':
-            clonedOptions.filter = this.constructor.outdatedMessageSweepFilter(clonedOptions.lifetime);
+            clonedOptions.filter = (this.constructor as typeof Sweepers).outdatedMessageSweepFilter(clonedOptions.lifetime);
             break;
           case 'threads':
-            clonedOptions.filter = this.constructor.archivedThreadSweepFilter(clonedOptions.lifetime);
+            clonedOptions.filter = (this.constructor as typeof Sweepers).archivedThreadSweepFilter(clonedOptions.lifetime);
         }
       }
 
@@ -320,8 +320,12 @@ class Sweepers {
    */
   static filterByLifetime({
     lifetime = 14400,
-    getComparisonTimestamp = (e: { createdTimestamp?: number }) => e?.createdTimestamp,
-    excludeFromSweep = () => false,
+    getComparisonTimestamp = (e: any) => e?.createdTimestamp,
+    excludeFromSweep = (..._args: any[]) => false,
+  }: {
+    lifetime?: number;
+    getComparisonTimestamp?: (e: any, key?: any, coll?: any) => number | undefined;
+    excludeFromSweep?: (...args: any[]) => boolean;
   } = {}) {
     if (typeof lifetime !== 'number') {
       throw new TypeError('INVALID_TYPE', 'lifetime', 'number');
@@ -401,7 +405,7 @@ class Sweepers {
    * @returns {Object} Object containing the number of guilds swept and the number of items swept
    * @private
    */
-  _sweepGuildDirectProp(key: string, filter: (...args: unknown[]) => boolean, { emit = true, outputName } = {}) {
+  _sweepGuildDirectProp(key: string, filter: (...args: unknown[]) => boolean, { emit = true, outputName }: { emit?: boolean; outputName?: string } = {}) {
     if (typeof filter !== 'function') {
       throw new TypeError('INVALID_TYPE', 'filter', 'function');
     }

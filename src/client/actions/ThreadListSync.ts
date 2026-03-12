@@ -21,13 +21,13 @@ class ThreadListSyncAction extends Action {
     }
 
     const syncedThreads = data.threads.reduce((coll, rawThread) => {
-      const thread = client.channels._add(rawThread);
+      const thread = client.channels._add(rawThread, rawThread.guild_id ? client.guilds.cache.get(rawThread.guild_id) ?? null : null);
       return coll.set(thread.id, thread);
     }, new Collection());
 
-    for (const rawMember of Object.values(data.members || {})) {
+    for (const rawMember of Object.values((data.members || {}) as any)) {
       // Discord sends the thread id as id in this object
-      const thread = client.channels.cache.get(rawMember.id);
+      const thread = client.channels.cache.get((rawMember as any).id) as any;
       if (thread) {
         thread.members._add(rawMember);
       }

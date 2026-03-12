@@ -12,7 +12,7 @@ import type { Snowflake } from 'discord-api-types/v10';
  */
 class PermissionOverwrites extends Base {
   public declare readonly channel: any;
-  public id!: Snowflake;
+  declare public id: Snowflake;
   public type!: string;
   public deny!: Readonly<Permissions>;
   public allow!: Readonly<Permissions>;
@@ -31,7 +31,7 @@ class PermissionOverwrites extends Base {
     if (data) this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The overwrite's id, either a {@link User} or a {@link Role} id
      * @type {Snowflake}

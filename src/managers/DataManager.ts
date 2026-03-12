@@ -43,7 +43,7 @@ class DataManager<K extends string = Snowflake, Holds extends { id: K } = { id: 
    */
   resolve(idOrInstance: Resolvable | Holds): Holds | null {
     if (idOrInstance instanceof this.holds) return idOrInstance;
-    if (typeof idOrInstance === 'string') return this.cache.get(idOrInstance as K) ?? null;
+    if (typeof idOrInstance === 'string') return this.cache.get(idOrInstance as unknown as K) ?? null;
     return null;
   }
 
@@ -54,7 +54,7 @@ class DataManager<K extends string = Snowflake, Holds extends { id: K } = { id: 
    */
   resolveId(idOrInstance: Resolvable | Holds): K | null {
     if (idOrInstance instanceof this.holds) return idOrInstance.id;
-    if (typeof idOrInstance === 'string') return idOrInstance as K;
+    if (typeof idOrInstance === 'string') return idOrInstance as unknown as K;
     return null;
   }
 

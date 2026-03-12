@@ -13,7 +13,7 @@ import Util from '../util/Util';
  * @extends {Base}
  */
 class User extends Base {
-  public id: string;
+  declare public id: string;
   public bot: boolean | null;
   public system: boolean | null;
   public flags: UserFlags | null;
@@ -67,7 +67,7 @@ class User extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('username' in data) {
       /**
        * The username of the user
@@ -306,7 +306,7 @@ class User extends Base {
    * @param {ImageURLOptions} [options={}] Options for the Image URL
    * @returns {?string}
    */
-  avatarURL({ format, size, dynamic } = {}): any {
+  avatarURL({ format, size, dynamic }: { format?: string; size?: number; dynamic?: boolean } = {}): any {
     if (!this.avatar) return null;
     return this.client.rest.cdn.Avatar(this.id, this.avatar, format, size, dynamic);
   }
@@ -347,7 +347,7 @@ class User extends Base {
     const index =
       this.discriminator === '0' || this.discriminator === '0000'
         ? Util.calculateUserDefaultAvatarIndex(this.id)
-        : this.discriminator % 5;
+        : Number(this.discriminator) % 5;
     return this.client.rest.cdn.DefaultAvatar(index);
   }
 
@@ -379,7 +379,7 @@ class User extends Base {
    * @param {ImageURLOptions} [options={}] Options for the Image URL
    * @returns {?string}
    */
-  bannerURL({ format, size, dynamic } = {}): any {
+  bannerURL({ format, size, dynamic }: { format?: string; size?: number; dynamic?: boolean } = {}): any {
     if (typeof this.banner === 'undefined') throw new Error('USER_BANNER_NOT_FETCHED');
     if (!this.banner) return null;
     return this.client.rest.cdn.Banner(this.id, this.banner, format, size, dynamic);
@@ -554,9 +554,9 @@ class User extends Base {
         tag: true,
       },
       ...props,
-    );
+    ) as Record<string, any>;
     json.avatarURL = this.avatarURL();
-    json.displayAvatarURL = this.displayAvatarURL();
+    json.displayAvatarURL = this.displayAvatarURL({});
     json.bannerURL = this.banner ? this.bannerURL() : this.banner;
     json.guildTagBadgeURL = this.guildTagBadgeURL();
     return json;
@@ -619,7 +619,7 @@ class User extends Base {
    */
   get relationship(): any {
     const i = this.client.relationships.cache.get(this.id) ?? 6; // Move none from 0 to 6
-    return RelationshipTypes[parseInt(i)];
+    return RelationshipTypes[parseInt(String(i))];
   }
 
   /**

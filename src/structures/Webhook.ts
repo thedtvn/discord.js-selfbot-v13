@@ -34,7 +34,7 @@ class Webhook {
     if (data) this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('name' in data) {
       /**
        * The name of the webhook

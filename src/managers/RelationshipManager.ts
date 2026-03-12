@@ -46,8 +46,8 @@ class RelationshipManager extends BaseManager {
   get friendCache(): Collection<Snowflake, User> {
     const users = this.cache
       .filter(value => value === RelationshipTypes.FRIEND)
-      .map((_, key) => [key, this.client.users.cache.get(key)]);
-    return new Collection(users);
+      .map((_, key) => [key, this.client.users.cache.get(key)] as [Snowflake, User]);
+    return new Collection<Snowflake, User>(users);
   }
 
   /**
@@ -58,8 +58,8 @@ class RelationshipManager extends BaseManager {
   get blockedCache(): Collection<Snowflake, User> {
     const users = this.cache
       .filter(value => value === RelationshipTypes.BLOCKED)
-      .map((_, key) => [key, this.client.users.cache.get(key)]);
-    return new Collection(users);
+      .map((_, key) => [key, this.client.users.cache.get(key)] as [Snowflake, User]);
+    return new Collection<Snowflake, User>(users);
   }
 
   /**
@@ -70,8 +70,8 @@ class RelationshipManager extends BaseManager {
   get ignoredCache(): Collection<Snowflake, User> {
     const users = this.cache
       .filter(value => value === RelationshipTypes.IGNORE)
-      .map((_, key) => [key, this.client.users.cache.get(key)]);
-    return new Collection(users);
+      .map((_, key) => [key, this.client.users.cache.get(key)] as [Snowflake, User]);
+    return new Collection<Snowflake, User>(users);
   }
 
   /**
@@ -82,8 +82,8 @@ class RelationshipManager extends BaseManager {
   get incomingCache(): Collection<Snowflake, User> {
     const users = this.cache
       .filter(value => value === RelationshipTypes.PENDING_INCOMING)
-      .map((_, key) => [key, this.client.users.cache.get(key)]);
-    return new Collection(users);
+      .map((_, key) => [key, this.client.users.cache.get(key)] as [Snowflake, User]);
+    return new Collection<Snowflake, User>(users);
   }
 
   /**
@@ -94,8 +94,8 @@ class RelationshipManager extends BaseManager {
   get outgoingCache(): Collection<Snowflake, User> {
     const users = this.cache
       .filter(value => value === RelationshipTypes.PENDING_OUTGOING)
-      .map((_, key) => [key, this.client.users.cache.get(key)]);
-    return new Collection(users);
+      .map((_, key) => [key, this.client.users.cache.get(key)] as [Snowflake, User]);
+    return new Collection<Snowflake, User>(users);
   }
 
   /**
@@ -127,9 +127,9 @@ class RelationshipManager extends BaseManager {
   _setup(users?: Array<Record<string, unknown>>): void {
     if (!Array.isArray(users)) return;
     for (const relationShip of users) {
-      this.friendNicknames.set(relationShip.id, relationShip.nickname);
-      this.cache.set(relationShip.id, relationShip.type);
-      this.sinceCache.set(relationShip.id, new Date(relationShip.since || 0));
+      this.friendNicknames.set(relationShip.id as Snowflake, relationShip.nickname as string);
+      this.cache.set(relationShip.id as Snowflake, relationShip.type as number);
+      this.sinceCache.set(relationShip.id as Snowflake, new Date((relationShip.since as string | number) || 0));
     }
   }
 
@@ -173,7 +173,7 @@ class RelationshipManager extends BaseManager {
       const id = this.resolveId(user);
       if (!force) {
         const existing = this.cache.get(id);
-        if (existing && !existing.partial) return existing;
+        if (existing !== undefined) return existing;
       }
       const data = await this.client.api.users['@me'].relationships.get();
       await this._setup(data);

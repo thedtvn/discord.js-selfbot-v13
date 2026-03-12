@@ -11,7 +11,7 @@ import { MessageComponentTypes } from '../util/Constants';
 class MessageComponentInteraction extends Interaction {
   public message: any;
   public customId: string;
-  public componentType: string;
+  declare public componentType: string;
   public deferred: boolean;
   public ephemeral: boolean | null;
   public replied: boolean;

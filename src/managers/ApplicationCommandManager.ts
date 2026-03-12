@@ -1,9 +1,10 @@
 'use strict';
 
-import { isJSONEncodable } from '@discordjs/builders';
+import { isJSONEncodable } from '@discordjs/util';
 import { Collection } from '@discordjs/collection';
 import type { Snowflake } from 'discord-api-types/v10';
 import type Client from '../client/Client';
+import type { APIRouteProxy } from '../rest/APIRouter';
 import ApplicationCommandPermissionsManager from './ApplicationCommandPermissionsManager';
 import CachedManager from './CachedManager';
 import { TypeError } from '../errors';
@@ -20,14 +21,14 @@ class ApplicationCommandManager extends CachedManager {
 
   public guild?: { id: Snowflake } | null;
 
-  constructor(client: Client, iterable?: Iterable<Record<string, unknown>>) {
+  constructor(client: Client, iterable?: Iterable<{ id: string } & Record<string, unknown>>) {
     super(client, ApplicationCommand, iterable);
 
     /**
      * The manager for permissions of arbitrary commands on arbitrary guilds
      * @type {ApplicationCommandPermissionsManager}
      */
-    this.permissions = new ApplicationCommandPermissionsManager(this);
+    this.permissions = new ApplicationCommandPermissionsManager(this as unknown as ConstructorParameters<typeof ApplicationCommandPermissionsManager>[0]);
   }
 
   /**
@@ -36,8 +37,13 @@ class ApplicationCommandManager extends CachedManager {
    * @name ApplicationCommandManager#cache
    */
 
-  _add(data: { id: Snowflake } & Record<string, unknown>, cache?: boolean, guildId?: Snowflake): ApplicationCommand {
-    return super._add(data, cache, { extras: [this.guild, guildId] });
+  _add(data: { id: Snowflake } & Record<string, unknown>, cache = true, options: { id?: string; extras?: unknown[] } = {}): ApplicationCommand {
+    const guildId = options.extras?.[1] as Snowflake | undefined;
+    return super._add(data, cache, { extras: [this.guild, guildId] }) as unknown as ApplicationCommand;
+  }
+
+  private _addCommand(data: { id: Snowflake } & Record<string, unknown>, cache?: boolean, guildId?: Snowflake): ApplicationCommand {
+    return this._add(data, cache, { extras: [this.guild, guildId] });
   }
 
   /**
@@ -48,7 +54,7 @@ class ApplicationCommandManager extends CachedManager {
    * @returns {Object}
    * @private
    */
-  commandPath({ id, guildId }: { id?: Snowflake; guildId?: Snowflake } = {}): unknown {
+  commandPath({ id, guildId }: { id?: Snowflake; guildId?: Snowflake } = {}): APIRouteProxy {
     let path = this.client.api.applications(this.client.application.id);
     if (this.guild ?? guildId) path = path.guilds(this.guild?.id ?? guildId);
     return id ? path.commands(id) : path.commands;
@@ -107,11 +113,11 @@ class ApplicationCommandManager extends CachedManager {
       ({ guildId, cache = true, locale, withLocalizations } = id);
     } else if (id) {
       if (!force) {
-        const existing = this.cache.get(id);
+        const existing = this.cache.get(id) as ApplicationCommand | undefined;
         if (existing) return existing;
       }
       const command = await this.commandPath({ id, guildId }).get();
-      return this._add(command, cache);
+      return this._addCommand(command, cache);
     }
 
     const data = await this.commandPath({ guildId }).get({
@@ -122,7 +128,7 @@ class ApplicationCommandManager extends CachedManager {
     });
     return data.reduce(
       (coll: Collection<Snowflake, ApplicationCommand>, command: { id: Snowflake } & Record<string, unknown>) =>
-        coll.set(command.id, this._add(command, cache, guildId)),
+        coll.set(command.id, this._addCommand(command, cache, guildId)),
       new Collection<Snowflake, ApplicationCommand>(),
     );
   }
@@ -144,9 +150,9 @@ class ApplicationCommandManager extends CachedManager {
    */
   async create(command: Record<string, unknown>, guildId?: Snowflake): Promise<ApplicationCommand> {
     const data = await this.commandPath({ guildId }).post({
-      data: this.constructor.transformCommand(command),
+      data: (this.constructor as typeof ApplicationCommandManager).transformCommand(command),
     });
-    return this._add(data, true, guildId);
+    return this._addCommand(data, true, guildId);
   }
 
   /**
@@ -173,11 +179,11 @@ class ApplicationCommandManager extends CachedManager {
    */
   async set(commands: Record<string, unknown>[], guildId?: Snowflake): Promise<Collection<Snowflake, ApplicationCommand>> {
     const data = await this.commandPath({ guildId }).put({
-      data: commands.map(c => this.constructor.transformCommand(c)),
+      data: commands.map(c => (this.constructor as typeof ApplicationCommandManager).transformCommand(c)),
     });
     return data.reduce(
       (coll: Collection<Snowflake, ApplicationCommand>, command: { id: Snowflake } & Record<string, unknown>) =>
-        coll.set(command.id, this._add(command, true, guildId)),
+        coll.set(command.id, this._addCommand(command, true, guildId)),
       new Collection<Snowflake, ApplicationCommand>(),
     );
   }
@@ -202,9 +208,9 @@ class ApplicationCommandManager extends CachedManager {
     if (!id) throw new TypeError('INVALID_TYPE', 'command', 'ApplicationCommandResolvable');
 
     const patched = await this.commandPath({ id, guildId }).patch({
-      data: this.constructor.transformCommand(data),
+      data: (this.constructor as typeof ApplicationCommandManager).transformCommand(data),
     });
-    return this._add(patched, true, guildId);
+    return this._addCommand(patched, true, guildId);
   }
 
   /**
@@ -225,7 +231,7 @@ class ApplicationCommandManager extends CachedManager {
 
     await this.commandPath({ id, guildId }).delete();
 
-    const cached = this.cache.get(id);
+    const cached = this.cache.get(id) as ApplicationCommand | undefined;
     this.cache.delete(id);
     return cached ?? null;
   }
@@ -237,20 +243,20 @@ class ApplicationCommandManager extends CachedManager {
    * @private
    */
   static transformCommand(command: Record<string, unknown>): Record<string, unknown> {
-    if (isJSONEncodable(command)) return command.toJSON();
+    if (isJSONEncodable(command)) return (command as { toJSON(): Record<string, unknown> }).toJSON();
 
     let default_member_permissions;
 
     if ('default_member_permissions' in command) {
       default_member_permissions = command.default_member_permissions
-        ? new Permissions(BigInt(command.default_member_permissions)).bitfield.toString()
+        ? new Permissions(BigInt(command.default_member_permissions as string | number)).bitfield.toString()
         : command.default_member_permissions;
     }
 
     if ('defaultMemberPermissions' in command) {
       default_member_permissions =
         command.defaultMemberPermissions !== null
-          ? new Permissions(command.defaultMemberPermissions).bitfield.toString()
+          ? new Permissions(BigInt(command.defaultMemberPermissions as string | number)).bitfield.toString()
           : command.defaultMemberPermissions;
     }
 
@@ -259,8 +265,8 @@ class ApplicationCommandManager extends CachedManager {
       name_localizations: command.nameLocalizations ?? command.name_localizations,
       description: command.description,
       description_localizations: command.descriptionLocalizations ?? command.description_localizations,
-      type: typeof command.type === 'number' ? command.type : ApplicationCommandTypes[command.type],
-      options: command.options?.map(o => ApplicationCommand.transformOption(o)),
+      type: typeof command.type === 'number' ? command.type : (ApplicationCommandTypes as Record<string, unknown>)[command.type as string],
+      options: (command.options as Record<string, unknown>[] | undefined)?.map(o => ApplicationCommand.transformOption(o)),
       default_permission: command.defaultPermission ?? command.default_permission,
       default_member_permissions,
       dm_permission: command.dmPermission ?? command.dm_permission,

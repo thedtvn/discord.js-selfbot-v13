@@ -138,8 +138,12 @@ class AudioDispatcher extends BaseDispatcher {
 
   // Volume stubs for docs
   /* eslint-disable no-empty-function*/
-  get volumeDecibels() {}
-  get volumeLogarithmic() {}
+  get volumeDecibels(): any {
+    return undefined;
+  }
+  get volumeLogarithmic(): any {
+    return undefined;
+  }
   setVolumeDecibels() {}
   setVolumeLogarithmic() {}
 }

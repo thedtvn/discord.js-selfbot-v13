@@ -29,7 +29,7 @@ let deprecationEmittedForDeleted = false;
 class Emoji extends Base {
   public animated: boolean | null;
   public name: string | null;
-  public id: Snowflake | null;
+  declare public id: Snowflake | null;
 
   constructor(client: Client, emoji: APIEmoji) {
     super(client);

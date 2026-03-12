@@ -25,7 +25,6 @@ import {
 import DataResolver from '../util/DataResolver';
 import Permissions from '../util/Permissions';
 import SystemChannelFlags from '../util/SystemChannelFlags';
-import { resolveColor } from '../util/Util';
 import Util from '../util/Util';
 
 let cacheWarningEmitted = false;
@@ -34,9 +33,9 @@ let cacheWarningEmitted = false;
  * Manages API methods for Guilds and stores their cache.
  * @extends {CachedManager}
  */
-class GuildManager extends CachedManager {
+class GuildManager extends CachedManager<Snowflake, Guild> {
   constructor(client: Client, iterable?: Iterable<Record<string, unknown>>) {
-    super(client, Guild, iterable);
+    super(client, Guild, iterable as unknown as Iterable<{ id: Snowflake }>);
     if (!cacheWarningEmitted && this._cache.constructor.name !== 'Collection') {
       cacheWarningEmitted = true;
       process.emitWarning(
@@ -120,9 +119,9 @@ class GuildManager extends CachedManager {
       guild instanceof Role ||
       (guild instanceof Invite && guild.guild)
     ) {
-      return super.resolve(guild.guild);
+      return super.resolve((guild as { guild: string | Guild }).guild as string | Guild);
     }
-    return super.resolve(guild);
+    return super.resolve(guild as string | Guild);
   }
 
   /**
@@ -141,9 +140,9 @@ class GuildManager extends CachedManager {
       guild instanceof Role ||
       (guild instanceof Invite && guild.guild)
     ) {
-      return super.resolveId(guild.guild.id);
+      return super.resolveId((guild as { guild: { id: string } }).guild.id);
     }
-    return super.resolveId(guild);
+    return super.resolveId(guild as string);
   }
 
   /**
@@ -195,7 +194,7 @@ class GuildManager extends CachedManager {
       verificationLevel?: string | number;
     } = {},
   ): Promise<Guild> {
-    icon = await DataResolver.resolveImage(icon);
+    icon = await DataResolver.resolveImage(icon as string | Buffer);
     if (typeof verificationLevel === 'string') {
       verificationLevel = VerificationLevels[verificationLevel];
     }
@@ -206,7 +205,7 @@ class GuildManager extends CachedManager {
       explicitContentFilter = ExplicitContentFilterLevels[explicitContentFilter];
     }
     for (const channel of channels) {
-      channel.type &&= typeof channel.type === 'number' ? channel.type : ChannelTypes[channel.type];
+      channel.type &&= typeof channel.type === 'number' ? channel.type : ChannelTypes[channel.type as string];
       channel.parent_id = channel.parentId;
       delete channel.parentId;
       channel.user_limit = channel.userLimit;
@@ -222,21 +221,21 @@ class GuildManager extends CachedManager {
       delete channel.videoQualityMode;
 
       if (!channel.permissionOverwrites) continue;
-      for (const overwrite of channel.permissionOverwrites) {
+      for (const overwrite of channel.permissionOverwrites as Record<string, unknown>[]) {
         if (typeof overwrite.type === 'string') {
           overwrite.type = OverwriteTypes[overwrite.type];
         }
-        overwrite.allow &&= Permissions.resolve(overwrite.allow).toString();
-        overwrite.deny &&= Permissions.resolve(overwrite.deny).toString();
+        overwrite.allow &&= Permissions.resolve(overwrite.allow as bigint).toString();
+        overwrite.deny &&= Permissions.resolve(overwrite.deny as bigint).toString();
       }
       channel.permission_overwrites = channel.permissionOverwrites;
       delete channel.permissionOverwrites;
     }
     for (const role of roles) {
-      role.color &&= resolveColor(role.color);
-      role.permissions &&= Permissions.resolve(role.permissions).toString();
+      role.color &&= Util.resolveColor(role.color as string | number | [number, number, number]);
+      role.permissions &&= Permissions.resolve(role.permissions as bigint).toString();
     }
-    systemChannelFlags &&= SystemChannelFlags.resolve(systemChannelFlags);
+    systemChannelFlags &&= SystemChannelFlags.resolve(systemChannelFlags as bigint);
 
     const data = await this.client.api.guilds.post({
       data: {
@@ -306,11 +305,11 @@ class GuildManager extends CachedManager {
         if (existing) return existing;
       }
 
-      const data = await this.client.api.guilds(id).get({ query: { with_counts: options.withCounts ?? true } });
-      return this._add(data, options.cache);
+      const data = await this.client.api.guilds(id).get({ query: { with_counts: options.withCounts ?? true } as Record<string, string | number | boolean> });
+      return this._add(data, options.cache as boolean);
     }
 
-    const data = await this.client.api.users('@me').guilds.get({ query: options });
+    const data = await this.client.api.users('@me').guilds.get({ query: options as Record<string, string | number | boolean> });
     return data.reduce((coll, guild) => coll.set(guild.id, new OAuth2Guild(this.client, guild)), new Collection());
   }
 

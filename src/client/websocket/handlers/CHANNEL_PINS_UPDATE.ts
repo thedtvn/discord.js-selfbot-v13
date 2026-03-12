@@ -2,7 +2,7 @@ import type { GatewayHandler } from './types';
 
 import { Events } from '../../../util/Constants';
 
-const handler: GatewayHandler = (client, { d: data }) => { const channel = client.channels.cache.get(data.channel_id);
+const handler: GatewayHandler = (client, { d: data }) => { const channel = client.channels.cache.get(data.channel_id) as any;
 const time = data.last_pin_timestamp ? new Date(data.last_pin_timestamp).getTime() : null;
 
 if (channel) {

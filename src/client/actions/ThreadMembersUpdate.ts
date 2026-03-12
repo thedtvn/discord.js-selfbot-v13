@@ -4,16 +4,16 @@ import { Events } from '../../util/Constants';
 class ThreadMembersUpdateAction extends Action {
   handle(data: any): any {
     const client = this.client;
-    const thread = client.channels.cache.get(data.id);
+    const thread = client.channels.cache.get(data.id) as any;
     if (thread) {
       const old = thread.members.cache.clone();
       thread.memberCount = data.member_count;
 
-      data.added_members?.forEach(rawMember => {
+      data.added_members?.forEach((rawMember: any) => {
         thread.members._add(rawMember);
       });
 
-      data.removed_member_ids?.forEach(memberId => {
+      data.removed_member_ids?.forEach((memberId: any) => {
         thread.members.cache.delete(memberId);
       });
 

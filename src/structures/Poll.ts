@@ -74,7 +74,7 @@ class Poll extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if (data.results) {
       /**
        * Whether this poll's results have been precisely counted

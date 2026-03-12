@@ -25,6 +25,7 @@ let deprecationEmittedForPassingBoolean = false;
  * Manages API methods for GuildMembers and stores their cache.
  * @extends {CachedManager}
  */
+// @ts-expect-error RawThreadMemberData uses user_id instead of id
 class ThreadMemberManager extends CachedManager<Snowflake, ThreadMember, ThreadMemberResolvable, RawThreadMemberData> {
   public readonly thread: ThreadChannel;
 
@@ -87,7 +88,7 @@ class ThreadMemberManager extends CachedManager<Snowflake, ThreadMember, ThreadM
   resolve(member: ThreadMemberResolvable): ThreadMember | null {
     const memberResolvable = super.resolve(member);
     if (memberResolvable) return memberResolvable;
-    const userId = this.client.users.resolveId(member);
+    const userId = this.client.users.resolveId(member as string);
     if (userId) return this.cache.get(userId) ?? null;
     return null;
   }
@@ -100,7 +101,7 @@ class ThreadMemberManager extends CachedManager<Snowflake, ThreadMember, ThreadM
   resolveId(member: ThreadMemberResolvable): Snowflake | null {
     const memberResolvable = super.resolveId(member);
     if (memberResolvable) return memberResolvable;
-    const userResolvable = this.client.users.resolveId(member);
+    const userResolvable = this.client.users.resolveId(member as string);
     return this.cache.has(userResolvable) ? userResolvable : null;
   }
 
@@ -111,7 +112,7 @@ class ThreadMemberManager extends CachedManager<Snowflake, ThreadMember, ThreadM
    * @returns {Promise<Snowflake>}
    */
   async add(member: UserResolvableLike | '@me', reason?: string): Promise<Snowflake | '@me'> {
-    const id = member === '@me' ? member : this.client.users.resolveId(member);
+    const id = member === '@me' ? member : this.client.users.resolveId(member as string);
     if (!id) throw new TypeError('INVALID_TYPE', 'member', 'UserResolvable');
     await this.client.api.channels(this.thread.id, 'thread-members', id).put({ reason });
     return id;
@@ -194,7 +195,7 @@ class ThreadMemberManager extends CachedManager<Snowflake, ThreadMember, ThreadM
       );
       deprecationEmittedForPassingBoolean = true;
     }
-    const id = this.resolveId(member);
+    const id = typeof member === 'boolean' ? null : this.resolveId(member);
     return id
       ? this._fetchOne(id, options)
       : this._fetchMany(typeof member === 'boolean' ? { ...options, cache: member } : options);

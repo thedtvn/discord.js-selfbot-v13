@@ -78,7 +78,7 @@ class Presence extends Base {
     return this.guild.members.resolve(this.userId);
   }
 
-  _patch(data: any): this {
+  _patch(data: any): any {
     if ('status' in data) {
       /**
        * The status of this presence
@@ -172,7 +172,7 @@ class Presence extends Base {
   }
 
   toJSON(): any {
-    return Util.flatten(this);
+    return Util.flatten(this as unknown as Record<string, unknown>);
   }
 }
 
@@ -447,7 +447,7 @@ class Activity {
 
   toJSON(...props: any[]): any {
     return Util.clearNullOrUndefinedObject({
-      ...Util.flatten(this, ...props),
+      ...Util.flatten(this as unknown as Record<string, unknown>, ...props),
       type: typeof this.type === 'number' ? this.type : ActivityTypes[this.type],
     });
   }
@@ -475,7 +475,7 @@ class RichPresenceAssets {
     this._patch(assets);
   }
 
-  _patch(assets: any = {}): void {
+  _patch(assets: any = {}): any {
     if ('large_text' in assets || 'largeText' in assets) {
       /**
        * Hover text for the large image
@@ -522,7 +522,7 @@ class RichPresenceAssets {
    * @param {StaticImageURLOptions} [options] Options for the image URL
    * @returns {?string}
    */
-  smallImageURL({ format, size } = {}): any {
+  smallImageURL({ format, size }: { format?: string; size?: number } = {}): any {
     if (!this.smallImage) return null;
     if (this.smallImage.includes(':')) {
       const [platform, id] = this.smallImage.split(':');
@@ -551,7 +551,7 @@ class RichPresenceAssets {
    * @param {StaticImageURLOptions} [options] Options for the image URL
    * @returns {?string}
    */
-  largeImageURL({ format, size } = {}): any {
+  largeImageURL({ format, size }: { format?: string; size?: number } = {}): any {
     if (!this.largeImage) return null;
     if (this.largeImage.includes(':')) {
       const [platform, id] = this.largeImage.split(':');
@@ -665,8 +665,8 @@ class RichPresenceAssets {
 }
 
 class CustomStatus extends Activity {
-  public emoji: any;
-  public state: string | null;
+  declare public emoji: any;
+  declare public state: string | null;
 
   /**
    * @typedef {Object} CustomStatusOptions
@@ -713,7 +713,7 @@ class CustomStatus extends Activity {
    * @returns {CustomStatus}
    */
   toJSON(): any {
-    if (!this.emoji & !this.state) throw new Error('CustomStatus must have at least one of emoji or state');
+    if (!this.emoji && !this.state) throw new Error('CustomStatus must have at least one of emoji or state');
     return {
       name: this.name,
       emoji: this.emoji,
@@ -726,16 +726,16 @@ class CustomStatus extends Activity {
 class RichPresence extends Activity {
   public secrets: any;
   public metadata: any;
-  public name: string;
-  public url: string | null;
-  public type: string | number;
-  public applicationId: string | null;
-  public state: string | null;
-  public details: string | null;
-  public party: any;
-  public timestamps: any;
-  public buttons: string[];
-  public platform: string | null;
+  declare public name: string;
+  declare public url: string | null;
+  declare public type: string | number;
+  declare public applicationId: string | null;
+  declare public state: string | null;
+  declare public details: string | null;
+  declare public party: any;
+  declare public timestamps: any;
+  declare public buttons: string[];
+  declare public platform: string | null;
 
   /**
    * @param {Client} client Discord client
@@ -1050,8 +1050,8 @@ class RichPresence extends Activity {
  * @extends {RichPresence}
  */
 class SpotifyRPC extends RichPresence {
-  public metadata: any;
-  public syncId: any;
+  declare public metadata: any;
+  declare public syncId: any;
 
   /**
    * Create a new RichPresence (Spotify style)

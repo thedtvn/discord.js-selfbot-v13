@@ -7,7 +7,7 @@ import { TypeError, Error } from '../errors';
 import GuildBan from '../structures/GuildBan';
 import { GuildMember } from '../structures/GuildMember';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import type { Guild } from '../structures/Guild';
 
 let deprecationEmittedForDays = false;
 
@@ -47,11 +47,13 @@ interface BulkBanResult {
  * Manages API methods for GuildBans and stores their cache.
  * @extends {CachedManager}
  */
+// GuildBan uses user.id instead of id for cache keys, so it doesn't satisfy the Holds constraint directly
+// @ts-expect-error - GuildBan lacks `id` property (uses user.id) and `_clone()`, but _add overrides handle this
 class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolvable, RawGuildBanData, [Guild]> {
   public readonly guild: Guild;
 
   constructor(guild: Guild, iterable?: Iterable<RawGuildBanData>) {
-    super(guild.client, GuildBan, iterable);
+    super(guild.client, GuildBan as unknown as abstract new (...args: unknown[]) => GuildBan, iterable);
 
     /**
      * The guild this Manager belongs to
@@ -67,7 +69,7 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
    */
 
   _add(data: RawGuildBanData, cache?: boolean): GuildBan {
-    return super._add(data, cache, { id: data.user.id, extras: [this.guild] });
+    return (super._add as Function).call(this, data, cache, { id: data.user.id, extras: [this.guild] }) as GuildBan;
   }
 
   /**
@@ -83,7 +85,7 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
    * @returns {?GuildBan}
    */
   resolve(ban: GuildBanResolvable): GuildBan | null {
-    return super.resolve(ban) ?? super.resolve(this.client.users.resolveId(ban));
+    return (super.resolve(ban) ?? super.resolve(this.client.users.resolveId(ban as string))) as GuildBan | null;
   }
 
   /**
@@ -133,8 +135,9 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
     */
    async fetch(options?: unknown): Promise<GuildBan | Collection<Snowflake, GuildBan>> {
     if (!options) return this._fetchMany();
-    const { user, cache, force, limit, before, after } = options;
-    const resolvedUser = this.client.users.resolveId(user ?? options);
+    const opts = options as FetchBanOptions & FetchBansOptions;
+    const { user, cache, force, limit, before, after } = opts;
+    const resolvedUser = this.client.users.resolveId((user ?? options) as string);
     if (resolvedUser) return this._fetchSingle({ user: resolvedUser, cache, force });
 
     if (!before && !after && !limit && typeof cache === 'undefined') {
@@ -156,7 +159,7 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
 
   async _fetchMany(options?: FetchBansOptions): Promise<Collection<Snowflake, GuildBan>> {
     const data = await this.client.api.guilds(this.guild.id).bans.get({
-      query: options,
+      query: options as unknown as Record<string, string | number | boolean>,
     });
 
     return data.reduce((col, ban) => col.set(ban.user.id, this._add(ban, options.cache)), new Collection());
@@ -186,7 +189,7 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
     */
    async create(user: unknown, options?: BanOptions): Promise<GuildMember | unknown> {
     if (typeof options !== 'object') throw new TypeError('INVALID_TYPE', 'options', 'object', true);
-    const id = this.client.users.resolveId(user);
+    const id = this.client.users.resolveId(user as string);
     if (!id) throw new Error('BAN_RESOLVE_ID', true);
 
     if (typeof options.days !== 'undefined' && !deprecationEmittedForDays) {
@@ -213,7 +216,7 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
     if (user instanceof GuildMember) return user;
     const _user = this.client.users.cache.get(id);
     if (_user) {
-      return this.guild.members.resolve(_user) ?? _user;
+      return this.guild.members.resolve(_user as unknown as string) ?? _user;
     }
     return id;
   }
@@ -230,10 +233,10 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
     *   .catch(console.error);
     */
    async remove(user: unknown, reason?: string): Promise<unknown> {
-    const id = this.client.users.resolveId(user);
+    const id = this.client.users.resolveId(user as string);
     if (!id) throw new Error('BAN_RESOLVE_ID');
     await this.client.api.guilds(this.guild.id).bans(id).delete({ reason });
-    return this.client.users.resolve(user);
+    return this.client.users.resolve(user as string);
   }
 
   /**
@@ -272,7 +275,8 @@ class GuildBanManager extends CachedManager<Snowflake, GuildBan, GuildBanResolva
     }
     if (typeof options !== 'object') throw new TypeError('INVALID_TYPE', 'options', 'object', true);
 
-    const userIds = users.map(user => this.client.users.resolveId(user));
+    const userArray = Array.isArray(users) ? users : [...users.values()];
+    const userIds = userArray.map(user => this.client.users.resolveId(user as string));
     if (userIds.length === 0) throw new Error('BULK_BAN_USERS_OPTION_EMPTY');
 
     const result = await this.client.api.guilds(this.guild.id)['bulk-ban'].post({

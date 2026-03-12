@@ -1,5 +1,5 @@
 import type { Snowflake } from 'discord-api-types/v10';
-import type Message from '../structures/Message';
+import type { Message } from '../structures/Message';
 import CachedManager from './CachedManager';
 import MessageReaction from '../structures/MessageReaction';
 
@@ -11,6 +11,7 @@ type RawMessageReactionData = {
  * Manages API methods for reactions and holds their cache.
  * @extends {CachedManager}
  */
+// @ts-expect-error MessageReaction uses emoji key instead of id
 class ReactionManager extends CachedManager<string | Snowflake, MessageReaction, MessageReaction | string | Snowflake, RawMessageReactionData, [Message]> {
   public readonly message: Message;
 

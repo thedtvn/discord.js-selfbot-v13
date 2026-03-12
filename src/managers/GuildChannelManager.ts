@@ -8,7 +8,7 @@ import GuildChannel from '../structures/GuildChannel';
 import PermissionOverwrites from '../structures/PermissionOverwrites';
 import ThreadChannel from '../structures/ThreadChannel';
 import Webhook from '../structures/Webhook';
-import ChannelFlags from '../util/ChannelFlags';
+import ChannelFlags, { type ChannelFlagsResolvable } from '../util/ChannelFlags';
 import {
   ThreadChannelTypes,
   ChannelTypes,
@@ -18,9 +18,8 @@ import {
 } from '../util/Constants';
 import DataResolver from '../util/DataResolver';
 import Util from '../util/Util';
-import { resolveAutoArchiveMaxLimit, transformGuildForumTag, transformGuildDefaultReaction } from '../util/Util';
 import type { Snowflake } from 'discord-api-types/v10';
-import type Guild from '../structures/Guild';
+import { Guild } from '../structures/Guild';
 
 let cacheWarningEmitted = false;
 let storeChannelDeprecationEmitted = false;
@@ -99,8 +98,8 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
     super(guild.client, GuildChannel, iterable);
     const defaultCaching =
       this._cache.constructor.name === 'Collection' ||
-      ((this._cache.maxSize === undefined || this._cache.maxSize === Infinity) &&
-        (this._cache.sweepFilter === undefined || this._cache.sweepFilter.isDefault));
+      (((this._cache as unknown as Record<string, unknown>).maxSize === undefined || (this._cache as unknown as Record<string, unknown>).maxSize === Infinity) &&
+        ((this._cache as unknown as Record<string, unknown>).sweepFilter === undefined || ((this._cache as unknown as Record<string, unknown>).sweepFilter as Record<string, unknown>)?.isDefault));
     if (!cacheWarningEmitted && !defaultCaching) {
       cacheWarningEmitted = true;
       process.emitWarning(
@@ -135,11 +134,14 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
    * @name GuildChannelManager#cache
    */
 
-  _add(channel: GuildChannel): GuildChannel {
-    const existing = this.cache.get(channel.id);
-    if (existing) return existing;
-    this.cache.set(channel.id, channel);
-    return channel;
+  _add(channel: GuildChannel | RawGuildChannelData, cache?: boolean): GuildChannel {
+    if (channel instanceof GuildChannel) {
+      const existing = this.cache.get(channel.id);
+      if (existing) return existing;
+      if (cache !== false) this.cache.set(channel.id, channel);
+      return channel;
+    }
+    return super._add(channel, cache);
   }
 
   /**
@@ -220,7 +222,7 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
       reason,
     }: GuildChannelCreateOptions = {},
   ) {
-    parent &&= this.client.channels.resolveId(parent);
+    parent &&= this.client.channels.resolveId(parent as string);
     permissionOverwrites &&= permissionOverwrites.map(o => PermissionOverwrites.resolve(o, this.guild));
     const intType = typeof type === 'number' ? type : ChannelTypes[type] ?? ChannelTypes.GUILD_TEXT;
 
@@ -254,8 +256,8 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
         rate_limit_per_user: rateLimitPerUser,
         rtc_region: rtcRegion,
         video_quality_mode: videoMode,
-        available_tags: availableTags?.map(availableTag => transformGuildForumTag(availableTag)),
-        default_reaction_emoji: defaultReactionEmoji && transformGuildDefaultReaction(defaultReactionEmoji),
+        available_tags: availableTags?.map(availableTag => Util.transformGuildForumTag(availableTag as Parameters<typeof Util.transformGuildForumTag>[0])),
+        default_reaction_emoji: defaultReactionEmoji && Util.transformGuildDefaultReaction(defaultReactionEmoji as Parameters<typeof Util.transformGuildDefaultReaction>[0]),
         default_sort_order: sortMode,
         default_forum_layout: layoutMode,
         default_thread_rate_limit_per_user: defaultThreadRateLimitPerUser,
@@ -288,7 +290,7 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
     const id = this.resolveId(channel);
     if (!id) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
 
-    const resolvedImage = await DataResolver.resolveImage(avatar);
+    const resolvedImage = await DataResolver.resolveImage(avatar as string);
 
     const data = await this.client.api.channels[id].webhooks.post({
       data: {
@@ -365,7 +367,7 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
     channel = this.resolve(channel);
     if (!channel) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
 
-    const parentId = data.parent && this.client.channels.resolveId(data.parent);
+    const parentId = data.parent && this.client.channels.resolveId(data.parent as string);
 
     if (typeof data.position !== 'undefined') await this.setPosition(channel, data.position, { reason });
 
@@ -387,7 +389,7 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
     }
 
     let defaultAutoArchiveDuration = data.defaultAutoArchiveDuration;
-    if (defaultAutoArchiveDuration === 'MAX') defaultAutoArchiveDuration = resolveAutoArchiveMaxLimit(this.guild);
+    if (defaultAutoArchiveDuration === 'MAX') defaultAutoArchiveDuration = Util.resolveAutoArchiveMaxLimit();
 
     const newData = await this.client.api.channels(channel.id).patch({
       data: {
@@ -395,9 +397,9 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
         type: data.type,
         topic: data.topic,
         nsfw: data.nsfw,
-        bitrate: data.bitrate ?? channel.bitrate,
-        user_limit: data.userLimit ?? channel.userLimit,
-        rtc_region: 'rtcRegion' in data ? data.rtcRegion : channel.rtcRegion,
+        bitrate: data.bitrate ?? (channel as unknown as Record<string, unknown>).bitrate,
+        user_limit: data.userLimit ?? (channel as unknown as Record<string, unknown>).userLimit,
+        rtc_region: 'rtcRegion' in data ? data.rtcRegion : (channel as unknown as Record<string, unknown>).rtcRegion,
         video_quality_mode:
           typeof data.videoQualityMode === 'string' ? VideoQualityModes[data.videoQualityMode] : data.videoQualityMode,
         parent_id: parentId,
@@ -405,10 +407,10 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
         rate_limit_per_user: data.rateLimitPerUser,
         default_auto_archive_duration: defaultAutoArchiveDuration,
         permission_overwrites,
-        available_tags: data.availableTags?.map(availableTag => transformGuildForumTag(availableTag)),
-        default_reaction_emoji: data.defaultReactionEmoji && transformGuildDefaultReaction(data.defaultReactionEmoji),
+        available_tags: data.availableTags?.map(availableTag => Util.transformGuildForumTag(availableTag as Parameters<typeof Util.transformGuildForumTag>[0])),
+        default_reaction_emoji: data.defaultReactionEmoji && Util.transformGuildDefaultReaction(data.defaultReactionEmoji as Parameters<typeof Util.transformGuildDefaultReaction>[0]),
         default_thread_rate_limit_per_user: data.defaultThreadRateLimitPerUser,
-        flags: 'flags' in data ? ChannelFlags.resolve(data.flags) : undefined,
+        flags: 'flags' in data ? ChannelFlags.resolve(data.flags as ChannelFlagsResolvable) : undefined,
         default_sort_order:
           typeof data.defaultSortOrder === 'string' ? SortOrderTypes[data.defaultSortOrder] : data.defaultSortOrder,
       },
@@ -482,12 +484,12 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
       const data = await this.client.api.channels(id).get();
       // Since this is the guild manager, throw if on a different guild
       if (this.guild.id !== data.guild_id) throw new Error('GUILD_CHANNEL_UNOWNED');
-      return this.client.channels._add(data, this.guild, { cache });
+      return this.client.channels._add(data, this.guild, { cache }) as unknown as GuildChannel;
     }
 
     const data = await this.client.api.guilds(this.guild.id).channels.get();
-    const channels = new Collection();
-    for (const channel of data) channels.set(channel.id, this.client.channels._add(channel, this.guild, { cache }));
+    const channels = new Collection<Snowflake, GuildChannel>();
+    for (const channel of data) channels.set(channel.id, this.client.channels._add(channel, this.guild, { cache }) as unknown as GuildChannel);
     return channels;
   }
 
@@ -535,17 +537,17 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
    *   .catch(console.error);
    */
   async setPositions(channelPositions: ChannelPosition[]): Promise<Guild> {
-    channelPositions = channelPositions.map(r => ({
-      id: this.client.channels.resolveId(r.channel),
+    const resolvedPositions = channelPositions.map(r => ({
+      id: this.client.channels.resolveId(r.channel as string),
       position: r.position,
       lock_permissions: r.lockPermissions,
-      parent_id: typeof r.parent !== 'undefined' ? this.resolveId(r.parent) : undefined,
+      parent_id: typeof r.parent !== 'undefined' ? this.resolveId(r.parent as GuildChannelResolvable) : undefined,
     }));
 
-    await this.client.api.guilds(this.guild.id).channels.patch({ data: channelPositions });
+    await this.client.api.guilds(this.guild.id).channels.patch({ data: resolvedPositions });
     return this.client.actions.GuildChannelsPositionUpdate.handle({
       guild_id: this.guild.id,
-      channels: channelPositions,
+      channels: resolvedPositions,
     }).guild;
   }
 

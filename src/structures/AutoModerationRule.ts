@@ -14,7 +14,7 @@ import {
  * @extends {Base}
  */
 class AutoModerationRule extends Base {
-  public id: any;
+  declare public id: any;
   public guild: any;
   public creatorId: any;
   public triggerType: any;
@@ -56,7 +56,7 @@ class AutoModerationRule extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     if ('name' in data) {
       /**
        * The name of this auto moderation rule.

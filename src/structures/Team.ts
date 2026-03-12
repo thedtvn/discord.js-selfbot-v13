@@ -10,7 +10,7 @@ import type { Snowflake } from 'discord-api-types/v10';
  * @extends {Base}
  */
 class Team extends Base {
-  public id!: Snowflake;
+  declare public id: Snowflake;
   public name!: string;
   public icon!: string | null;
   public ownerId!: Snowflake | null;
@@ -21,7 +21,7 @@ class Team extends Base {
     this._patch(data);
   }
 
-  _patch(data: any): void {
+  _patch(data: any): any {
     /**
      * The Team's id
      * @type {Snowflake}

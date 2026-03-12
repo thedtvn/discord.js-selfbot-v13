@@ -2,7 +2,7 @@ import type { GatewayHandler } from './types';
 
 import { Events } from '../../../util/Constants';
 
-const handler: GatewayHandler = (client, { d: data }) => { const channel = client.channels.cache.get(data.id);
+const handler: GatewayHandler = (client, { d: data }) => { const channel = client.channels.cache.get(data.id) as any;
 if (channel) {
   const old = channel._clone();
   channel.status = data.status;

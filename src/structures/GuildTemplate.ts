@@ -224,7 +224,7 @@ class GuildTemplate extends Base {
    * @readonly
    */
   get url(): string {
-    return `${this.client.options.http.template}/${this.code}`;
+    return `${(this.client.options.http as any).template}/${this.code}`;
   }
 
   /**
@@ -243,6 +243,6 @@ class GuildTemplate extends Base {
  * Regular expression that globally matches guild template links
  * @type {RegExp}
  */
-GuildTemplate.GUILD_TEMPLATES_PATTERN = /discord(?:app)?\.(?:com\/template|new)\/([\w-]{2,255})/gi;
+(GuildTemplate as any).GUILD_TEMPLATES_PATTERN = /discord(?:app)?\.(?:com\/template|new)\/([\w-]{2,255})/gi;
 
 export default GuildTemplate;

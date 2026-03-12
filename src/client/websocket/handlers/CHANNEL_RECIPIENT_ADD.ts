@@ -1,6 +1,6 @@
 import type { GatewayHandler } from './types';
 import { Events, Status } from '../../../util/Constants';
-const handler: GatewayHandler = (client, packet, shard) => { const channel = client.channels.cache.get(packet.d.channel_id);
+const handler: GatewayHandler = (client, packet, shard) => { const channel = client.channels.cache.get(packet.d.channel_id) as any;
 if (channel) {
   if (!channel._recipients) channel._recipients = [];
   channel._recipients.push(packet.d.user);

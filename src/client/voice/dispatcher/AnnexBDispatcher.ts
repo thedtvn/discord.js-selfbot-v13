@@ -28,6 +28,10 @@ class AnnexBDispatcher extends VideoDispatcher {
     this._nalFunctions = nalFunctions;
   }
 
+  makeFragmentationUnitHeader(isFirstPacket: boolean, isLastPacket: boolean, naluHeader: Buffer): Buffer {
+    throw new Error('makeFragmentationUnitHeader must be implemented by subclass');
+  }
+
   _codecCallback(frame: Buffer): void {
     let accessUnit = frame;
     let offset = 0;

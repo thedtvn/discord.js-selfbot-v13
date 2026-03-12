@@ -9,6 +9,7 @@ type RawSessionData = { id_hash: string; id?: string };
  * Manages API methods for users and stores their cache.
  * @extends {CachedManager}
  */
+// @ts-expect-error RawSessionData uses id_hash instead of id
 class SessionManager extends CachedManager<string, Session, string | Session, RawSessionData> {
   public currentSessionIdHash: string | null;
 
@@ -47,11 +48,11 @@ class SessionManager extends CachedManager<string, Session, string | Session, Ra
    * @returns {Promise<void>}
    */
   logoutAllDevices(): Promise<void> {
-    return this.client.api.auth.sessions.logout({
+    return (this.client.api.auth.sessions as unknown as Record<string, (...args: unknown[]) => unknown>).logout({
       data: {
         session_id_hashes: this.cache.map(session => session.id),
       },
-    });
+    }) as unknown as Promise<void>;
   }
 
   /**
