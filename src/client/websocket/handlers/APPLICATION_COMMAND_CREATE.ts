@@ -1,0 +1,18 @@
+import type { GatewayHandler } from './types';
+
+import { Events } from '../../../util/Constants';
+
+const handler: GatewayHandler = (client, { d: data }) => { const commandManager = data.guild_id ? client.guilds.cache.get(data.guild_id)?.commands : client.application.commands;
+if (!commandManager) return;
+
+const command = commandManager._add(data, data.application_id === client.application.id);
+
+/**
+ * Emitted when a guild application command is created.
+ * @event Client#applicationCommandCreate
+ * @param {ApplicationCommand} command The command which was created
+ * @deprecated See {@link https://github.com/discord/discord-api-docs/issues/3690 this issue} for more information.
+ */
+client.emit(Events.APPLICATION_COMMAND_CREATE, command); };
+
+export default handler;;

@@ -1,0 +1,24 @@
+import AnonymousGuild from './AnonymousGuild';
+import WelcomeScreen from './WelcomeScreen';
+
+/**
+ * Represents a guild received from an invite, includes welcome screen data if available.
+ * @extends {AnonymousGuild}
+ */
+class InviteGuild extends AnonymousGuild {
+  public welcomeScreen: WelcomeScreen | null;
+
+  constructor(client: any, data: any) {
+    super(client, data);
+
+    /**
+     * The welcome screen for this invite guild
+     * @type {?WelcomeScreen}
+     */
+    this.welcomeScreen =
+      typeof data.welcome_screen !== 'undefined' ? new WelcomeScreen(this, data.welcome_screen) : null;
+  }
+}
+
+
+export default InviteGuild;

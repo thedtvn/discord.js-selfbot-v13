@@ -1,0 +1,27 @@
+import Action from './Action';
+import Typing from '../../structures/Typing';
+import { Events } from '../../util/Constants';
+
+class TypingStart extends Action {
+  handle(data: any): any {
+    const channel = this.getChannel({ id: data.channel_id, ...('guild_id' in data && { guild_id: data.guild_id }) });
+    if (!channel) return;
+
+    if (!channel.isText()) {
+      this.client.emit(Events.WARN, `Discord sent a typing packet to a ${channel.type} channel ${channel.id}`);
+      return;
+    }
+
+    const user = this.getUserFromMember(data);
+    if (user) {
+      /**
+       * Emitted whenever a user starts typing in a channel.
+       * @event Client#typingStart
+       * @param {Typing} typing The typing state
+       */
+      this.client.emit(Events.TYPING_START, new Typing(channel, user, data));
+    }
+  }
+}
+
+export default TypingStart;

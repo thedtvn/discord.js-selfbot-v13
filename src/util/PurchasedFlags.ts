@@ -1,0 +1,36 @@
+import BitField, { type BitFieldResolvable } from './BitField';
+
+/**
+ * Data structure that makes it easy to interact with an {@link PurchasedFlags#flags} bitfield.
+ * @extends {BitField}
+ */
+const FLAGS = {
+  NITRO_CLASSIC: 1 << 0,
+  NITRO: 1 << 1,
+  GUILD_BOOST: 1 << 2,
+  NITRO_BASIC: 1 << 3,
+} as const;
+
+export type PurchasedFlagsString = keyof typeof FLAGS;
+export type PurchasedFlagsResolvable = BitFieldResolvable<PurchasedFlagsString>;
+
+class PurchasedFlags extends BitField<PurchasedFlagsString> {
+  public static override FLAGS = FLAGS;
+}
+
+/**
+ * @name PurchasedFlags
+ * @kind constructor
+ * @memberof PurchasedFlags
+ * @param {BitFieldResolvable} [bits=0] Bit(s) to read from
+ */
+
+/**
+ * Numeric the Discord purchased flags. All available properties:
+ * * `NITRO_CLASSIC`
+ * * `NITRO`
+ * * `GUILD_BOOST`
+ * * `NITRO_BASIC`
+ * @type {Object}
+ */
+export default PurchasedFlags;

@@ -1,0 +1,61 @@
+'use strict';
+
+import { Emoji } from './Emoji';
+
+/**
+ * Parent class for {@link GuildEmoji} and {@link GuildPreviewEmoji}.
+ * @extends {Emoji}
+ * @abstract
+ */
+class BaseGuildEmoji extends Emoji {
+  public guild: any;
+  public requiresColons: boolean | null;
+  public managed: boolean | null;
+  public available: boolean | null;
+
+  constructor(client: any, data: any, guild: any) {
+    super(client, data);
+
+    /**
+     * The guild this emoji is a part of
+     * @type {Guild|GuildPreview}
+     */
+    this.guild = guild;
+
+    this.requiresColons = null;
+    this.managed = null;
+    this.available = null;
+
+    this._patch(data);
+  }
+
+  _patch(data: any): void {
+    if ('name' in data) this.name = data.name;
+
+    if ('require_colons' in data) {
+      /**
+       * Whether or not this emoji requires colons surrounding it
+       * @type {?boolean}
+       */
+      this.requiresColons = data.require_colons;
+    }
+
+    if ('managed' in data) {
+      /**
+       * Whether this emoji is managed by an external service
+       * @type {?boolean}
+       */
+      this.managed = data.managed;
+    }
+
+    if ('available' in data) {
+      /**
+       * Whether this emoji is available
+       * @type {?boolean}
+       */
+      this.available = data.available;
+    }
+  }
+}
+
+export default BaseGuildEmoji;

@@ -1,0 +1,11 @@
+import { Buffer } from 'node:buffer';
+import WebSocketLib from 'ws';
+export declare const WebSocket: typeof WebSocketLib;
+export declare const encoding: 'etf' | 'json';
+export declare const pack: (data: unknown) => string | Buffer;
+export declare const unpack: (data: unknown, type?: "json") => unknown;
+export declare const create: (gateway: string, query: Record<string, string | number>, ...args: ConstructorParameters<typeof WebSocketLib>) => InstanceType<typeof WebSocketLib>;
+export declare const CONNECTING: 0;
+export declare const OPEN: 1;
+export declare const CLOSING: 2;
+export declare const CLOSED: 3;

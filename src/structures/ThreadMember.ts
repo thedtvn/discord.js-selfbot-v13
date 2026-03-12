@@ -1,0 +1,110 @@
+import Base from './Base';
+import ThreadMemberFlags from '../util/ThreadMemberFlags';
+
+/**
+ * Represents a Member for a Thread.
+ * @extends {Base}
+ */
+class ThreadMember extends Base {
+  public thread: any;
+  public joinedTimestamp: number | null;
+  public id: string;
+  public flags: any;
+  public member: any;
+
+  constructor(thread: any, data: any, extra: any = {}) {
+    super(thread.client);
+
+    /**
+     * The thread that this member is a part of
+     * @type {ThreadChannel}
+     */
+    this.thread = thread;
+
+    /**
+     * The timestamp the member last joined the thread at
+     * @type {?number}
+     */
+    this.joinedTimestamp = null;
+
+    /**
+     * The id of the thread member
+     * @type {Snowflake}
+     */
+    this.id = data.user_id;
+
+    this._patch(data, extra);
+  }
+
+  _patch(data: any, extra: any = {}): void {
+    if ('join_timestamp' in data) this.joinedTimestamp = new Date(data.join_timestamp).getTime();
+
+    if ('flags' in data) {
+      /**
+       * The flags for this thread member
+       * @type {ThreadMemberFlags}
+       */
+      this.flags = new ThreadMemberFlags(data.flags).freeze();
+    }
+
+    if ('member' in data) {
+      /**
+       * The guild member associated with this thread member.
+       * @type {?GuildMember}
+       * @private
+       */
+      this.member = this.thread.guild.members._add(data.member, extra.cache);
+    } else {
+      this.member ??= null;
+    }
+  }
+
+  /**
+   * The guild member associated with this thread member
+   * @type {?GuildMember}
+   * @readonly
+   */
+  get guildMember(): any {
+    return this.member ?? this.thread.guild.members.cache.get(this.id) ?? null;
+  }
+
+  /**
+   * The last time this member joined the thread
+   * @type {?Date}
+   * @readonly
+   */
+  get joinedAt(): Date | null {
+    return this.joinedTimestamp ? new Date(this.joinedTimestamp) : null;
+  }
+
+  /**
+   * The user associated with this thread member
+   * @type {?User}
+   * @readonly
+   */
+  get user(): any {
+    return this.client.users.cache.get(this.id) ?? null;
+  }
+
+  /**
+   * Whether the client user can manage this thread member
+   * @type {boolean}
+   * @readonly
+   */
+  get manageable(): boolean {
+    return !this.thread.archived && this.thread.editable;
+  }
+
+  /**
+   * Removes this member from the thread.
+   * @param {string} [reason] Reason for removing the member
+   * @returns {ThreadMember}
+   */
+  async remove(reason?: string): Promise<this> {
+    await this.thread.members.remove(this.id, reason);
+    return this;
+  }
+}
+
+
+export default ThreadMember;

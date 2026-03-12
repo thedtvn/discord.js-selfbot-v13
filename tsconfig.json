@@ -1,32 +1,37 @@
 {
-    // Mapped from https://www.typescriptlang.org/tsconfig
     "compilerOptions": {
-        // Type Checking
-        "allowUnreachableCode": false,
-        "allowUnusedLabels": false,
-        // if true: conflicts with discord-api-types
+        // Type Checking - relaxed for migration
+        "allowUnreachableCode": true,
+        "allowUnusedLabels": true,
         "exactOptionalPropertyTypes": false,
         "noFallthroughCasesInSwitch": true,
-        "noImplicitOverride": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "strict": true,
-        "useUnknownInCatchVariables": true,
+        "noImplicitOverride": false,
+        "noImplicitReturns": false,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "strict": false,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "strictFunctionTypes": false,
+        "strictBindCallApply": false,
+        "strictPropertyInitialization": false,
+        "useUnknownInCatchVariables": false,
         // Modules
         "module": "CommonJS",
         "moduleResolution": "node",
         "resolveJsonModule": true,
         // Emit
-        "declaration": false,
-        "importHelpers": true,
+        "declaration": true,
+        "declarationDir": "typings",
+        "importHelpers": false,
         "inlineSources": false,
         "newLine": "lf",
-        "noEmitHelpers": true,
+        "noEmitHelpers": false,
         "outDir": "dist",
+        "rootDir": "src",
         "preserveConstEnums": true,
         "removeComments": false,
-        "sourceMap": false,
+        "sourceMap": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         // Language and Environment
@@ -34,15 +39,16 @@
         "experimentalDecorators": true,
         "lib": [
             "ESNext",
-            "ES2021",
-            "DOM"
+            "ES2021"
         ],
         "target": "ES2020",
         "useDefineForClassFields": true,
         // Output Formatting
-        "pretty": false,
+        "pretty": true,
         // Completeness
         "skipLibCheck": true,
-        "skipDefaultLibCheck": true,
-    }
+        "skipDefaultLibCheck": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "dist", "typings", "examples", "docs"]
 }
