@@ -221,7 +221,7 @@ class ThreadChannel extends Channel {
     }
 
     if (data.member && this.client.user) this.members._add({ user_id: this.client.user.id, ...data.member });
-    if (data.messages) for (const message of data.messages) this.messages._add(message);
+    if (Array.isArray(data.messages)) for (const message of data.messages) this.messages._add(message);
   }
 
   /**

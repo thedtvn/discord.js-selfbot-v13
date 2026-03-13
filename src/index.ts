@@ -117,6 +117,7 @@ export { default as MessageAttachment } from './structures/MessageAttachment';
 export { default as MessageButton } from './structures/MessageButton';
 export { default as MessageCollector } from './structures/MessageCollector';
 export { default as MessageEmbed } from './structures/MessageEmbed';
+export { default as MessageSelectMenu } from './structures/MessageSelectMenu';
 export { default as MessageMentions } from './structures/MessageMentions';
 export { default as MessagePayload } from './structures/MessagePayload';
 export { default as MessageReaction } from './structures/MessageReaction';

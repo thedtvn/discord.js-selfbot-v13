@@ -135,13 +135,10 @@ class GuildChannelManager extends CachedManager<Snowflake, GuildChannel, GuildCh
    */
 
   _add(channel: GuildChannel | RawGuildChannelData, cache?: boolean): GuildChannel {
-    if (channel instanceof GuildChannel) {
-      const existing = this.cache.get(channel.id);
-      if (existing) return existing;
-      if (cache !== false) this.cache.set(channel.id, channel);
-      return channel;
-    }
-    return super._add(channel, cache);
+    const existing = this.cache.get((channel as any).id);
+    if (existing) return existing;
+    if (cache !== false) this.cache.set((channel as any).id, channel as GuildChannel);
+    return channel as GuildChannel;
   }
 
   /**
