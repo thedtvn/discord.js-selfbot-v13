@@ -65,14 +65,6 @@ dist
 # TernJS port file
 .tern-port
 
-# Env
-.env
-test/
-docs/deploy/deploy_key
-docs/deploy/deploy_key.pub
-deploy/deploy_key
-deploy/deploy_key.pub
-
 # Miscellaneous
 .tmp/
 .idea/
