@@ -22,7 +22,6 @@
         "resolveJsonModule": true,
         // Emit
         "declaration": true,
-        "declarationDir": "typings",
         "importHelpers": false,
         "inlineSources": false,
         "newLine": "lf",
