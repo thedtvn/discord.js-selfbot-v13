@@ -51,7 +51,7 @@ class VoiceConnection extends EventEmitter {
   videoStatus: boolean | null;
   authentication: any;
   player: MediaPlayer;
-  ssrcMap: Map<number, { userId: string; speaking: number | boolean; hasVideo: boolean }>;
+  ssrcMap: Map<number, { userId: string; speaking: number | boolean; hasVideo?: boolean }>;
   _speaking: Map<string, any>;
   sockets: any;
   receiver: VoiceReceiver;
@@ -610,7 +610,6 @@ class VoiceConnection extends EventEmitter {
 
   onStartSpeaking({ user_id, ssrc, speaking }: { user_id: string; ssrc: number; speaking: number }): void {
     this.ssrcMap.set(+ssrc, {
-      hasVideo: false,
       ...(this.ssrcMap.get(+ssrc) || {}),
       userId: user_id,
       speaking: speaking,
@@ -677,7 +676,7 @@ class VoiceConnection extends EventEmitter {
          * @param {GuildMember} member The member that started/stopped speaking
          * @param {Readonly<Speaking>} speaking The speaking state of the member
          */
-        this.client.emit('guildMemberSpeaking' as any, member, speakingObj);
+        this.client.emit('guildMemberSpeaking', member, speakingObj);
       }
     }
   }

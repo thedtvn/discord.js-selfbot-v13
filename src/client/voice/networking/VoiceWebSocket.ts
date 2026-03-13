@@ -197,7 +197,7 @@ class VoiceWebSocket extends EventEmitter {
          */
         this.emit('sessionDescription', packet.d);
         break;
-      case VoiceOpcodes.CLIENT_DISCONNECT:
+      case 12: // CLIENT_CONNECT - not officially documented, opcode 12 handles client connections
         this.connection.ssrcMap.set(+packet.d.audio_ssrc, {
           userId: packet.d.user_id,
           speaking: 0,

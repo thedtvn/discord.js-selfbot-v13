@@ -606,12 +606,16 @@ async function run() {
     // ================================================================
     section('19. CLEANUP - DELETE TEST SERVER');
     // ================================================================
-    try {
-      if (testGuild) {
-        await testGuild.delete();
-        pass('CLEANUP', `Deleted test server: ${TEST_GUILD_NAME}`);
-      }
-    } catch (e) { fail('CLEANUP', 'Delete test server', e); }
+    if (process.env.SKIP_CLEANUP) {
+      skip('CLEANUP', `Skipping server deletion (SKIP_CLEANUP set). Server: ${TEST_GUILD_NAME}`);
+    } else {
+      try {
+        if (testGuild) {
+          await testGuild.delete();
+          pass('CLEANUP', `Deleted test server: ${TEST_GUILD_NAME}`);
+        }
+      } catch (e) { fail('CLEANUP', 'Delete test server', e); }
+    }
 
     // ================================================================
     section('FINAL RESULTS');
